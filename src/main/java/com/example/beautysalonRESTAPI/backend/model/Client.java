@@ -31,6 +31,8 @@ public class Client {
     private String pershkrimi;
 
     // Getters and setters
+
+    /* 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getEmri() { return emri; }
@@ -45,5 +47,6 @@ public class Client {
     public void setDataRegjistrimit(LocalDate dataRegjistrimit) { this.dataRegjistrimit = dataRegjistrimit; }
     public String getPershkrimi() { return pershkrimi; }
     public void setPershkrimi(String pershkrimi) { this.pershkrimi = pershkrimi; }
+    */
 } 
 
