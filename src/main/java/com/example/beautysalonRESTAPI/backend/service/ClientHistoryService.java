@@ -14,7 +14,7 @@ public class ClientHistoryService {
         this.clientHistoryRepository = clientHistoryRepository;
     }
 
-    public ClientHistory getClientHistoryById(Long id) {
+    public ClientHistory getClientHistoryById(int id) {
         return clientHistoryRepository.findById(id).orElse(null);
     }
 }

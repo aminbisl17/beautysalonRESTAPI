@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
 
 @Repository
-public interface ClientHistoryRepository extends JpaRepository<ClientHistory, Long> {
+public interface ClientHistoryRepository extends JpaRepository<ClientHistory, Integer> {
     
 }
