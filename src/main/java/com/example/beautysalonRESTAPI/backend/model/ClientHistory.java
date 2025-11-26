@@ -16,23 +16,18 @@ public class ClientHistory {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "ID")
+    private Long id_personit; 
+
     @Column(name ="id_historikut")
     private int id_historiku;
 
-    @Column(name = "ID")
-    private int id_personit; 
 
     @Column(name ="Sherbimi")
     private int id_sherbimit;
 
     @Column(name = "id_atributit")
     private int id_atributit;
-
-    @Column(name = "emri_sherbimit")
-    private String emri_sherbimit;
-
-    @Column(name = "opsioni")
-    private String emri_atributit;
 
     @Column(name = "data_sherbimit")
     private Timestamp data_sherbimit;

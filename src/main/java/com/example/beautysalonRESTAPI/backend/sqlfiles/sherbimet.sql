@@ -1,3 +1,4 @@
 use beautysalon;
 
-select * from beautysalon.sherbimet;
+SELECT TOP 1 * 
+FROM beautysalon.sherbimet;
