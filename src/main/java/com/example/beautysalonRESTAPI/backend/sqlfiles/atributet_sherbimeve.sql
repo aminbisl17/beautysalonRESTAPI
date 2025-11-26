@@ -1,1 +1,1 @@
-select * from beautysalon.atributet_sherbimeve;
+select * from beautysalon.clients;

@@ -32,7 +32,14 @@ public class SecurityConfig {
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin);
+                    UserDetails client = User.builder()
+            .username("Amin")
+            .password(encoder.encode("Bislimaj"))
+            .roles("CLIENT")
+            .build();
+
+
+        return new InMemoryUserDetailsManager(admin, client);
     }
 
     @Bean
@@ -46,9 +53,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/api/clientHistory").permitAll()
-                .requestMatchers("/api/clients").authenticated()
-                .anyRequest().permitAll()
+                  .requestMatchers("/api/clients").hasRole("ADMIN")
+                     .requestMatchers("/api/clients/**").hasRole("CLIENT")
+                .requestMatchers("/api/clientsHistory/**").hasAnyRole("CLIENT", "ADMIN")
+                .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

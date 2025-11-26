@@ -2,9 +2,11 @@ package com.example.beautysalonRESTAPI.backend.api;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
@@ -27,4 +29,6 @@ public class ClientHistoryController {
     public List<ClientHistoryDTO> getClientHistoryById(@PathVariable Long id) {
         return clientHistoryService.getClientHistoryById(id);
     }
+
+
 }
