@@ -41,7 +41,6 @@ public class AuthController {
             )
         );
 
-        // User authenticated → get roles + create token
         UserDetails user = (UserDetails) auth.getPrincipal();
         String role = user.getAuthorities().iterator().next().getAuthority();
 

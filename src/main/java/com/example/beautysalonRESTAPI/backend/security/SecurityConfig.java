@@ -15,11 +15,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
+    /*
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    } */
 
+       /* @Bean
+public PasswordEncoder passwordEncoder() {
+    // WARNING: This is only for testing. Do NOT use in production!
+    return NoOpPasswordEncoder.getInstance();
+}
+ */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -31,7 +38,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/ClientRegister/register").permitAll()
+                .requestMatchers("/api/clients/register").permitAll()
                 .requestMatchers("/api/clients").hasRole("ADMIN")
                 .requestMatchers("/api/clients/**").hasRole("CLIENT")
                 .requestMatchers("/api/clientsHistory/**").hasAnyRole("CLIENT", "ADMIN")

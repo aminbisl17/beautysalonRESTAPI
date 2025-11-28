@@ -1,14 +1,17 @@
 package com.example.beautysalonRESTAPI.backend.dto;
 
+import java.sql.Timestamp;
 
 public class ClientRegisterRequest {
     private String emri;
     private String mbiemri;
     private char gjinia;
     private String numri_telefonit;
-      private String username;
+    private String username;
     private String password;
-    public char getGjinia() {
+
+    public char getGjinia() 
+    {
         return gjinia;
     }
     public void setGjinia(char gjinia) {

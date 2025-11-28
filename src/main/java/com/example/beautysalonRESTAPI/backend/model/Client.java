@@ -2,6 +2,7 @@ package com.example.beautysalonRESTAPI.backend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "clients", schema = "beautysalon")
@@ -24,8 +25,8 @@ public class Client {
     @Column(name = "numri_telefonit")
     private String numriTelefonit;
 
-    @Column(name = "data_regjistrimit")
-    private LocalDate dataRegjistrimit;
+    @Column(name = "data_regjistrimit", insertable = false, updatable = false)
+private LocalDateTime dataRegjistrimit;
 
     @Column(name = "pershkrimi")
     private String pershkrimi;
@@ -58,8 +59,8 @@ public class Client {
     public void setGjinia(String gjinia) { this.gjinia = gjinia; }
     public String getNumriTelefonit() { return numriTelefonit; }
     public void setNumriTelefonit(String numriTelefonit) { this.numriTelefonit = numriTelefonit; }
-    public LocalDate getDataRegjistrimit() { return dataRegjistrimit; }
-    public void setDataRegjistrimit(LocalDate dataRegjistrimit) { this.dataRegjistrimit = dataRegjistrimit; }
+    public LocalDateTime getDataRegjistrimit() { return dataRegjistrimit; }
+    public void setDataRegjistrimit(LocalDateTime dataRegjistrimit) { this.dataRegjistrimit = dataRegjistrimit; }
     public String getPershkrimi() { return pershkrimi; }
     public void setPershkrimi(String pershkrimi) { this.pershkrimi = pershkrimi; }
     

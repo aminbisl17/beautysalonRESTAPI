@@ -3,20 +3,33 @@ package com.example.beautysalonRESTAPI.backend.api;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.backend.dto.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.repository.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.service.ClientService;
 
 @RestController
 @RequestMapping("/api/clients")
 public class ClientController {
+
+        @Autowired
+    private ClientRepository clientRepo;
+
+        
+  @Autowired
+ private BCryptPasswordEncoder passwordEncoder;
 
     private final ClientService clientService;
 
@@ -45,4 +58,32 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
 
     return ResponseEntity.ok(client);
 }
+
+  
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) {
+ 
+    //if (origin == null || !origin.equals("http://localhost:8080")) {
+     //   return ResponseEntity.status(403).body("Registration allowed only from website");
+    //}
+
+        if (clientRepo.findByUsername(request.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+    
+        var client = new com.example.beautysalonRESTAPI.backend.model.Client();
+        client.setEmri(request.getEmri());
+        client.setMbiemri(request.getMbiemri());
+        client.setNumriTelefonit(request.getNumri_telefonit());
+        client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
+                       : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
+        client.setUsername(request.getUsername());
+        client.setUserpassword(passwordEncoder.encode(request.getPassword()));
+    //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
+
+    
+        clientRepo.save(client);
+    
+        return ResponseEntity.ok("Client registered successfully");
+    }
 }

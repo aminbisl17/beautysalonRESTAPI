@@ -1,16 +1,12 @@
 package com.example.beautysalonRESTAPI.backend.service;
-
-import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
-import com.example.beautysalonRESTAPI.backend.model.ClientHistoryDTO;
+import com.example.beautysalonRESTAPI.backend.dto.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.repository.ClientHistoryRepository;
 
 @Service
@@ -45,4 +41,5 @@ public class ClientHistoryService {
 
         return historyList;
     }
+
 }
