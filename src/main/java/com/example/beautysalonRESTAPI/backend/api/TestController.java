@@ -16,8 +16,8 @@ public class TestController {
 
     @GetMapping("/generate-token")
     public String generateToken() {
-        String token = jwtUtil.generateToken("admin");
-        System.out.println("Generated Token: " + token); // prints to console
-        return token; // returns token in response for testing
+        //String token = jwtUtil.generateToken("admin");
+      //  System.out.println("Generated Token: " + token); // prints to console
+        return ""; // returns token in response for testing
     }
 }

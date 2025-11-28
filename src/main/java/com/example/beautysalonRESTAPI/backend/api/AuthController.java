@@ -3,9 +3,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.beautysalonRESTAPI.backend.repository.AdminUserRepository;
+import com.example.beautysalonRESTAPI.backend.repository.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.security.AuthRequest;
 import com.example.beautysalonRESTAPI.backend.security.AuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
@@ -13,6 +17,13 @@ import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    
+    @Autowired
+    private AdminUserRepository adminUserRepo;
+
+    @Autowired
+    private ClientRepository clientRepo;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -22,19 +33,34 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        try {
-            // Authenticate user
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+    try {
+        Authentication auth = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+            )
+        );
 
-            // Generate JWT token
-            String token = jwtUtil.generateToken(request.getUsername());
+        // User authenticated → get roles + create token
+        UserDetails user = (UserDetails) auth.getPrincipal();
+        String role = user.getAuthorities().iterator().next().getAuthority();
 
-            return ResponseEntity.ok(new AuthResponse(token));
+        String token = jwtUtil.generateToken(user.getUsername(), role);
 
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body("Invalid username or password");
-        }
+        Long userId = getUserIdFromDatabase(user.getUsername(), role);
+
+        return ResponseEntity.ok(new AuthResponse(token, userId, role));
+
+    } catch (AuthenticationException e) {
+        return ResponseEntity.status(401).body("Invalid username or password");
     }
+}
+
+    private Long getUserIdFromDatabase(String username, String role) {
+    if (role.equals("ROLE_ADMIN")) {
+        return adminUserRepo.findByUsername(username).get().getId();
+    } else {
+        return clientRepo.findByUsername(username).get().getId();
+    }
+}
 }
