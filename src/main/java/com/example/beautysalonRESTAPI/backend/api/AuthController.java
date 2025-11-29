@@ -62,4 +62,33 @@ public class AuthController {
         return clientRepo.findByUsername(username).get().getId();
     }
 }
+
+@PostMapping("/login/admin")
+public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
+    try {
+        Authentication auth = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+            )
+        );
+
+        UserDetails user = (UserDetails) auth.getPrincipal();
+        String role = user.getAuthorities().iterator().next().getAuthority();
+
+        // ALLOW ONLY ADMIN
+        if (!role.equals("ROLE_ADMIN")) {
+            return ResponseEntity.status(403).body("Access denied: admin only");
+        }
+
+        String token = jwtUtil.generateToken(user.getUsername(), role);
+
+        Long userId = adminUserRepo.findByUsername(user.getUsername()).get().getId();
+
+        return ResponseEntity.ok(new AuthResponse(token, userId, role));
+
+    } catch (AuthenticationException e) {
+        return ResponseEntity.status(401).body("Invalid admin username or password");
+    }
+}
 }
