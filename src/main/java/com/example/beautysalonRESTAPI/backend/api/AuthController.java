@@ -31,6 +31,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @CrossOrigin(origins = "http://192.168.1.106:8080")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
     try {
