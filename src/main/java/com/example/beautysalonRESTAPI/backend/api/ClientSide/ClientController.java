@@ -1,5 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api;
-
+package com.example.beautysalonRESTAPI.backend.api.ClientSide;
 
 import java.util.List;
 

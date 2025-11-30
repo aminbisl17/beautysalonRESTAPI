@@ -1,3 +1,3 @@
 use beautysalon;
 
-SELECT * FROM beautysalon.users;
+SELECT * FROM beautysalon.sherbimet;

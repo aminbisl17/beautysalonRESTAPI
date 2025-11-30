@@ -26,7 +26,7 @@ public class Client {
     private String numriTelefonit;
 
     @Column(name = "data_regjistrimit", insertable = false, updatable = false)
-private LocalDateTime dataRegjistrimit;
+    private LocalDateTime dataRegjistrimit;
 
     @Column(name = "pershkrimi")
     private String pershkrimi;
