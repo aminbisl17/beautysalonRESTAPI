@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.dto;
+package com.example.beautysalonRESTAPI.backend.dto.admin;
 
 import java.time.LocalDateTime;
 

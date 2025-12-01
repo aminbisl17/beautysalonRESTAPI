@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.dto;
+package com.example.beautysalonRESTAPI.backend.dto.Clients;
 
 import java.sql.Time;
 import java.sql.Timestamp;

@@ -22,6 +22,6 @@ public adminSherbimetController(sherbimetService sherbimetService) {
 
      @GetMapping("/sherbimet/all")
     public List<SherbimetAdminDTO> getAllServices() {
-        return sherbimetService.getAllServices();
+        return sherbimetService.getAllServicesAdmin();
     }
 }

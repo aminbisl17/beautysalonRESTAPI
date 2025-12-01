@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.beautysalonRESTAPI.backend.dto.ClientHistoryDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.repository.ClientHistoryRepository;
 
 @Service

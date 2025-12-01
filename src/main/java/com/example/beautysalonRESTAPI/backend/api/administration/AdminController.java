@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.beautysalonRESTAPI.backend.dto.UserDTO;
+import com.example.beautysalonRESTAPI.backend.dto.admin.UserDTO;
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.repository.AdminUserRepository;
 

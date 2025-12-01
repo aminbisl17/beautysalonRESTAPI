@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
 import com.example.beautysalonRESTAPI.backend.repository.sherbimetRepository;
 @Service
 public class sherbimetService {
@@ -14,10 +15,17 @@ public class sherbimetService {
            this.sherbimetRepo = sherbimetRepo;
     }
 
-   public List<SherbimetAdminDTO> getAllServices() {
+   public List<SherbimetAdminDTO> getAllServicesAdmin() {
     return sherbimetRepo.findAll()
             .stream()
             .map(SherbimetAdminDTO::new)
             .toList();
 }
+
+   public List<SherbimetClientDTO> getAllServicesClient(){
+       return sherbimetRepo.findAll()
+            .stream()
+            .map(SherbimetClientDTO::new)
+            .toList();
+   }
 }
