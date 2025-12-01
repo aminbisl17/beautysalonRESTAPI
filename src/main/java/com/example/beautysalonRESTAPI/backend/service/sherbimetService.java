@@ -3,7 +3,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.beautysalonRESTAPI.backend.dto.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.repository.sherbimetRepository;
 @Service
 public class sherbimetService {

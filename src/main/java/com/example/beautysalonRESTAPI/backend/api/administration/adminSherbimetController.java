@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.service.sherbimetService;
-import com.example.beautysalonRESTAPI.backend.dto.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.repository.sherbimetRepository;
 
 @RestController

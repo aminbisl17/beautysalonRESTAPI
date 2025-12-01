@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.dto;
+package com.example.beautysalonRESTAPI.backend.dto.Sherbimet;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

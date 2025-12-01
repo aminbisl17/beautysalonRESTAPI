@@ -35,6 +35,7 @@ public PasswordEncoder passwordEncoder() {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/test/generate-token").permitAll()
                 .requestMatchers("/auth/login").permitAll()
                   .requestMatchers("/auth/login/admin").permitAll()
                 .requestMatchers("/api/clients/register").permitAll()
