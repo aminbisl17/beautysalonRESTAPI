@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.ClientSide;
+package com.example.beautysalonRESTAPI.backend.api.Client;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.repository.ClientRepository;
-import com.example.beautysalonRESTAPI.backend.service.ClientService;
+import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
 
 @RestController
 @RequestMapping("/api/clients")

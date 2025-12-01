@@ -5,9 +5,12 @@ import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -46,6 +49,10 @@ public class ClientHistory {
 
     @Column(name = "kohezgjatja")
     private Time kohezgjatja;
+
+      @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id") // this column should exist in your DB
+    private Client client;
 
     public Long getId_personit() {
         return id_personit;

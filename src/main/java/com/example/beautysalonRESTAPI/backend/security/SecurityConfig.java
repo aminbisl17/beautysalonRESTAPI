@@ -30,15 +30,16 @@ public PasswordEncoder passwordEncoder() {
         return config.getAuthenticationManager();
     }
 
-    @Bean
+  @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/test/generate-token").permitAll()
                 .requestMatchers("/web/sherbimet/all").permitAll()
-                .requestMatchers("/auth/login").permitAll()
+            //    .requestMatchers("/auth/login").permitAll()
                   .requestMatchers("/auth/login/admin").permitAll()
+                    .requestMatchers("/auth/login/client").permitAll()
                 .requestMatchers("/api/clients/register").permitAll()
                 .requestMatchers("/api/clients").hasRole("ADMIN")
                  .requestMatchers("/api/admin/register").hasRole("ADMIN")

@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.repository;
+package com.example.beautysalonRESTAPI.backend.repository.Sherbimet;
 
 import java.util.Optional;
 

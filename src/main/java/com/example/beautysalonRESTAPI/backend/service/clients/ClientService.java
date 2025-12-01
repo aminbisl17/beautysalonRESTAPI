@@ -1,11 +1,11 @@
-package com.example.beautysalonRESTAPI.backend.service;
+package com.example.beautysalonRESTAPI.backend.service.clients;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.repository.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 
 @Service
 public class ClientService {

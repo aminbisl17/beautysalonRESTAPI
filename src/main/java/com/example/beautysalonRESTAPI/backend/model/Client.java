@@ -38,13 +38,14 @@ public class Client {
     @Column(name = "userpassword")
     private String userpassword;
 
-    private List<ClientHistory> ClientHistory;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ClientHistory> clientHistory;
 
     public List<ClientHistory> getClientHistory() {
-        return ClientHistory;
+        return clientHistory;
     }
     public void setClientHistory(List<ClientHistory> clientHistory) {
-        ClientHistory = clientHistory;
+      this.clientHistory = clientHistory;
     }
     public String getUsername() {
         return username;

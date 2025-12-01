@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.administration;
+package com.example.beautysalonRESTAPI.backend.api.Admin;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.service.sherbimetService;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
-import com.example.beautysalonRESTAPI.backend.repository.sherbimetRepository;
+import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.sherbimetRepository;
 
 @RestController
 @RequestMapping("api/admin")

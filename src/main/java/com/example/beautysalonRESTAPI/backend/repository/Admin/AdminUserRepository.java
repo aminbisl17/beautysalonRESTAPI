@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.repository;
+package com.example.beautysalonRESTAPI.backend.repository.Admin;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

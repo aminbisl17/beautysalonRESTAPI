@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.service;
+package com.example.beautysalonRESTAPI.backend.service.clients;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
-import com.example.beautysalonRESTAPI.backend.repository.ClientHistoryRepository;
+import com.example.beautysalonRESTAPI.backend.repository.Client.ClientHistoryRepository;
 
 @Service
 public class ClientHistoryService {

@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api;
+package com.example.beautysalonRESTAPI.backend.api.Client;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
-import com.example.beautysalonRESTAPI.backend.repository.ClientRepository;
-import com.example.beautysalonRESTAPI.backend.service.ClientHistoryService;
+import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.service.clients.ClientHistoryService;
 
 @RestController
 @RequestMapping("/api/clientsHistory")

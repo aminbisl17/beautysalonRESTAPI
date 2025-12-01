@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.ClientSide;
+package com.example.beautysalonRESTAPI.backend.api.Sherbimet;
 
 import java.util.List;
 
