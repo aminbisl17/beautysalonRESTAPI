@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 
 public class SherbimetAdminDTO {
-    private int ID;
+    private Long ID;
     private String emri_sherbimit;
     private String pershkrimi;
     private Double qmimi_baze;
@@ -28,10 +28,10 @@ public class SherbimetAdminDTO {
         this.kohezgjatja = s.getKohezgjatja();
     }
 
-    public int getID() {
+    public Long getID() {
         return ID;
     }
-    public void setID(int iD) {
+    public void setID(Long iD) {
         ID = iD;
     }
     public String getEmri_sherbimit() {
