@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.service.sherbimetService;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
 import com.example.beautysalonRESTAPI.backend.repository.sherbimetRepository;
 
 @RestController
@@ -21,7 +22,10 @@ public adminSherbimetController(sherbimetService sherbimetService) {
 }
 
      @GetMapping("/sherbimet/all")
-    public List<SherbimetAdminDTO> getAllServices() {
-        return sherbimetService.getAllServicesAdmin();
+    public List<SherbimetClientDTO> getAllServices() {
+        return sherbimetService.getAllServicesClient();
     }
+
+   // @GetMappinng("/sherbimet/client")
+
 }

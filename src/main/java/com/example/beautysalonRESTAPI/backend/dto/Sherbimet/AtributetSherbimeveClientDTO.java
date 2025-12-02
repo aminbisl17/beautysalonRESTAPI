@@ -7,7 +7,7 @@ import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 public class AtributetSherbimeveClientDTO {
     
     private String opsioni;
-    private String pershkrimi;
+    private String pershkrimi_opsionit;
     private Double qmimi;
     private Integer zbritja;
     private LocalTime kohezgjatja;
@@ -15,7 +15,7 @@ public class AtributetSherbimeveClientDTO {
     
     public AtributetSherbimeveClientDTO(Atributet_sherbimeve a) {
         this.opsioni = a.getOpsioni();
-        this.pershkrimi = a.getPershkrimi();
+        this.pershkrimi_opsionit = a.getPershkrimi();
         this.qmimi = a.getQmimi();
         this.zbritja = a.getZbritja();
         this.kohezgjatja = a.getKohezgjatja();
@@ -30,11 +30,11 @@ public class AtributetSherbimeveClientDTO {
     }
 
     public String getPershkrimi() {
-        return pershkrimi;
+        return pershkrimi_opsionit;
     }
 
     public void setPershkrimi(String pershkrimi) {
-        this.pershkrimi = pershkrimi;
+        this.pershkrimi_opsionit = pershkrimi;
     }
 
     public Double getQmimi() {

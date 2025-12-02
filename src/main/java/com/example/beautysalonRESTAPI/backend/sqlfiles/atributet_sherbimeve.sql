@@ -1,2 +1,2 @@
-
-select * from beautysalon.atributet_sherbimeve;
+use beautysalon;
+-- select * from beautysalon.atributet_sherbimeve;

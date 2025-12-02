@@ -26,7 +26,7 @@ public class Atributet_sherbimeve {
     @Column(name="opsioni")
     private String opsioni;
 
-    @Column(name="pershkrimi")
+    @Column(name="pershkrimi_opsionit")
     private String pershkrimi;
 
     @Column(name="kohezgjatja")

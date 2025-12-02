@@ -10,6 +10,16 @@ public class SherbimetClientDTO {
     private int zbritja;
     private List<AtributetSherbimeveClientDTO> atributet;
 
+    public List<AtributetSherbimeveClientDTO> getAtributet() {
+        return atributet;
+    }
+
+
+    public void setAtributet(List<AtributetSherbimeveClientDTO> atributet) {
+        this.atributet = atributet;
+    }
+
+
     public SherbimetClientDTO(Sherbimet s){
         this.emri_sherbimit = s.getEmri_sherbimit();
         this.pershkrimi = s.getPershkrimi();
