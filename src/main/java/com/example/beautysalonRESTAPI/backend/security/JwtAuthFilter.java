@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,12 +20,18 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService adminDetailsService;
+    private final UserDetailsService clientDetailsService;
 
     @Autowired
-    public JwtAuthFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+    public JwtAuthFilter(
+            JwtUtil jwtUtil,
+            @Qualifier("adminDetailsService") UserDetailsService adminDetailsService,
+            @Qualifier("clientDetailsService") UserDetailsService clientDetailsService
+    ) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
+        this.adminDetailsService = adminDetailsService;
+        this.clientDetailsService = clientDetailsService;
     }
 
     @Override
@@ -37,10 +44,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+
             String username = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);  // IMPORTANT!
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UserDetails userDetails;
+
+                // Decide which service to use based on role in JWT
+                if ("ROLE_ADMIN".equals(role)) {
+                    userDetails = adminDetailsService.loadUserByUsername(username);
+                } else {
+                    userDetails = clientDetailsService.loadUserByUsername(username);
+                }
 
                 if (jwtUtil.validateToken(token)) {
                     UsernamePasswordAuthenticationToken auth =

@@ -19,12 +19,11 @@ public class ClientHistory {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    @Column(name = "ID")
-    private Long id_personit; 
-
     @Column(name ="id_historikut")
-    private int id_historiku;
+    private Long id_historiku;
 
+   //  @Column(name = "ID")
+   // private Long id_personit; 
 
     @Column(name ="Sherbimi")
     private int id_sherbimit;
@@ -51,22 +50,22 @@ public class ClientHistory {
     private Time kohezgjatja;
 
       @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id") // this column should exist in your DB
+    @JoinColumn(name = "ID") 
     private Client client;
 
-    public Long getId_personit() {
-        return id_personit;
-    }
+ //   public Long getId_personit() {
+   //     return id_personit;
+    //}
 
-    public void setId_personit(Long id_personit) {
-        this.id_personit = id_personit;
-    }
+    //public void setId_personit(Long id_personit) {
+      //  this.id_personit = id_personit;
+    //}
 
-    public int getId_historiku() {
+    public Long getId_historiku() {
         return id_historiku;
     }
 
-    public void setId_historiku(int id_historiku) {
+    public void setId_historiku(Long id_historiku) {
         this.id_historiku = id_historiku;
     }
 

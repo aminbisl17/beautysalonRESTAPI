@@ -3,11 +3,19 @@ package com.example.beautysalonRESTAPI.backend.repository.Client;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
      Optional<Client> findByEmri(String emri);
      Optional<Client> findByUsername(String username);
+     
+
+        @Query("SELECT c FROM Client c LEFT JOIN FETCH c.clientHistory WHERE c.ID = :id")
+        Optional<Client> findByIdWithHistory(@Param("id") Long id);
 }
+

@@ -27,7 +27,7 @@ public class ClientHistoryController {
         this.clientRepository = clientRepository; // <-- initialize it
     }
 
-    @GetMapping("/{id}")
+     @GetMapping("/{id}")
     public ResponseEntity<List<ClientHistoryDTO>> getClientHistoryById(
             @PathVariable Long id, Authentication auth) {
 

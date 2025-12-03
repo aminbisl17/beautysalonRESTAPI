@@ -23,6 +23,6 @@ public class ClientService {
 
     // Fetch client by ID
     public Client getClientById(Long id) {
-        return clientRepository.findById(id).orElse(null);
+        return clientRepository.findByIdWithHistory(id).orElse(null);
     }
 }

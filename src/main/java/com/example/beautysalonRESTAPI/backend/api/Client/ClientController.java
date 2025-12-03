@@ -44,21 +44,23 @@ public class ClientController {
     }
 
     // GET client by ID
-  @GetMapping("/{id}")
+@GetMapping("/{id}")
 public ResponseEntity<Client> getClientById(@PathVariable Long id, Authentication auth) {
     Client client = clientService.getClientById(id);
+    if (client == null) {
+        return ResponseEntity.notFound().build();
+    }
 
-    String username = auth.getName(); // username from JWT
     boolean isAdmin = auth.getAuthorities().stream()
                           .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-    if (!isAdmin && !client.getEmri().equals(username)) {
+    // Non-admins can only access their own data by username
+    if (!isAdmin && !client.getUsername().equals(auth.getName())) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     return ResponseEntity.ok(client);
 }
-
   
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) {

@@ -26,8 +26,8 @@ public class AuthController {
     private ClientRepository clientRepo;
 
 
-    @Autowired
-    private CustomUserDetailsService clientService;
+ //   @Autowired
+   // private CustomUserDetailsService clientService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
