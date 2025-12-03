@@ -8,14 +8,14 @@ public class SherbimetClientDTO {
     private String emri_sherbimit, pershkrimi;
     private Double qmimi_baze;
     private int zbritja;
-    private List<AtributetSherbimeveClientDTO> atributet;
+    private List<AtributetSherbimeveDTO> atributet;
 
-    public List<AtributetSherbimeveClientDTO> getAtributet() {
+    public List<AtributetSherbimeveDTO> getAtributet() {
         return atributet;
     }
 
 
-    public void setAtributet(List<AtributetSherbimeveClientDTO> atributet) {
+    public void setAtributet(List<AtributetSherbimeveDTO> atributet) {
         this.atributet = atributet;
     }
 
@@ -28,7 +28,7 @@ public class SherbimetClientDTO {
           if (s.getAtributet() != null) {
         this.atributet = s.getAtributet()
                 .stream()
-                .map(AtributetSherbimeveClientDTO::new)
+                .map(AtributetSherbimeveDTO::new)
                 .toList();
     }
     }

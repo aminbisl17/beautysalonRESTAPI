@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.repository.ClientHistoryRepository;
 
@@ -41,5 +42,10 @@ public class ClientHistoryService {
 
         return historyList;
     }
+
+
+  //  public List<ClientDTO> getSpecificClientHistory(Long id){
+   //     return repository.getSpecificClientHistory(id).stream().map(ClientDTO::new).toList();
+   // }
 
 }

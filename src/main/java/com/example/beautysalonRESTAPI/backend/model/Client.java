@@ -3,6 +3,7 @@ package com.example.beautysalonRESTAPI.backend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "clients", schema = "beautysalon")
@@ -37,6 +38,14 @@ public class Client {
     @Column(name = "userpassword")
     private String userpassword;
 
+    private List<ClientHistory> ClientHistory;
+
+    public List<ClientHistory> getClientHistory() {
+        return ClientHistory;
+    }
+    public void setClientHistory(List<ClientHistory> clientHistory) {
+        ClientHistory = clientHistory;
+    }
     public String getUsername() {
         return username;
     }

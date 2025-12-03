@@ -3,6 +3,8 @@ package com.example.beautysalonRESTAPI.backend.dto.Clients;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
+
 public class ClientHistoryDTO {
     private Long id_personit;
     private int id_historiku;
@@ -16,6 +18,7 @@ public class ClientHistoryDTO {
     private int zbritja;
     private String pershkrimi;
     private Time kohezgjatja;
+
     // getters/setters
     public Long getId_personit() {
         return id_personit;

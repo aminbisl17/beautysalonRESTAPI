@@ -2,6 +2,7 @@ package com.example.beautysalonRESTAPI.backend.dto.Sherbimet;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 
@@ -16,6 +17,8 @@ public class SherbimetAdminDTO {
     private int zbritja;
     private LocalTime kohezgjatja;
 
+    private List<AtributetSherbimeveDTO> atributet;
+
         public SherbimetAdminDTO(Sherbimet s) {
         this.ID = s.getID();
         this.emri_sherbimit = s.getEmri_sherbimit();
@@ -26,8 +29,13 @@ public class SherbimetAdminDTO {
         this.update_at = s.getUpdated_at();
         this.zbritja = s.getZbritja();
         this.kohezgjatja = s.getKohezgjatja();
-    }
 
+        
+          if (s.getAtributet() != null) {
+            this.atributet = s.getAtributet().stream().map(AtributetSherbimeveDTO::new).toList();
+          
+         }
+        }
     public Long getID() {
         return ID;
     }
@@ -81,6 +89,14 @@ public class SherbimetAdminDTO {
     }
     public void setKohezgjatja(LocalTime kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
+    }
+
+     public List<AtributetSherbimeveDTO> getAtributet() {
+        return atributet;
+    }
+
+    public void setAtributet(List<AtributetSherbimeveDTO> atributet) {
+        this.atributet = atributet;
     }
     
 }

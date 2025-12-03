@@ -4,8 +4,9 @@ import java.time.LocalTime;
 
 import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 
-public class AtributetSherbimeveClientDTO {
+public class AtributetSherbimeveDTO {
     
+    private Long id_atributit;
     private String opsioni;
     private String pershkrimi_opsionit;
     private Double qmimi;
@@ -13,13 +14,23 @@ public class AtributetSherbimeveClientDTO {
     private LocalTime kohezgjatja;
 
     
-    public AtributetSherbimeveClientDTO(Atributet_sherbimeve a) {
+    public AtributetSherbimeveDTO(Atributet_sherbimeve a) {
+        this.id_atributit = a.getId_atributit();
         this.opsioni = a.getOpsioni();
         this.pershkrimi_opsionit = a.getPershkrimi();
         this.qmimi = a.getQmimi();
         this.zbritja = a.getZbritja();
         this.kohezgjatja = a.getKohezgjatja();
     }
+
+    public Long getID() {
+        return id_atributit;
+    }
+
+    public void setID(Long ID) {
+        this.id_atributit= ID;
+    }
+
 
     public String getOpsioni() {
         return opsioni;
