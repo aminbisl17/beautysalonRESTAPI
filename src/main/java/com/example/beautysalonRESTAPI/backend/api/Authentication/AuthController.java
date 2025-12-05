@@ -1,8 +1,11 @@
 package com.example.beautysalonRESTAPI.backend.api.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -11,12 +14,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.model.employees;
 import com.example.beautysalonRESTAPI.backend.repository.Admin.AdminUserRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.security.AuthRequest;
 import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
 import com.example.beautysalonRESTAPI.backend.security.Responses.AdminAuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.Responses.ClientAuthResponse;
+import com.example.beautysalonRESTAPI.backend.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.backend.service.CustomUserDetailsService;
 
 @RestController
@@ -29,6 +35,8 @@ public class AuthController {
     @Autowired
     private ClientRepository clientRepo;
 
+    @Autowired
+    private EmployeesRepository employeeRepo;
 
  //   @Autowired
    // private CustomUserDetailsService clientService;
@@ -61,8 +69,7 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
 
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
-    try { //  Authentication authentication =
-           authenticationManager.authenticate(
+    try {   Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
@@ -75,8 +82,10 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
 
         return ResponseEntity.ok(new AdminAuthResponse(adminUser, token, "ROLE_ADMIN"));
 
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+   } catch (AuthenticationException e) {
+        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body("Invalid username or password");
     }
 }
 /* 
@@ -102,8 +111,7 @@ UserDetails user = (UserDetails) authentication.getPrincipal();
 
 @PostMapping("/login/client")
 public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
-    try { // Authentication authentication = 
-        authenticationManager.authenticate(
+    try {  Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
@@ -115,9 +123,35 @@ public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
         ClientAuthResponse response = new ClientAuthResponse(client, token, "ROLE_CLIENT");
 
         return ResponseEntity.ok(response);
+  } catch (AuthenticationException e) {
+        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body("Invalid username or password");
+    }
+}
 
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+@PostMapping("/login/employee")
+public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
+    try {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
+
+        UserDetails user = (UserDetails) authentication.getPrincipal();
+
+        employees employee = employeeRepo.findByUsername(user.getUsername())
+                                         .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        String token = jwtUtil.generateToken(employee.getUsername(), "ROLE_EMPLOYEE");
+
+        EmployeeAuthResponse response = new EmployeeAuthResponse(employee, token, "ROLE_EMPLOYEE");
+
+        return ResponseEntity.ok(response);
+
+  } catch (AuthenticationException e) {
+        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body("Invalid username or password");
     }
 }
 }

@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -28,6 +30,11 @@ public class SecurityConfig {
     private UserDetailsService clientDetailsService;
 
     
+    @Autowired
+    @Qualifier("employeeDetailsService")
+    private UserDetailsService employeeDetailsService;
+
+    
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -39,6 +46,7 @@ public PasswordEncoder passwordEncoder() {
     return NoOpPasswordEncoder.getInstance();
 }
  */
+/* 
   @Bean
     public AuthenticationProvider adminAuthProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -55,10 +63,37 @@ public PasswordEncoder passwordEncoder() {
         return provider;
     }
 
+      @Bean
+    public AuthenticationProvider employeeAuthProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(employeeDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+ */
+@Bean
+@Primary
+public AuthenticationManager authenticationManager() {
+    DaoAuthenticationProvider adminProvider = new DaoAuthenticationProvider();
+    adminProvider.setUserDetailsService(adminDetailsService);
+    adminProvider.setPasswordEncoder(passwordEncoder());
+
+    DaoAuthenticationProvider clientProvider = new DaoAuthenticationProvider();
+    clientProvider.setUserDetailsService(clientDetailsService);
+    clientProvider.setPasswordEncoder(passwordEncoder());
+
+    DaoAuthenticationProvider employeeProvider = new DaoAuthenticationProvider();
+    employeeProvider.setUserDetailsService(employeeDetailsService);
+    employeeProvider.setPasswordEncoder(passwordEncoder());
+
+    return new ProviderManager(adminProvider, clientProvider, employeeProvider);
+}
+    /* 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .authenticationProvider(adminAuthProvider())
+                .authenticationProvider(employeeAuthProvider())
                 .authenticationProvider(clientAuthProvider())
                 .build();
     }
@@ -76,9 +111,11 @@ public PasswordEncoder passwordEncoder() {
                 .requestMatchers("/web/sherbimet/all").permitAll()
             //    .requestMatchers("/auth/login").permitAll()
                   .requestMatchers("/auth/login/admin").permitAll()
+                  .requestMatchers("/auth/login/employee").permitAll()
                     .requestMatchers("/auth/login/client").permitAll()
                 .requestMatchers("/api/clients/register").permitAll()
                  .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
+                     .requestMatchers("/api/admin/employees/all").hasRole("ADMIN")
                 .requestMatchers("/api/clients").hasRole("ADMIN")
                  .requestMatchers("/api/admin/register").hasRole("ADMIN")
                   .requestMatchers("/api/admin/sherbimet/all").hasRole("ADMIN")

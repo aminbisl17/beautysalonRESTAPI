@@ -1,3 +1,3 @@
 
 
--- sselect * from employees;
+select * from employees;

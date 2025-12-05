@@ -22,55 +22,70 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService adminDetailsService;
     private final UserDetailsService clientDetailsService;
+    private final UserDetailsService employeeDetailsService;
 
     @Autowired
     public JwtAuthFilter(
             JwtUtil jwtUtil,
             @Qualifier("adminDetailsService") UserDetailsService adminDetailsService,
-            @Qualifier("clientDetailsService") UserDetailsService clientDetailsService
+            @Qualifier("clientDetailsService") UserDetailsService clientDetailsService,
+            @Qualifier("employeeDetailsService") UserDetailsService employeeDetailsService
     ) {
         this.jwtUtil = jwtUtil;
         this.adminDetailsService = adminDetailsService;
         this.clientDetailsService = clientDetailsService;
+        this.employeeDetailsService = employeeDetailsService;
     }
+@Override
+protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain filterChain)
+        throws ServletException, IOException {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-
+    try {
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
             String username = jwtUtil.extractUsername(token);
-            String role = jwtUtil.extractRole(token);  // IMPORTANT!
+            String role = jwtUtil.extractRole(token);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
                 UserDetails userDetails;
 
-                // Decide which service to use based on role in JWT
                 if ("ROLE_ADMIN".equals(role)) {
                     userDetails = adminDetailsService.loadUserByUsername(username);
-                } else {
+                } else if ("ROLE_CLIENT".equals(role)) {
                     userDetails = clientDetailsService.loadUserByUsername(username);
+                } else if ("ROLE_EMPLOYEE".equals(role)) {
+                    userDetails = employeeDetailsService.loadUserByUsername(username);
+                } else {
+                    userDetails = null;
                 }
 
-                if (jwtUtil.validateToken(token)) {
+                if (userDetails != null && jwtUtil.validateToken(token)) {
                     UsernamePasswordAuthenticationToken auth =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
                                     userDetails.getAuthorities());
-
                     SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    // Invalid token → respond 401 immediately
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Invalid JWT token");
+                    return;  // stop filter chain
                 }
             }
         }
-
-        filterChain.doFilter(request, response);
+    } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("Invalid JWT token");
+        return; // stop filter chain
     }
+
+    // Continue the chain for valid requests
+    filterChain.doFilter(request, response);
+}
 }

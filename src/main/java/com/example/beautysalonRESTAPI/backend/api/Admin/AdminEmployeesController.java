@@ -1,15 +1,20 @@
 package com.example.beautysalonRESTAPI.backend.api.Admin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.employees.EmployeeRegisterDTO;
+import com.example.beautysalonRESTAPI.backend.dto.employees.EmployeesDTO;
 import com.example.beautysalonRESTAPI.backend.model.employees;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 
@@ -44,6 +49,13 @@ public class AdminEmployeesController {
        employeesRepo.save(employees);
        
         return ResponseEntity.ok("Employee registered successfully");
+  }
+
+  @GetMapping("/employees/all")
+  public List<EmployeesDTO> getAllEmployees(){
+     return employeesRepo.findAll().stream()
+            .map(EmployeesDTO::new)
+            .toList();
   }
 
 }
