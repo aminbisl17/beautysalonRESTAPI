@@ -13,11 +13,11 @@ import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.sherbimetRepo
 
 @RestController
 @RequestMapping("api/admin")
-public class adminSherbimetController {
+public class AdminSherbimetController {
   
     private final sherbimetService sherbimetService;
 
-public adminSherbimetController(sherbimetService sherbimetService) {
+public AdminSherbimetController(sherbimetService sherbimetService) {
     this.sherbimetService = sherbimetService;
 }
 

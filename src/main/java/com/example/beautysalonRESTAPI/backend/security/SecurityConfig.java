@@ -78,6 +78,7 @@ public PasswordEncoder passwordEncoder() {
                   .requestMatchers("/auth/login/admin").permitAll()
                     .requestMatchers("/auth/login/client").permitAll()
                 .requestMatchers("/api/clients/register").permitAll()
+                 .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
                 .requestMatchers("/api/clients").hasRole("ADMIN")
                  .requestMatchers("/api/admin/register").hasRole("ADMIN")
                   .requestMatchers("/api/admin/sherbimet/all").hasRole("ADMIN")
