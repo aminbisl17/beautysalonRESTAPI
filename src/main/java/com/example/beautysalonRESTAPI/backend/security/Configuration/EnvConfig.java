@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.Configuration;
+package com.example.beautysalonRESTAPI.backend.security.Configuration;
 
 
 import io.github.cdimascio.dotenv.Dotenv;
