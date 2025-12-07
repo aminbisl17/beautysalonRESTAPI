@@ -3,9 +3,13 @@ package com.example.beautysalonRESTAPI.backend.api.Admin;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.employees.EmployeeRegisterDTO;
 import com.example.beautysalonRESTAPI.backend.dto.employees.EmployeesDTO;
-import com.example.beautysalonRESTAPI.backend.model.employees;
+import com.example.beautysalonRESTAPI.backend.model.Employees;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 
 @RestController
@@ -35,7 +39,7 @@ public class AdminEmployeesController {
          return  ResponseEntity.badRequest().body("Username already exists");
        }
 
-       var employees = new employees();
+       var employees = new Employees();
 
        employees.setEmri(request.getEmri());
        employees.setMbiemri(request.getMbiemri());
@@ -50,6 +54,18 @@ public class AdminEmployeesController {
        
         return ResponseEntity.ok("Employee registered successfully");
   }
+
+  @DeleteMapping("/employees/delete/{id}")
+  public ResponseEntity<String> deleteEmploye(@PathVariable Long id, Authentication auth){
+         Employees employee = employeesRepo.findEmployeeById(id).orElse(null);
+         if(employee == null){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+  }
+
+  employeesRepo.delete(employee);
+  return ResponseEntity.ok("Employee deleted successfully");
+
+}
 
   @GetMapping("/employees/all")
   public List<EmployeesDTO> getAllEmployees(){

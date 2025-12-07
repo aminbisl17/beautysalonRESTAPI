@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,14 +36,16 @@ public class Sherbimet {
     @Column(name="qmimi_baze")
     private Double qmimi_baze;
 
-    @Column(name="is_active")
+      @Column(name = "is_active", insertable = false, updatable = false)
     private boolean is_active;
 
-    @Column(name="created_at")
-    private LocalDateTime created_at;
+     @CreationTimestamp
+  @Column(name="created_at", insertable = false, updatable = false)
+private LocalDateTime created_at;
 
-    @Column(name="updated_at")
-    private LocalDateTime updated_at;
+ @CreationTimestamp
+@Column(name="updated_at", insertable = false, updatable = false)
+private LocalDateTime updated_at;
 
     @Column(name="zbritja")
     private int zbritja;

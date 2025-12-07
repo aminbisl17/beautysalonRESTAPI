@@ -5,13 +5,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
-import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.sherbimetRepository;
+import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 @Service
 public class sherbimetService {
     
-    private final sherbimetRepository sherbimetRepo;
+    private final SherbimetRepository sherbimetRepo;
 
-    public sherbimetService(sherbimetRepository sherbimetRepo){
+    public sherbimetService(SherbimetRepository sherbimetRepo){
            this.sherbimetRepo = sherbimetRepo;
     }
 

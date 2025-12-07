@@ -1,3 +1,3 @@
 use beautysalon;
 
-SELECT * FROM beautysalon.sherbimet;
+SELECT * FROM beautysalon.atributet_sherbimeve;;

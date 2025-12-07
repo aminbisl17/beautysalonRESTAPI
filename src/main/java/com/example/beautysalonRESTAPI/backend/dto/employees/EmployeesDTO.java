@@ -2,7 +2,7 @@ package com.example.beautysalonRESTAPI.backend.dto.employees;
 
 import java.time.LocalDateTime;
 
-import com.example.beautysalonRESTAPI.backend.model.employees;
+import com.example.beautysalonRESTAPI.backend.model.Employees;
 
 public class EmployeesDTO {
       private Long ID;
@@ -10,7 +10,7 @@ public class EmployeesDTO {
       private LocalDateTime data_regjistrimit;
       private Boolean is_active;
 
-        public EmployeesDTO(employees employee) {
+        public EmployeesDTO(Employees employee) {
         this.ID = employee.getID();
         this.emri = employee.getEmri();
         this.mbiemri = employee.getMbiemri();

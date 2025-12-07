@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.model.employees;
+import com.example.beautysalonRESTAPI.backend.model.Employees;
 import com.example.beautysalonRESTAPI.backend.repository.Admin.AdminUserRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
@@ -38,34 +38,13 @@ public class AuthController {
     @Autowired
     private EmployeesRepository employeeRepo;
 
- //   @Autowired
-   // private CustomUserDetailsService clientService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
-/* 
- @PostMapping("/login/admin")
-public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
-    try {
-      Authentication authentication = authenticationManager.authenticate(
-    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-);
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        Long userId = adminRepo.findByUsername(request.getUsername())
-                               .orElseThrow()
-                               .getId();
 
-        String token = jwtUtil.generateToken(user.getUsername(), "ROLE_ADMIN");
-
-        return ResponseEntity.ok(new AuthResponse(token, userId, "ROLE_ADMIN"));
-    } catch (Exception e) {
-        return ResponseEntity.status(401).body("Invalid admin username or password");
-    }
-}
-    */
 
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
@@ -88,26 +67,6 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
                              .body("Invalid username or password");
     }
 }
-/* 
-@PostMapping("/login/client")
-public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
-    try {
-       Authentication authentication = authenticationManager.authenticate(
-    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-);
-UserDetails user = (UserDetails) authentication.getPrincipal();
-        Long userId = clientRepo.findByUsername(request.getUsername())
-                                .orElseThrow()
-                                .getId();
-
-        String token = jwtUtil.generateToken(user.getUsername(), "ROLE_CLIENT");
-
-        return ResponseEntity.ok(new ClientAuthResponse(token, userId, "ROLE_CLIENT"));
-    } catch (Exception e) {
-        return ResponseEntity.status(401).body("Invalid client username or password");
-    }
-}
-    */
 
 @PostMapping("/login/client")
 public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
@@ -139,7 +98,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
         UserDetails user = (UserDetails) authentication.getPrincipal();
 
-        employees employee = employeeRepo.findByUsername(user.getUsername())
+        Employees employee = employeeRepo.findByUsername(user.getUsername())
                                          .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         String token = jwtUtil.generateToken(employee.getUsername(), "ROLE_EMPLOYEE");

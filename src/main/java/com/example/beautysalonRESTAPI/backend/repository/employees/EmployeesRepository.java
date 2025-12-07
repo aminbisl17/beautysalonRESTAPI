@@ -3,11 +3,17 @@ package com.example.beautysalonRESTAPI.backend.repository.employees;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import com.example.beautysalonRESTAPI.backend.model.employees;
+import com.example.beautysalonRESTAPI.backend.model.Employees;
 
 @Repository
-public interface EmployeesRepository extends JpaRepository<employees, Long> {
-    Optional<employees> findByUsername(String username);
+public interface EmployeesRepository extends JpaRepository<Employees, Long> {
+    Optional<Employees> findByUsername(String username);
+
+    @Query("SELECT e FROM Employees e WHERE e.ID = :id")
+    Optional<Employees> findEmployeeById(@Param("id") Long id);
 }

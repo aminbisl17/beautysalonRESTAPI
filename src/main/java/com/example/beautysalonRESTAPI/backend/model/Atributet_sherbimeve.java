@@ -38,6 +38,34 @@ public class Atributet_sherbimeve {
     @Column(name="zbritja")
     private int zbritja;
 
+    public void setId_atributit(Long id_atributit) {
+        this.id_atributit = id_atributit;
+    }
+
+    public void setSherbimi(Sherbimet sherbimi) {
+        this.sherbimi = sherbimi;
+    }
+
+    public void setOpsioni(String opsioni) {
+        this.opsioni = opsioni;
+    }
+
+    public void setPershkrimi(String pershkrimi) {
+        this.pershkrimi = pershkrimi;
+    }
+
+    public void setKohezgjatja(LocalTime kohezgjatja) {
+        this.kohezgjatja = kohezgjatja;
+    }
+
+    public void setQmimi(Double qmimi) {
+        this.qmimi = qmimi;
+    }
+
+    public void setZbritja(int zbritja) {
+        this.zbritja = zbritja;
+    }
+
     public Long getId_atributit() {
         return id_atributit;
     }

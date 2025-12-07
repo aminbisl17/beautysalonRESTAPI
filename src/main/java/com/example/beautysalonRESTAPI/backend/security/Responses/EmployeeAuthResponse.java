@@ -2,7 +2,7 @@ package com.example.beautysalonRESTAPI.backend.security.Responses;
 
 import java.time.LocalDateTime;
 
-import com.example.beautysalonRESTAPI.backend.model.employees;
+import com.example.beautysalonRESTAPI.backend.model.Employees;
 
 public class EmployeeAuthResponse {
     
@@ -19,7 +19,7 @@ public class EmployeeAuthResponse {
     private String token;
     private String role;
 
-    public EmployeeAuthResponse(employees emp, String token, String role) {
+    public EmployeeAuthResponse(Employees emp, String token, String role) {
         this.ID = emp.getID();
         this.emri = emp.getEmri();
         this.mbiemri = emp.getMbiemri();
