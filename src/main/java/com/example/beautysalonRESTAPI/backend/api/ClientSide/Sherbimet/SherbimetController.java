@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.Sherbimet;
+package com.example.beautysalonRESTAPI.backend.api.ClientSide.Sherbimet;
 
 import java.util.List;
 
@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
-import com.example.beautysalonRESTAPI.backend.service.sherbimetService;
+import com.example.beautysalonRESTAPI.backend.service.SherbimetService;
 
 @RestController
 @RequestMapping("/web")
 public class SherbimetController {
-    private final sherbimetService sherbimetService;
+    private final SherbimetService sherbimetService;
 
-public SherbimetController(sherbimetService sherbimetService) {
+public SherbimetController(SherbimetService sherbimetService) {
     this.sherbimetService = sherbimetService;
 }
 

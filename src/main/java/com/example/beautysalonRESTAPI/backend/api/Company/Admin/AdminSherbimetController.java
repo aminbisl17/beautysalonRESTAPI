@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.Admin;
+package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.beautysalonRESTAPI.backend.service.sherbimetService;
+import com.example.beautysalonRESTAPI.backend.service.SherbimetService;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register.SherbimetRegisterDTO;
@@ -22,22 +22,9 @@ import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepo
 @RestController
 @RequestMapping("api/admin")
 public class AdminSherbimetController {
-  
-    private final sherbimetService sherbimetService;
 
     @Autowired
     private SherbimetRepository sherbimetRepo;
-
-public AdminSherbimetController(sherbimetService sherbimetService) {
-    this.sherbimetService = sherbimetService;
-}
-    
-
-     @GetMapping("/sherbimet/all")
-    public List<SherbimetAdminDTO> getAllServices() {
-        return sherbimetService.getAllServicesAdmin();
-    }
-
 
      @PostMapping("/sherbimet/register")
     public ResponseEntity<String> registerService(@RequestBody SherbimetRegisterDTO request) {

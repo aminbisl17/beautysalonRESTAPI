@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.Admin;
+package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
 
 import java.util.List;
 
