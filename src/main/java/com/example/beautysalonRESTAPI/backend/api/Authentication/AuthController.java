@@ -1,4 +1,6 @@
 package com.example.beautysalonRESTAPI.backend.api.Authentication;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -112,5 +114,27 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body("Invalid username or password");
     }
+}
+
+@PostMapping("/auth/refresh")
+public ResponseEntity<Map<String, String>> refreshToken(
+        @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+
+    // No cookie found
+    if (refreshToken == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Refresh token missing"));
+    }
+
+    // Validate refresh token
+    if (!jwtUtil.validateRefreshToken(refreshToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+    String username = jwtUtil.extractUsername(refreshToken);
+    String newAccessToken = jwtUtil.generateToken(username, "ROLE_ADMIN");
+
+    return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 }
 }

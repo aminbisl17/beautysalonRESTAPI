@@ -13,10 +13,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7;
+
     private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-    // Generate JWT with username + role
     public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
@@ -27,7 +28,29 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Extract username
+     
+public String generateRefreshToken(String username) {
+    return Jwts.builder()
+            .setSubject(username)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+            .signWith(key, SignatureAlgorithm.HS256) 
+            .compact();
+}
+
+public boolean validateRefreshToken(String token) {
+    try {
+        getClaims(token);  // reuse existing method
+        return true;
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+public String extractUsernameFromRefreshToken(String token) {
+    return getClaims(token).getSubject();
+}
+
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
