@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.Client;
+package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
 
 import java.util.List;
 
@@ -88,27 +88,4 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
     
         return ResponseEntity.ok("Client registered successfully");
     }
-
-    @DeleteMapping("delete/{id}")
-public ResponseEntity<String> deleteClient(@PathVariable Long id, Authentication auth) {
-
-    // Fetch client from DB
-    Client client = clientService.getClientById(id);
-    if (client == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
-    }
-
-    // Get username & role from JWT
-    String username = auth.getName();
-    boolean isAdmin = auth.getAuthorities().stream()
-                          .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-    // Only admin or the client themselves can delete
-    if (!isAdmin && !client.getUsername().equals(username)) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot delete this client");
-    }
-
-    clientRepo.delete(client);
-    return ResponseEntity.ok("Client deleted successfully");
-}
 }

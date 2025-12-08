@@ -7,11 +7,11 @@ import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 @Service
-public class sherbimetService {
+public class SherbimetService {
     
     private final SherbimetRepository sherbimetRepo;
 
-    public sherbimetService(SherbimetRepository sherbimetRepo){
+    public SherbimetService(SherbimetRepository sherbimetRepo){
            this.sherbimetRepo = sherbimetRepo;
     }
 
