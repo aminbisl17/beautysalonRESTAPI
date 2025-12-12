@@ -23,7 +23,7 @@ import com.example.beautysalonRESTAPI.backend.model.Employees;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 public class AdminEmployeesController {
     
   @Autowired
