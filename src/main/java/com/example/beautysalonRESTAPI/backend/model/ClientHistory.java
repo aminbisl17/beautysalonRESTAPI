@@ -26,10 +26,10 @@ public class ClientHistory {
    // private Long id_personit; 
 
     @Column(name ="Sherbimi")
-    private int id_sherbimit;
+    private Long id_sherbimit;
 
     @Column(name = "id_atributit")
-    private int id_atributit;
+    private Long id_atributit;
 
     @Column(name = "data_sherbimit")
     private Timestamp data_sherbimit;
@@ -61,6 +61,23 @@ public class ClientHistory {
       //  this.id_personit = id_personit;
     //}
 
+    
+    public Long getId_sherbimit() {
+        return id_sherbimit;
+    }
+
+    public void setId_sherbimit(Long id_sherbimit) {
+        this.id_sherbimit = id_sherbimit;
+    }
+
+    public Long getId_atributit() {
+        return id_atributit;
+    }
+
+    public void setId_atributit(Long id_atributit) {
+        this.id_atributit = id_atributit;
+    }
+    
     public Long getId_historiku() {
         return id_historiku;
     }
@@ -69,21 +86,6 @@ public class ClientHistory {
         this.id_historiku = id_historiku;
     }
 
-    public int getId_sherbimit() {
-        return id_sherbimit;
-    }
-
-    public void setId_sherbimit(int id_sherbimit) {
-        this.id_sherbimit = id_sherbimit;
-    }
-
-    public int getId_atributit() {
-        return id_atributit;
-    }
-
-    public void setId_atributit(int id_atributit) {
-        this.id_atributit = id_atributit;
-    }
 
     public Timestamp getData_sherbimit() {
         return data_sherbimit;
