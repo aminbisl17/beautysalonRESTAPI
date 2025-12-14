@@ -2,7 +2,7 @@ package com.example.beautysalonRESTAPI.backend.dto.employees;
 
 import java.time.LocalDateTime;
 
-public class EmployeeRegisterDTO {
+public class EmployeeCredentialsDTO {
  
     private String emri, mbiemri, gjinia, pershkrimi, username, userpassword, numri_telefonit, email;
       private LocalDateTime data_regjistrimit;
