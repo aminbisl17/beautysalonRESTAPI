@@ -77,7 +77,8 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/admin/employees/all").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/delete/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/update/**").hasRole("ADMIN")
-                 .requestMatchers("/api/admin/sherbimet/register").hasRole("ADMIN")
+                .requestMatchers("/api/admin/sherbimet/register").hasRole("ADMIN")
+                .requestMatchers("/api/admin/sherbimet/update").hasRole("ADMIN")
 
 
                 .requestMatchers("/api/clients").hasRole("EMPLOYEE")

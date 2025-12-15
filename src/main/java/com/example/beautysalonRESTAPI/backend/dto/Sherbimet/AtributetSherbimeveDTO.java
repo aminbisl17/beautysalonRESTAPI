@@ -23,12 +23,18 @@ public class AtributetSherbimeveDTO {
         this.kohezgjatja = a.getKohezgjatja();
     }
 
-    public Long getID() {
+     public AtributetSherbimeveDTO() {
+     }
+
+    
+
+     
+    public Long getId_atributit() {
         return id_atributit;
     }
 
-    public void setID(Long ID) {
-        this.id_atributit= ID;
+    public void setId_atributit(Long id_atributit) {
+        this.id_atributit = id_atributit;
     }
 
 
