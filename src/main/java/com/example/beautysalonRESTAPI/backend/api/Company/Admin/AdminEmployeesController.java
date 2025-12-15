@@ -57,7 +57,7 @@ public class AdminEmployeesController {
   }
 
   @DeleteMapping("/employees/delete/{id}")
-  public ResponseEntity<String> deleteEmploye(@PathVariable Long id, Authentication auth){
+  public ResponseEntity<String> deleteEmploye(@PathVariable Long id){
          Employees employee = employeesRepo.findEmployeeById(id).orElse(null);
          if(employee == null){
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,5 +112,18 @@ if (request.getAtributet() != null) {
 }
       sherbimetRepo.save(sh);
       return ResponseEntity.ok("Employee updated successfully");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteService(@PathVariable Long id){
+
+         Sherbimet sh = sherbimetRepo.findById(id).orElse(null);
+
+         if(sh == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sherbimi nuk u gjet!");
+         }
+
+         sherbimetRepo.delete(sh);
+        return ResponseEntity.ok("Sherbimi u fshi!");
     }
 }

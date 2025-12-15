@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,8 +44,8 @@ public class Sherbimet {
   @Column(name="created_at", insertable = false, updatable = false)
 private LocalDateTime created_at;
 
- @CreationTimestamp
-@Column(name="updated_at", insertable = false, updatable = false)
+ @UpdateTimestamp
+@Column(name = "updated_at")
 private LocalDateTime updated_at;
 
     @Column(name="zbritja")
