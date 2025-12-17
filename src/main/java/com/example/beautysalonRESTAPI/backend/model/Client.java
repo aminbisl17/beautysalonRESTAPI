@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "clients", schema = "beautysalon")
+@Table(name = "clients")
 public class Client {
 
     @Id

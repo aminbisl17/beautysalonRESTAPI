@@ -19,7 +19,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="sherbimet", schema="beautysalon")
+@Table(name="sherbimet")
 
 public class Sherbimet {
 

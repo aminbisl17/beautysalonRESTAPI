@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="atributet_sherbimeve", schema="beautysalon")
+@Table(name="atributet_sherbimeve")
 public class Atributet_sherbimeve {
     
     @Id

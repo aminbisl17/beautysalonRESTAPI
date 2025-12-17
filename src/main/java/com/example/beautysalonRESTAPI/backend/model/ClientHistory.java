@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "historiku", schema="beautysalon")
+@Table(name = "historiku")
 public class ClientHistory {
     
     @Id
