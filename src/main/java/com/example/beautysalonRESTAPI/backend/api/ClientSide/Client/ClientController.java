@@ -37,12 +37,6 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    // GET all clients
-    @GetMapping
-    public List<Client> getAllClients() {
-        return clientService.getAllClients();
-    }
-
     // GET client by ID
 @GetMapping("/{id}")
 public ResponseEntity<Client> getClientById(@PathVariable Long id, Authentication auth) {
