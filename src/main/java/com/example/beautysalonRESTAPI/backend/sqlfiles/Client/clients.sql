@@ -1,1 +1,1 @@
-select * from beautysalon.clients;
+select * from clients;
