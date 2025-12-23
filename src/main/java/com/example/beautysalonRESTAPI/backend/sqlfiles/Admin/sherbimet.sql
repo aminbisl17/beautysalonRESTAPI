@@ -1,3 +1,3 @@
 use beautysalon;
 
-SELECT * FROM beautysalon.Sherbimet;
+SELECT * FROM Sherbimet;
