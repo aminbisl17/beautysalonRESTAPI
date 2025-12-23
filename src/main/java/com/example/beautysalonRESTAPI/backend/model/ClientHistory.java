@@ -49,7 +49,7 @@ public class ClientHistory {
     @Column(name = "kohezgjatja")
     private Time kohezgjatja;
 
-      @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID") 
     private Client client;
 
