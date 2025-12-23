@@ -23,14 +23,14 @@ public class TestController {
 
     @GetMapping("/generate-token")
     public String generateToken() {
-        String token = jwtUtil.generateToken("admin123A", "ADMIN");
+        String token = jwtUtil.generateToken("admin123", "ADMIN");
         System.out.println("Generated Token: " + token); // prints to console
         return ""; // returns token in response for testing
     }
 
     @GetMapping("/test-token")
     public void testToken(){
-         System.out.println("New pEncoder: " + passwordEncoder.encode("admin123A"));
-         System.out.println(("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyM0EiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjUxMTgxNTQsImV4cCI6MTc2NTE1NDE1NH0.xTz3sQkaCxz3YLNXFSC_eSfBiCFZhvruUQNzv1fK620".equals(passwordEncoder.encode("admin123A")))); 
+         System.out.println("New pEncoder: " + passwordEncoder.encode("admin123"));
+       //  System.out.println(("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyM0EiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjUxMTgxNTQsImV4cCI6MTc2NTE1NDE1NH0.xTz3sQkaCxz3YLNXFSC_eSfBiCFZhvruUQNzv1fK620".equals(passwordEncoder.encode("admin123A")))); 
     }
 }

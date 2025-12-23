@@ -59,12 +59,11 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
 
         String token = jwtUtil.generateToken(adminUser.getUsername(), "ROLE_ADMIN");
 
-        //AdminAuthResponse response = new AdminAuthResponse(adminUser, token, "ROLE_ADMIN");
 
         return ResponseEntity.ok(new AdminAuthResponse(adminUser, token, "ROLE_ADMIN"));
 
    } catch (AuthenticationException e) {
-        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+       
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body("Invalid username or password");
     }
@@ -85,7 +84,7 @@ public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
 
         return ResponseEntity.ok(response);
   } catch (AuthenticationException e) {
-        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+    
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body("Invalid username or password");
     }
