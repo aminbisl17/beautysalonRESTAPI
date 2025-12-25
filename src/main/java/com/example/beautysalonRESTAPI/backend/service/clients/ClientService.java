@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 

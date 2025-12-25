@@ -4,21 +4,35 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
 
 public class ClientDTO {
     
+    private Long ID;
     private String emri, mbiemri, username, gjinia, numri_telefonit;
     private LocalDateTime data_regjistrimit;
-     private List<ClientHistoryDTO> ClientHistory;
-
+     private List<ClientHistory> clientHistory;
      public ClientDTO(Client c){
+     this.ID = c.getId();
      this.emri = c.getEmri();
      this.mbiemri = c.getMbiemri();
      this.gjinia = c.getGjinia();
      this.numri_telefonit = c.getNumriTelefonit();
      this.data_regjistrimit = c.getDataRegjistrimit();
-
+     this.clientHistory = c.getClientHistory();
      }
+     public List<ClientHistory> getClientHistory() {
+        return clientHistory;
+    }
+     public void setClientHistory(List<ClientHistory> clientHistory) {
+         this.clientHistory = clientHistory;
+     }
+     public Long getID() {
+        return ID;
+    }
+    public void setID(Long iD) {
+        ID = iD;
+    }
     public String getEmri() {
         return emri;
     }
@@ -55,11 +69,4 @@ public class ClientDTO {
     public void setData_regjistrimit(LocalDateTime data_regjistrimit) {
         this.data_regjistrimit = data_regjistrimit;
     }
-    public List<ClientHistoryDTO> getClientHistory() {
-        return ClientHistory;
-    }
-    public void setClientHistory(List<ClientHistoryDTO> clientHistory) {
-        ClientHistory = clientHistory;
-    }
-
 }
