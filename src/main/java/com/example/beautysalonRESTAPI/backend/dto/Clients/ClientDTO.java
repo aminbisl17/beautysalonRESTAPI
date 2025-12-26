@@ -19,6 +19,7 @@ public class ClientDTO {
      this.gjinia = c.getGjinia();
      this.numri_telefonit = c.getNumriTelefonit();
      this.data_regjistrimit = c.getDataRegjistrimit();
+     this.username = c.getUsername();
      this.clientHistory = c.getClientHistory();
      }
      public List<ClientHistory> getClientHistory() {
