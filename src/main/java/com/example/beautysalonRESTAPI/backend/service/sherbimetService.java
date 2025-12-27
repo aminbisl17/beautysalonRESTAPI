@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetEmployeeDTO;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 @Service
 public class SherbimetService {
@@ -22,6 +23,11 @@ public class SherbimetService {
             .toList();
 }
 
+   public List<SherbimetEmployeeDTO> getAllServicesEmployee(){
+    return sherbimetRepo.findAll()
+             .stream().map(SherbimetEmployeeDTO::new)
+             .toList();
+   }
    public List<SherbimetClientDTO> getAllServicesClient(){
        return sherbimetRepo.findAll()
             .stream()

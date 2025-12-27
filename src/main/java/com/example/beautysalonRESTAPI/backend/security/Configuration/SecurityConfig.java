@@ -80,12 +80,14 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/admin/sherbimet/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/update").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/delete/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/sherbimet/all").hasRole("ADMIN")
 
 
                 .requestMatchers("/api/employee/clients/all").hasRole("EMPLOYEE")
+                .requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
 
-                .requestMatchers("/api/mixed/sherbimet/all").hasAnyRole("ADMIN","EMPLOYEE")
-                .requestMatchers("/api/admin/sherbimet/all").hasAnyRole("ADMIN", "EMPLOYEE")
+               // .requestMatchers("/api/mixed/sherbimet/all").hasAnyRole("ADMIN","EMPLOYEE")
+             //   .requestMatchers("/api/admin/sherbimet/all").hasAnyRole("ADMIN", "EMPLOYEE")
                 .requestMatchers("/api/clientsHistory/**").hasAnyRole("CLIENT", "EMPLOYEE")
                 .requestMatchers("/api/mixed/clients/delete/*").hasAnyRole("EMPLOYEE", "CLIENT")
                 .requestMatchers("/api/clients/**").hasRole("CLIENT")
