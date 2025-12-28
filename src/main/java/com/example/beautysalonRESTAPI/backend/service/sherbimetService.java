@@ -6,14 +6,19 @@ import org.springframework.stereotype.Service;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetEmployeeDTO;
+import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
+import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
+import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.AtributetSherbimeveRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 @Service
 public class SherbimetService {
     
     private final SherbimetRepository sherbimetRepo;
+    //private final AtributetSherbimeveRepository atributetRepo;
 
     public SherbimetService(SherbimetRepository sherbimetRepo){
            this.sherbimetRepo = sherbimetRepo;
+        //   this.atributetRepo = atributetRepo;
     }
 
    public List<SherbimetAdminDTO> getAllServicesAdmin() {
@@ -33,5 +38,11 @@ public class SherbimetService {
             .stream()
             .map(SherbimetClientDTO::new)
             .toList();
+   }
+
+   public Sherbimet regiterService(Sherbimet s){
+    return sherbimetRepo.save(s);
+
+
    }
 }
