@@ -30,7 +30,7 @@ public class AdminSherbimetController {
     private SherbimetRepository sherbimetRepo;
 
      @PostMapping("/register")
-    public ResponseEntity<String> registerService(@RequestBody SherbimetRegisterDTO request) {
+    public ResponseEntity<Map<String, Object>> registerService(@RequestBody SherbimetRegisterDTO request) {
 
         Sherbimet sherbimi = new Sherbimet();
         sherbimi.setEmri_sherbimit(request.getEmri_sherbimit());
@@ -55,7 +55,9 @@ public class AdminSherbimetController {
 
         sherbimetRepo.save(sherbimi);
 
-        return ResponseEntity.ok("Service registered successfully");
+        return ResponseEntity.ok(Map.of(
+            "message", "Service registered successfully"
+        ));
     }
 
     @PutMapping("/update/{id}")
