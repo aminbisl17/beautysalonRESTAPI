@@ -102,10 +102,13 @@ public ResponseEntity<?> updateEmployee(
 }
 
   @GetMapping("/employees/all")
-  public List<EmployeesDTO> getAllEmployees(){
-     return employeesRepo.findAll().stream()
-            .map(EmployeesDTO::new)
-            .toList();
+  public List<Employees> getAllEmployees(){
+     return employeesRepo.findAll(); 
   }
+  /**
+   * .stream()
+            .map(Employees::new)
+            .toList();
+   */
 
 }
