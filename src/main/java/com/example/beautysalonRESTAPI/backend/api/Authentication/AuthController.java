@@ -27,6 +27,9 @@ import com.example.beautysalonRESTAPI.backend.security.Responses.ClientAuthRespo
 import com.example.beautysalonRESTAPI.backend.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.backend.service.CustomUserDetailsService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -49,7 +52,7 @@ public class AuthController {
 
 
 @PostMapping("/login/admin")
-public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
+public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
     try {   Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -58,7 +61,18 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request) {
                                        .orElseThrow(() -> new RuntimeException("User not found"));
 
         String token = jwtUtil.generateToken(adminUser.getUsername(), "ROLE_ADMIN");
+        String refreshToken = jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN");
 
+          Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+        refreshCookie.setHttpOnly(true);          // Prevent JS access
+        refreshCookie.setSecure(true);            // Only HTTPS
+        refreshCookie.setPath("/");               // Cookie valid for entire domain
+        refreshCookie.setMaxAge(7 * 24 * 60 * 60); 
+        refreshCookie.setSecure(true);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setPath("/");
+
+        response.addCookie(refreshCookie);
 
         return ResponseEntity.ok(new AdminAuthResponse(adminUser, token, "ROLE_ADMIN"));
 
@@ -115,7 +129,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
     }
 }
 
-@PostMapping("/auth/refresh")
+@PostMapping("/refresh-token")
 public ResponseEntity<Map<String, String>> refreshToken(
         @CookieValue(value = "refreshToken", required = false) String refreshToken) {
 
@@ -132,7 +146,8 @@ public ResponseEntity<Map<String, String>> refreshToken(
     }
 
     String username = jwtUtil.extractUsername(refreshToken);
-    String newAccessToken = jwtUtil.generateToken(username, "ROLE_ADMIN");
+    String role = jwtUtil.extractRole(refreshToken);
+    String newAccessToken = jwtUtil.generateToken(username, role);
 
     return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 }

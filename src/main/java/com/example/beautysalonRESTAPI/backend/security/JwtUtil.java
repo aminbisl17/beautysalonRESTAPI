@@ -15,6 +15,8 @@ public class JwtUtil {
 
     private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7;
 
+  ///private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; 
+
     private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
@@ -29,9 +31,10 @@ public class JwtUtil {
     }
 
      
-public String generateRefreshToken(String username) {
+public String generateRefreshToken(String username, String role) {
     return Jwts.builder()
             .setSubject(username)
+            .claim("role", role) 
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
             .signWith(key, SignatureAlgorithm.HS256) 

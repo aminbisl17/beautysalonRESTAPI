@@ -3,6 +3,8 @@ package com.example.beautysalonRESTAPI.backend.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,7 @@ public class AdminUser {
 
     
     @Column(name = "userpassword")
+    @JsonIgnore
     private String userpassword;
 
     

@@ -71,6 +71,7 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/auth/login/employee").permitAll()
                 .requestMatchers("/auth/login/client").permitAll()
                 .requestMatchers("/api/clients/register").permitAll()
+                .requestMatchers("/auth/refresh-token").permitAll()
 
                 .requestMatchers("/api/admin/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
@@ -81,6 +82,7 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/admin/sherbimet/update").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/delete/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/all").hasRole("ADMIN")
+                .requestMatchers("/api/admin/data").hasRole("ADMIN")
 
 
                 .requestMatchers("/api/employee/clients/all").hasRole("EMPLOYEE")
