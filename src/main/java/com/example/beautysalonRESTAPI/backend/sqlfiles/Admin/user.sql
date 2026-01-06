@@ -1,2 +1,2 @@
 
-select * from beautysalon.users;
+select * from users;

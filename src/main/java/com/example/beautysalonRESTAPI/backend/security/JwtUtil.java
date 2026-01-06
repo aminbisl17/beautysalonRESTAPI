@@ -13,9 +13,9 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-  //  private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7;
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7;
 
-  private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; 
+ // private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; //test
 
     private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
