@@ -25,10 +25,10 @@ public class ClientHistoryService {
         for (Object[] row : repository.getHistoryByClientIdNative(id)) {
             // System.out.println(Arrays.toString(row));
             ClientHistoryDTO dto = new ClientHistoryDTO();
-            dto.setId_personit(((Number) row[0]).longValue());
-            dto.setId_historiku(((Number) row[1]).intValue());
-            dto.setId_sherbimit(((Number) row[2]).intValue());
-            dto.setId_atributit(((Number) row[3]).intValue());
+         //   dto.setId_personit(((Number) row[0]).longValue());
+           // dto.setId_historiku(((Number) row[1]).intValue());
+           // dto.setId_sherbimit(((Number) row[2]).intValue());
+           // dto.setId_atributit(((Number) row[3]).intValue());
             dto.setData_sherbimit((Timestamp) row[4]); // or convert to LocalDateTime
             dto.setPagesa(((Number) row[5]).doubleValue());
             dto.setQmimiBazik(((Number) row[6]).doubleValue());
@@ -36,7 +36,7 @@ public class ClientHistoryService {
             dto.setPershkrimi((String) row[8]);
             dto.setKohezgjatja((Time) row[9]); // or convert to LocalTime
             dto.setEmri_sherbimit((String) row[10]);
-            dto.setOpsioni((String) row[11]);
+        //s    dto.setOpsioni((String) row[11]);
             historyList.add(dto);
         }
 

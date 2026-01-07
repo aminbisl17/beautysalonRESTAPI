@@ -1,1 +1,1 @@
-select * from beautysalon.historiku;
+select * from historiku;

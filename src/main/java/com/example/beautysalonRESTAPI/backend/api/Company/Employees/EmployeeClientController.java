@@ -3,12 +3,18 @@ package com.example.beautysalonRESTAPI.backend.api.Company.Employees;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
+import com.example.beautysalonRESTAPI.backend.repository.Client.ClientHistoryRepository;
 import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
 
 @RestController
@@ -18,12 +24,33 @@ public class EmployeeClientController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    ClientHistoryRepository historyRepo;
+
+
     @GetMapping("/all")
  public List<ClientDTO> getAllClientsDTO() {
     return clientService.getAllClients()
             .stream()
             .map(this::toDTO)
             .toList();
+}
+
+
+@GetMapping("/{id}")
+public ResponseEntity<List<ClientHistoryDTO>> getClientHistory(@PathVariable Long id) {
+
+    List<ClientHistory> history = historyRepo.getSpecificClientHistory(id);
+
+    if (history == null || history.isEmpty()) {
+        return ResponseEntity.notFound().build();
+    }
+
+    List<ClientHistoryDTO> dtoList = history.stream()
+            .map(ClientHistoryDTO::new)
+            .toList();
+
+    return ResponseEntity.ok(dtoList);
 }
 
 private ClientDTO toDTO(Client client) {

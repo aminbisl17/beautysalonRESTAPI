@@ -17,6 +17,9 @@ public interface ClientHistoryRepository extends JpaRepository<ClientHistory, Lo
 @Query(value="Exec clientHistory :ClientId", nativeQuery= true)
 List<Object[]> getHistoryByClientIdNative(@Param("ClientId") Long ID);
 
- @Query(value ="select h.emri_sherbimit, h.emri_atributit, h.pagesa, h.qmimiBazik, h.zbritja, h.pershkrimi, h.data_sherbimit where h.ID = :ID", nativeQuery = true)
- List<Object[]> getSpecificClientHistory(@Param("ID") Long ID);
+
+@Query(value = "SELECT * FROM historiku WHERE ID = :id", nativeQuery = true)
+List<ClientHistory> getSpecificClientHistory(@Param("id") Long id);
+
+ //@Query(value="Select * from historiku where ID = ?",)
 }

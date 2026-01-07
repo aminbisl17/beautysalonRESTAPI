@@ -6,12 +6,10 @@ import java.sql.Timestamp;
 import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
 
 public class ClientHistoryDTO {
-    private Long id_personit;
-    private int id_historiku;
-    private int id_sherbimit;
-    private int id_atributit;
+   // private Long id_personit;
+    private Long id_historiku;
     private String emri_sherbimit;
-    private String opsioni;
+    private String emri_atributit;
     private Timestamp data_sherbimit;
     private Double pagesa;
     private Double qmimiBazik;
@@ -19,43 +17,52 @@ public class ClientHistoryDTO {
     private String pershkrimi;
     private Time kohezgjatja;
 
+    public ClientHistoryDTO(ClientHistory ch){
+       this.id_historiku = ch.getId_historiku();
+       this.emri_sherbimit = ch.getEmri_sherbimit();
+       this.emri_atributit = ch.getEmri_atributit();
+       this.data_sherbimit = ch.getData_sherbimit();
+       this.pagesa = ch.getPagesa();
+       this.qmimiBazik = ch.getQmimiBazik();
+       this.zbritja = ch.getZbritja();
+       this.pershkrimi = ch.getPershkrimi();
+       this.kohezgjatja = ch.getKohezgjatja();
+    }
+
+        public ClientHistoryDTO(){
+       
+    }
+
+
+        public String getEmri_atributit() {
+        return emri_atributit;
+    }
+
+    public void setEmri_atributit(String emri_atributit) {
+        this.emri_atributit = emri_atributit;
+    }
+
     // getters/setters
-    public Long getId_personit() {
+ /*    public Long getId_personit() {
         return id_personit;
     }
     public void setId_personit(Long id_personit) {
         this.id_personit = id_personit;
-    }
-    public int getId_historiku() {
+    }*/
+    public Long getId_historiku() {
         return id_historiku;
     }
-    public void setId_historiku(int id_historiku) {
+    public void setId_historiku(Long id_historiku) {
         this.id_historiku = id_historiku;
     }
-    public int getId_sherbimit() {
-        return id_sherbimit;
-    }
-    public void setId_sherbimit(int id_sherbimit) {
-        this.id_sherbimit = id_sherbimit;
-    }
-    public int getId_atributit() {
-        return id_atributit;
-    }
-    public void setId_atributit(int id_atributit) {
-        this.id_atributit = id_atributit;
-    }
+
     public String getEmri_sherbimit() {
         return emri_sherbimit;
     }
     public void setEmri_sherbimit(String emri_sherbimit) {
         this.emri_sherbimit = emri_sherbimit;
     }
-    public String getOpsioni() {
-        return opsioni;
-    }
-    public void setOpsioni(String opsioni) {
-        this.opsioni = opsioni;
-    }
+
     public Timestamp getData_sherbimit() {
         return data_sherbimit;
     }
