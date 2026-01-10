@@ -2,8 +2,6 @@ package com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register;
 
 import java.time.LocalTime;
 
-import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
-
 public class AtributetSherbimeveRegisterDTO {
     private String opsioni;
     private String pershkrimi_opsionit;

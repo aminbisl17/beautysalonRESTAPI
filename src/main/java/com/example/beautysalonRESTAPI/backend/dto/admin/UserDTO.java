@@ -2,6 +2,8 @@ package com.example.beautysalonRESTAPI.backend.dto.admin;
 
 import java.time.LocalDateTime;
 
+import com.example.beautysalonRESTAPI.backend.model.AdminUser;
+
 public class UserDTO {
     
     private String emri;
@@ -9,6 +11,15 @@ public class UserDTO {
     private String username;
     private String userpassword;
     private LocalDateTime dateRegistered;
+
+    public UserDTO(){}
+
+    public UserDTO(AdminUser a){
+        this.emri = a.getEmri();
+        this.mbiemri = a.getMbiemri();
+        this.username = a.getUsername();
+        this.dateRegistered = a.getDateRegistered();
+    }
 
     public String getEmri() {
         return emri;
@@ -33,11 +44,11 @@ public class UserDTO {
     }
     public void setUserpassword(String userpassword) {
         this.userpassword = userpassword;
-    }
-    public LocalDateTime getDateRegistered() {
+    } 
+     public LocalDateTime getDateRegistered() {
         return dateRegistered;
     }
     public void setDateRegistered(LocalDateTime dateRegistered) {
         this.dateRegistered = dateRegistered;
-    }
+    } 
 }

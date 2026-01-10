@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.dto.employees;
 
-import java.time.LocalDateTime;
-
 import com.example.beautysalonRESTAPI.backend.model.Employees;
 
 public class EmployeesDTO {

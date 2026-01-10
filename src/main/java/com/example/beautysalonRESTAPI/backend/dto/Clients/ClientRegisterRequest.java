@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.dto.Clients;
 
-import java.sql.Timestamp;
-
 public class ClientRegisterRequest {
     private String emri;
     private String mbiemri;

@@ -6,8 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 
 @Service("employeeDetailsService")

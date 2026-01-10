@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +23,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsService clientDetailsService;
     private final UserDetailsService employeeDetailsService;
 
-    @Autowired
     public JwtAuthFilter(
             JwtUtil jwtUtil,
             @Qualifier("adminDetailsService") UserDetailsService adminDetailsService,

@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.AtributetSherbimeveDTO;
-import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register.AtributetSherbimeveRegisterDTO;
 
 public class SherbimetUpdateDTO {
     

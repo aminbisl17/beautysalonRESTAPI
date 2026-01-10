@@ -1,6 +1,4 @@
 package com.example.beautysalonRESTAPI.backend.model;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

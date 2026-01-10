@@ -1,10 +1,7 @@
 package com.example.beautysalonRESTAPI.backend.dto.Sherbimet;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-
-import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 
 public class SherbimetEmployeeDTO {
