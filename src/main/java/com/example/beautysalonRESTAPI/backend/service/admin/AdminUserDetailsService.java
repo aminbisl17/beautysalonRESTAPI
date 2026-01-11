@@ -12,6 +12,7 @@ import com.example.beautysalonRESTAPI.backend.repository.Admin.AdminUserReposito
 @Service("adminDetailsService")
 public class AdminUserDetailsService implements UserDetailsService {
 
+    
     @Autowired
     private AdminUserRepository adminRepo;
 
