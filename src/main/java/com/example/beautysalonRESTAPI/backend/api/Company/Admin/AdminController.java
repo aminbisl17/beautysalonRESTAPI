@@ -71,7 +71,7 @@ private AdminUserRepository adminRepo;
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
  
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(new UserDTO(user));
     }
     
 }
