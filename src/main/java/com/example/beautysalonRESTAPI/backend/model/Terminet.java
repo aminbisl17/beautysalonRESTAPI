@@ -1,13 +1,18 @@
 package com.example.beautysalonRESTAPI.backend.model;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,17 +23,13 @@ public class Terminet {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id_terminit;
 
-   @Column(name="ID")
-   private Long ID;
+   @ManyToOne
+   @JoinColumn(name="ID")
+   private Client client;
 
-   @Column(name="ID_sherbimit")
-   private Long ID_sherbimit;
-
-   @Column(name="id_atributit")
-   private Long id_atributit;
-
-   @Column(name="employee_id")
-   private Long employee_id;
+   @ManyToOne
+   @JoinColumn(name="employee_id")
+   private Employees employee;
 
    @Column(name="pershkrimi")
    private String pershkrimi;
@@ -36,17 +37,33 @@ public class Terminet {
    @Column(name="data_caktimit")
    private LocalDateTime data_caktimit;
 
-   @Column(name="kohezgjatja")
-   private LocalTime kohezgjatja;
+   @OneToMany(mappedBy = "terminet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   private List<Detajet_termineve> detajet_termineve;
 
-   @Column(name="qmimi")
-   private Double qmimi;
 
-   @Column(name="zbritja")
-   private int zbritja;
-   
-   @Column(name="qmimi_fillestar")
-   private Double qmimi_fillestar;
+      public List<Detajet_termineve> getDetajet_termineve() {
+      return detajet_termineve;
+   }
+
+   public void setDetajet_termineve(List<Detajet_termineve> detajet_termineve) {
+      this.detajet_termineve = detajet_termineve;
+   }
+
+      public Client getClient() {
+      return client;
+   }
+
+   public void setClient(Client client) {
+      this.client = client;
+   }
+
+   public Employees getEmployee() {
+      return employee;
+   }
+
+   public void setEmployee(Employees employee) {
+      this.employee = employee;
+   }
 
    public Long getId_terminit() {
     return id_terminit;
@@ -56,37 +73,6 @@ public class Terminet {
     this.id_terminit = id_terminit;
    }
 
-   public Long getID() {
-    return ID;
-   }
-
-   public void setID(Long iD) {
-    ID = iD;
-   }
-
-   public Long getID_sherbimit() {
-    return ID_sherbimit;
-   }
-
-   public void setID_sherbimit(Long iD_sherbimit) {
-    ID_sherbimit = iD_sherbimit;
-   }
-
-   public Long getId_atributit() {
-    return id_atributit;
-   }
-
-   public void setId_atributit(Long id_atributit) {
-    this.id_atributit = id_atributit;
-   }
-
-   public Long getEmployee_id() {
-    return employee_id;
-   }
-
-   public void setEmployee_id(Long employee_id) {
-    this.employee_id = employee_id;
-   }
 
    public String getPershkrimi() {
     return pershkrimi;
@@ -103,38 +89,5 @@ public class Terminet {
    public void setData_caktimit(LocalDateTime data_caktimit) {
     this.data_caktimit = data_caktimit;
    }
-
-   public LocalTime getKohezgjatja() {
-    return kohezgjatja;
-   }
-
-   public void setKohezgjatja(LocalTime kohezgjatja) {
-    this.kohezgjatja = kohezgjatja;
-   }
-
-   public Double getQmimi() {
-    return qmimi;
-   }
-
-   public void setQmimi(Double qmimi) {
-    this.qmimi = qmimi;
-   }
-
-   public int getZbritja() {
-    return zbritja;
-   }
-
-   public void setZbritja(int zbritja) {
-    this.zbritja = zbritja;
-   }
-
-   public Double getQmimi_fillestar() {
-    return qmimi_fillestar;
-   }
-
-   public void setQmimi_fillestar(Double qmimi_fillestar) {
-    this.qmimi_fillestar = qmimi_fillestar;
-   }
-
 
 }
