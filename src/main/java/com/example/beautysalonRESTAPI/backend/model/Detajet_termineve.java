@@ -1,6 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.model;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;

@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.dto.terminet;
 
-import java.time.LocalTime;
-
 public class DetajetTermineveDTO {
 
     private Long sherbimetId;         // the service ID
