@@ -68,13 +68,13 @@ List<Detajet_termineve> detajetList = dto.getDetajetTermineve().stream().map(d -
 termin.setDetajet_termineve(detajetList);
 terminetRepository.save(termin);
 
-     /*try {
-        smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + termin.getClient().getEmri());
+     try {
+        smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + termin.getEmployee().getEmri());
     } catch (Exception e) {
         // Log the error but don’t block appointment creation
         e.printStackTrace(); // Or use a logger: log.error("Failed to send SMS", e);
     }
- */
+ 
         return ResponseEntity.ok("Termini u krijua!");
     }
 
