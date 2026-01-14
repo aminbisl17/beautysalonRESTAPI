@@ -19,10 +19,14 @@ import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.AtributetSher
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.repository.terminet.TerminetRepository;
+import com.example.beautysalonRESTAPI.backend.service.SmsService;
 
 @RestController
 @RequestMapping("api/mixed/terminet/")
 public class MixedTerminet {
+
+    @Autowired
+    SmsService smsService;
 
     @Autowired
     private ClientRepository clientRepo;
@@ -64,6 +68,13 @@ List<Detajet_termineve> detajetList = dto.getDetajetTermineve().stream().map(d -
 termin.setDetajet_termineve(detajetList);
 terminetRepository.save(termin);
 
+     /*try {
+        smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + termin.getClient().getEmri());
+    } catch (Exception e) {
+        // Log the error but don’t block appointment creation
+        e.printStackTrace(); // Or use a logger: log.error("Failed to send SMS", e);
+    }
+ */
         return ResponseEntity.ok("Termini u krijua!");
     }
 

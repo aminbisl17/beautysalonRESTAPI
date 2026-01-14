@@ -10,12 +10,13 @@ public class TerminetCreateDTO {
 
     private Long clientId;            // the client making the appointment
     private Long employeeId;          // the employee assigned
-    private String pershkrimi;        // description
-    private LocalDateTime dataCaktimit; // appointment date/time
+    private String pershkrimi, numri_tel;
+    private LocalDateTime dataCaktimit; //descripti appointment date/time
 
     private List<DetajetTermineveDTO> detajetTermineve;
 
     public TerminetCreateDTO(){}
+    
     public TerminetCreateDTO(Terminet t){
                this.clientId = t.getClient().getId();
     this.employeeId = t.getEmployee().getID();
@@ -32,6 +33,13 @@ public class TerminetCreateDTO {
             return dto;
         }).collect(Collectors.toList());
     }
+    }
+
+     public String getNumri_tel() {
+        return numri_tel;
+    }
+    public void setNumri_tel(String numri_tel) {
+        this.numri_tel = numri_tel;
     }
 
     public Long getClientId() {
