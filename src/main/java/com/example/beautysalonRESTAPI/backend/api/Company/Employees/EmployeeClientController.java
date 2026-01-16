@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
+import com.example.beautysalonRESTAPI.backend.model.Historiku;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientHistoryRepository;
 import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
 
@@ -39,7 +39,7 @@ public class EmployeeClientController {
 @GetMapping("/{id}")
 public ResponseEntity<List<ClientHistoryDTO>> getClientHistory(@PathVariable Long id) {
 
-    List<ClientHistory> history = historyRepo.getSpecificClientHistory(id);
+    List<Historiku> history = historyRepo.getSpecificClientHistory(id);
 
     if (history == null || history.isEmpty()) {
         return ResponseEntity.notFound().build();

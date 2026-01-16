@@ -1,6 +1,7 @@
 package com.example.beautysalonRESTAPI.backend.security.Responses;
 
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 
 public class ClientAuthResponse {
@@ -11,7 +12,7 @@ public class ClientAuthResponse {
 public ClientAuthResponse(Client client, String token) {
     this.token = token;
     this.client = new ClientDTO(client);
-    this.client.setClientHistory(client.getClientHistory());
+    this.client.setClientHistory(client.getClientHistory().stream().map(ClientHistoryDTO::new).toList());
 
 }
 

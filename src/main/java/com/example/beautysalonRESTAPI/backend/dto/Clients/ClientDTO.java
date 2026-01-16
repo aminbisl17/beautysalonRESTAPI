@@ -4,14 +4,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.model.ClientHistory;
+import com.example.beautysalonRESTAPI.backend.model.Historiku;
 
 public class ClientDTO {
     
     private Long ID;
     private String emri, mbiemri, username, gjinia, numri_telefonit;
     private LocalDateTime data_regjistrimit;
-     private List<ClientHistory> clientHistory;
+     private List<ClientHistoryDTO> clientHistory;
+
      public ClientDTO(Client c){
      this.ID = c.getId();
      this.emri = c.getEmri();
@@ -22,10 +23,10 @@ public class ClientDTO {
      this.username = c.getUsername();
   //   this.clientHistory = c.getClientHistory();
      }
-      public List<ClientHistory> getClientHistory() {
+      public List<ClientHistoryDTO> getClientHistory() {
         return clientHistory;
     }
-     public void setClientHistory(List<ClientHistory> clientHistory) {
+     public void setClientHistory(List<ClientHistoryDTO> clientHistory) {
          this.clientHistory = clientHistory;
      }
      public Long getID() {
