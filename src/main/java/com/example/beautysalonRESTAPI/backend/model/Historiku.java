@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.model;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 

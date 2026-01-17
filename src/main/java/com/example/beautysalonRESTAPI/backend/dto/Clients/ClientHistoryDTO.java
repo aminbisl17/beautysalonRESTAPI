@@ -1,15 +1,11 @@
 package com.example.beautysalonRESTAPI.backend.dto.Clients;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.model.Historiku;
-import com.example.beautysalonRESTAPI.backend.model.Historiku_detajet;
 
 public class ClientHistoryDTO {
-  //  private Long id_historiku, id_employee;
     private String emri_mbiemri_klientit;
     private String emri_mbiemri_puntorit;
        private LocalDateTime data_sherbimit;

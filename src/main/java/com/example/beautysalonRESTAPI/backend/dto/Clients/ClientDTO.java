@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.model.Historiku;
 
 public class ClientDTO {
     
@@ -21,7 +20,6 @@ public class ClientDTO {
      this.numri_telefonit = c.getNumriTelefonit();
      this.data_regjistrimit = c.getDataRegjistrimit();
      this.username = c.getUsername();
-  //   this.clientHistory = c.getClientHistory();
      }
       public List<ClientHistoryDTO> getClientHistory() {
         return clientHistory;
