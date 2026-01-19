@@ -2,6 +2,8 @@ package com.example.beautysalonRESTAPI.backend.model;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +22,8 @@ public class Atributet_sherbimeve {
     private Long id_atributit;
 
     @ManyToOne
-    @JoinColumn(name="ID")  // FK referencing sherbimet.ID
+    @JoinColumn(name="ID") 
+    @JsonIgnore
     private Sherbimet sherbimi;
 
     @Column(name="opsioni")

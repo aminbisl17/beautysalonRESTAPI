@@ -88,7 +88,7 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
 
-               // .requestMatchers("/api/mixed/sherbimet/all").hasAnyRole("ADMIN","EMPLOYEE")
+                .requestMatchers("/api/mixed/sherbimet/all").hasAnyRole("ADMIN","EMPLOYEE")
              //   .requestMatchers("/api/admin/sherbimet/all").hasAnyRole("ADMIN", "EMPLOYEE")
                // .requestMatchers("/api/clientsHistory/**").hasAnyRole("CLIENT", "EMPLOYEE")
                 .requestMatchers("/api/mixed/clients/delete/*").hasAnyRole("EMPLOYEE", "CLIENT")

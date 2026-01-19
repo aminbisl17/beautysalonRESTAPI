@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetEmployeeDTO;
 import com.example.beautysalonRESTAPI.backend.service.SherbimetService;
 
 @RestController
@@ -17,9 +16,11 @@ public class EmployeeSherbimetController {
       @Autowired
     private SherbimetService sherbimetService;
 
+    /* 
     @GetMapping("all")
     public List<SherbimetEmployeeDTO> fetchAllSherbimet(){
         return sherbimetService.getAllServicesEmployee();
     }
+        */
     }
 
