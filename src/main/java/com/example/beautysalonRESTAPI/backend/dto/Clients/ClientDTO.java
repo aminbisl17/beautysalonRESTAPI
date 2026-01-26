@@ -8,10 +8,13 @@ import com.example.beautysalonRESTAPI.backend.model.Client;
 public class ClientDTO {
     
     private Long ID;
-    private String emri, mbiemri, username, gjinia, numri_telefonit;
+    private String emri, mbiemri, username, gjinia, numri_telefonit, paassword;
     private LocalDateTime data_regjistrimit;
      private List<ClientHistoryDTO> clientHistory;
 
+     public ClientDTO(){
+
+     }
      public ClientDTO(Client c){
      this.ID = c.getId();
      this.emri = c.getEmri();

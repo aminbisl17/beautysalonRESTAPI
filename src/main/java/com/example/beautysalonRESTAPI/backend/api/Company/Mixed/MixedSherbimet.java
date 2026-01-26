@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
-import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 import com.example.beautysalonRESTAPI.backend.service.SherbimetService;
 
 @RestController

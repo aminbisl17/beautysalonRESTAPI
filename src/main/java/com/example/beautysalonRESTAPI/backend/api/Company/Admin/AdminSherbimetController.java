@@ -73,7 +73,7 @@ public class AdminSherbimetController {
         sh.setIs_active(request.getIs_active());
         sh.setZbritja(request.getZbritja());
         sh.setKohezgjatja(request.getKohezgjatja());
-      //  sh.setAtributet(request.getAtributet());
+     
 if (request.getAtributet() != null) {
 
     Map<Long, Atributet_sherbimeve> existingMap =

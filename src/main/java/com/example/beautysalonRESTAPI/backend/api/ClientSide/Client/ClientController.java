@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
@@ -71,7 +72,8 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
         client.setNumriTelefonit(request.getNumri_telefonit());
         client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
                        : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
-        client.setUsername(request.getUsername());
+      //  client.setGjinia(request.getGjinia());
+        //client.setUsername(request.getUsername());
         client.setUserpassword(passwordEncoder.encode(request.getPassword()));
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 

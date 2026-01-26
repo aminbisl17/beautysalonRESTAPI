@@ -12,15 +12,5 @@ import com.example.beautysalonRESTAPI.backend.service.SherbimetService;
 @RequestMapping("api/employee/sherbimet/")
 public class EmployeeSherbimetController {
     
-
-      @Autowired
-    private SherbimetService sherbimetService;
-
-    /* 
-    @GetMapping("all")
-    public List<SherbimetEmployeeDTO> fetchAllSherbimet(){
-        return sherbimetService.getAllServicesEmployee();
-    }
-        */
     }
 
