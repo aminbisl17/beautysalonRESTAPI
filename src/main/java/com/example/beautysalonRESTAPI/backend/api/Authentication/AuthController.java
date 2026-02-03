@@ -52,6 +52,9 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
         );
         AdminUser adminUser = adminRepo.findByUsername(request.getUsername())
                                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+/* 
+
           Cookie refreshCookie = new Cookie("refreshToken", jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN"));
         refreshCookie.setHttpOnly(true);          // Prevent JS access
         refreshCookie.setSecure(true);            // Only HTTPS
@@ -61,6 +64,21 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/");
 
+        */
+
+        String jwtToken = jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN");
+        Cookie refreshCookie = new Cookie("refreshToken", jwtToken);
+refreshCookie.setHttpOnly(true);        // JS cannot access
+refreshCookie.setSecure(false);         // Must be false for HTTP
+refreshCookie.setPath("/");             // Valid for entire domain
+refreshCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+
+// Add SameSite=None via response header for cross-origin
+response.addHeader("Set-Cookie",
+    "refreshToken=" + jwtToken +
+    "; Path=/; Max-Age=" + (7*24*60*60) +
+    "; HttpOnly; SameSite=None; Secure=false"
+);
         response.addCookie(refreshCookie);
 
         return ResponseEntity.ok(new AdminAuthResponse(adminUser, jwtUtil.generateToken(adminUser.getUsername(), "ROLE_ADMIN")));
