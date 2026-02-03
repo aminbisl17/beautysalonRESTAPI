@@ -8,17 +8,17 @@ import com.example.beautysalonRESTAPI.backend.model.Terminet;
 
 public class TerminetCreateDTO {
 
-    private Long clientId;            // the client making the appointment
-    private Long employeeId;          // the employee assigned
+    private Long clientId;            
+    private Long employeeId;          
     private String pershkrimi, numri_tel;
-    private LocalDateTime dataCaktimit; //descripti appointment date/time
+    private LocalDateTime dataCaktimit;
 
     private List<DetajetTermineveDTO> detajetTermineve;
 
     public TerminetCreateDTO(){}
     
-    public TerminetCreateDTO(Terminet t){
-               this.clientId = t.getClient().getId();
+   /*  public TerminetCreateDTO(Terminet t){
+              this.clientId = clientId;
     this.employeeId = t.getEmployee().getID();
     this.pershkrimi = t.getPershkrimi();
     this.dataCaktimit = t.getData_caktimit();
@@ -35,6 +35,7 @@ public class TerminetCreateDTO {
     }
     }
 
+     */
      public String getNumri_tel() {
         return numri_tel;
     }

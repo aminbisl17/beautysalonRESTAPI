@@ -20,6 +20,7 @@ import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepo
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.repository.terminet.TerminetRepository;
 import com.example.beautysalonRESTAPI.backend.service.SmsService;
+import com.example.beautysalonRESTAPI.backend.service.terminet.TerminetService;
 
 @RestController
 @RequestMapping("api/mixed/terminet/")
@@ -29,53 +30,30 @@ public class MixedTerminet {
     SmsService smsService;
 
     @Autowired
-    private ClientRepository clientRepo;
+    TerminetService terminetService;
 
     @Autowired
     private EmployeesRepository employeeRepo;
 
-    @Autowired
-    private TerminetRepository terminetRepository;
 
-    @Autowired
-    private SherbimetRepository sherbimetRepo;
-
-    @Autowired
-    private AtributetSherbimeveRepository atributetRepo;
 
     @PostMapping("create")
     public ResponseEntity<?> CreateAppointment(@RequestBody TerminetCreateDTO dto){
 
-        Terminet termin = new Terminet();
-termin.setClient(clientRepo.findById(dto.getClientId()).orElseThrow());
-termin.setEmployee(employeeRepo.findById(dto.getEmployeeId()).orElseThrow());
-termin.setPershkrimi(dto.getPershkrimi());
-termin.setData_caktimit(dto.getDataCaktimit());
-
-List<Detajet_termineve> detajetList = dto.getDetajetTermineve().stream().map(d -> {
-    Detajet_termineve detaj = new Detajet_termineve();
-    detaj.setTerminet(termin);
-    detaj.setSherbimet(sherbimetRepo.findById(d.getSherbimetId()).orElseThrow());
-    
-    if(d.getAtributetId() != null) {
-        detaj.setAtributet_sherbimeve(atributetRepo.findById(d.getAtributetId()).orElse(null));
-    }
-
-    detaj.setKohezgjatja(LocalTime.parse(d.getKohezgjatja()));
-    return detaj;
-}).collect(Collectors.toList());
-
-termin.setDetajet_termineve(detajetList);
-terminetRepository.save(termin);
-
      try {
-        smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + termin.getEmployee().getEmri());
+
+          boolean success = terminetService.createAppointment(dto);
+            if (success) {
+                 smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
+                return ResponseEntity.ok("Termini u krijua!");
+            } else {
+                return ResponseEntity.status(500).body("Failed to create appointment");
+            }
     } catch (Exception e) {
         // Log the error but don’t block appointment creation
         e.printStackTrace(); // Or use a logger: log.error("Failed to send SMS", e);
     }
- 
-        return ResponseEntity.ok("Termini u krijua!");
+        return ResponseEntity.status(500).body("Termini nuk u krijua!");
     }
 
 }
