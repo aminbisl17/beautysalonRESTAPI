@@ -2,9 +2,6 @@ package com.example.beautysalonRESTAPI.backend.dto.terminet;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.example.beautysalonRESTAPI.backend.model.Terminet;
 
 public class TerminetCreateDTO {
 
