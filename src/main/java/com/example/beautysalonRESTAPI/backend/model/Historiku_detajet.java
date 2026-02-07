@@ -1,5 +1,7 @@
 package com.example.beautysalonRESTAPI.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,10 +19,12 @@ public class Historiku_detajet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     @Column(name="id_historikut_detajet")
+    @JsonIgnore
     private Long id_historikut_detajet;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="id_historikut")
+    @JsonIgnore
     private Historiku historiku;
 
     @Column(name="emri_sherbimit")

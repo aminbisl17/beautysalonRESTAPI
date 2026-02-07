@@ -3,6 +3,8 @@ package com.example.beautysalonRESTAPI.backend.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +24,7 @@ public class Historiku {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     @Column(name ="id_historikut")
+    @JsonIgnore
     private Long id_historiku;
 
 
@@ -36,7 +39,7 @@ public class Historiku {
     @Column(name="data_sherbimit")
     private LocalDateTime data_sherbimit;
 
-     @OneToMany(mappedBy = "historiku", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+     @OneToMany(mappedBy = "historiku", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
      private List<Historiku_detajet> detajet;
 
 

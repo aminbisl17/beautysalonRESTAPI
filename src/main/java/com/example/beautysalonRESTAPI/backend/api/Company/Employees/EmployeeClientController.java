@@ -37,19 +37,8 @@ public class EmployeeClientController {
 
 
 @GetMapping("/{id}")
-public ResponseEntity<List<ClientHistoryDTO>> getClientHistory(@PathVariable Long id) {
-
-    List<Historiku> history = historyRepo.getSpecificClientHistory(id);
-
-    if (history == null || history.isEmpty()) {
-        return ResponseEntity.notFound().build();
-    }
-
-    List<ClientHistoryDTO> dtoList = history.stream()
-            .map(ClientHistoryDTO::new)
-            .toList();
-
-    return ResponseEntity.ok(dtoList);
+public List<ClientHistoryDTO> getClientHistory(@PathVariable Long id) {
+    return historyRepo.getSpecificClientHistory(id).stream().map(ClientHistoryDTO::new).toList();
 }
 
 private ClientDTO toDTO(Client client) {
