@@ -3,6 +3,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -66,7 +67,10 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
 
         */
 
+ 
         String jwtToken = jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN");
+
+        /* 
         Cookie refreshCookie = new Cookie("refreshToken", jwtToken);
 refreshCookie.setHttpOnly(true);        // JS cannot access
 refreshCookie.setSecure(false);         // Must be false for HTTP
@@ -80,6 +84,17 @@ response.addHeader("Set-Cookie",
     "; HttpOnly; SameSite=None; Secure=false"
 );
         response.addCookie(refreshCookie);
+ */
+ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
+        .httpOnly(true)
+        .secure(false)          // false because localhost is HTTP
+        .path("/")
+          .domain("localhost")
+        .maxAge(7 * 24 * 60 * 60)
+        .sameSite("Lax")       // allows cross-origin POST
+        .build();
+
+response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new AdminAuthResponse(adminUser, jwtUtil.generateToken(adminUser.getUsername(), "ROLE_ADMIN")));
 
