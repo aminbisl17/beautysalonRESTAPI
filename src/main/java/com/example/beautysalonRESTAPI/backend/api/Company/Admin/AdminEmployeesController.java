@@ -1,6 +1,7 @@
 package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,10 +30,10 @@ public class AdminEmployeesController {
  private BCryptPasswordEncoder passwordEncoder;
 
   @PostMapping("/employees/register")
-  public ResponseEntity<String> register(@RequestBody EmployeeCredentialsDTO request){
+  public ResponseEntity<Map<String, String>> register(@RequestBody EmployeeCredentialsDTO request){
 
        if(employeesRepo.findByUsername(request.getUsername()).isPresent()){
-         return  ResponseEntity.badRequest().body("Username already exists");
+         return  ResponseEntity.badRequest().body(Map.of("message", "Username already exists"));
        }
 
        var employees = new Employees();
@@ -48,7 +49,7 @@ public class AdminEmployeesController {
 
        employeesRepo.save(employees);
        
-        return ResponseEntity.ok("Employee registered successfully");
+        return ResponseEntity.ok(Map.of("message", "Employee registered successfully"));
   }
 
   @DeleteMapping("/employees/delete/{id}")
