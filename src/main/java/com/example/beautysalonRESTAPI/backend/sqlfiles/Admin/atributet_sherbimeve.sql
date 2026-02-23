@@ -1,2 +1,4 @@
 use beautysalon;
-select * from atributet_sherbimeve;
+
+--DELETE FROM atributet_sherbimeve where id_atributit = 76;
+select id_atributit from atributet_sherbimeve;

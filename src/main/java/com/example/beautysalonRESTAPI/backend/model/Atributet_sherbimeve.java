@@ -14,12 +14,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="atributet_sherbimeve")
+@Table(name="atributet_sherbimeve", schema="dbo")
 public class Atributet_sherbimeve {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_atributit;
+  
+@Id
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+ @Column(name = "id_atributit") 
+ private Long id_atributit;
 
     @ManyToOne
     @JoinColumn(name="ID") 

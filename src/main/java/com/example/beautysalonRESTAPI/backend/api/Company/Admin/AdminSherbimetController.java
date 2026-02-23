@@ -106,7 +106,7 @@ if (request.getAtributet() != null) {
     }
 }// 
       sherbimetRepo.save(sh);
-      return ResponseEntity.ok("Employee updated successfully");
+      return ResponseEntity.ok("Service updated successfully");
     }
 
     @DeleteMapping("/delete/{id}")
