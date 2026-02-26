@@ -10,6 +10,7 @@ public class SherbimetRegisterDTO {
     private int zbritja;
     private LocalTime kohezgjatja;
     private List<AtributetSherbimeveRegisterDTO> atributet;
+
     public String getEmri_sherbimit() {
         return emri_sherbimit;
     }

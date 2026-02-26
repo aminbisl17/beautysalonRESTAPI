@@ -1,5 +1,9 @@
 package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -12,13 +16,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.AtributetSherbimeveDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register.SherbimetRegisterDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Update.SherbimetUpdateDTO;
 import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @RestController
 @RequestMapping("api/admin/sherbimet")
@@ -27,37 +37,55 @@ public class AdminSherbimetController {
     @Autowired
     private SherbimetRepository sherbimetRepo;
 
-     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> registerService(@RequestBody SherbimetRegisterDTO request) {
+    @PostMapping("/register")
+public ResponseEntity<Map<String, Object>> registerService(
+        @RequestPart("data") String dataJson,   // <- JSON as string
+        @RequestPart(value = "image", required = false) MultipartFile image
+) throws IOException {
 
-        Sherbimet sherbimi = new Sherbimet();
-        sherbimi.setEmri_sherbimit(request.getEmri_sherbimit());
-        sherbimi.setPershkrimi(request.getPershkrimi());
-        sherbimi.setQmimi_baze(request.getQmimi_baze());
-        sherbimi.setZbritja(request.getZbritja());
-        sherbimi.setKohezgjatja(request.getKohezgjatja());
+  
+    ObjectMapper mapper = new ObjectMapper();
+mapper.registerModule(new JavaTimeModule()); // <-- this is the key
+mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // optional for proper format
+SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.class);
 
-        // Map attributes
-        if (request.getAtributet() != null) {
-            sherbimi.setAtributet(request.getAtributet().stream().map(attrDTO -> {
-                Atributet_sherbimeve attr = new Atributet_sherbimeve();
-                attr.setOpsioni(attrDTO.getOpsioni());
-                attr.setPershkrimi(attrDTO.getPershkrimi());
-                attr.setSherbimi(sherbimi);
-                attr.setKohezgjatja(attrDTO.getKohezgjatja());
-                attr.setQmimi(attrDTO.getQmimi());
-                attr.setZbritja(attrDTO.getZbritja());
-                return attr;
-            }).collect(Collectors.toList()));
-        }
 
-        sherbimetRepo.save(sherbimi);
+    Sherbimet sherbimi = new Sherbimet();
+    sherbimi.setEmri_sherbimit(request.getEmri_sherbimit());
+    sherbimi.setPershkrimi(request.getPershkrimi());
+    sherbimi.setQmimi_baze(request.getQmimi_baze());
+    sherbimi.setZbritja(request.getZbritja());
+    sherbimi.setKohezgjatja(request.getKohezgjatja());
 
-        return ResponseEntity.ok(Map.of(
-            "message", "Service registered successfully"
-        ));
+    // Map attributes
+    if (request.getAtributet() != null) {
+        sherbimi.setAtributet(request.getAtributet().stream().map(attrDTO -> {
+            Atributet_sherbimeve attr = new Atributet_sherbimeve();
+            attr.setOpsioni(attrDTO.getOpsioni());
+            attr.setPershkrimi(attrDTO.getPershkrimi());
+            attr.setSherbimi(sherbimi);
+            attr.setKohezgjatja(attrDTO.getKohezgjatja());
+            attr.setQmimi(attrDTO.getQmimi());
+            attr.setZbritja(attrDTO.getZbritja());
+            return attr;
+        }).collect(Collectors.toList()));
     }
 
+    // Handle image
+    if (image != null && !image.isEmpty()) {
+        String uploadDir = "C:/Users/aminb/OneDrive/Desktop/BeautySalonManagementSystem/SherbimetImgPath/";
+        String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir + fileName);
+        Files.createDirectories(filePath.getParent());
+        Files.write(filePath, image.getBytes());
+
+        sherbimi.setImagepath(fileName);
+    }
+
+    sherbimetRepo.save(sherbimi);
+
+    return ResponseEntity.ok(Map.of("message", "Service registered successfully"));
+}
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateService(@PathVariable Long id, @RequestBody SherbimetUpdateDTO request){
 

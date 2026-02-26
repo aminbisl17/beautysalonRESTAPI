@@ -41,8 +41,8 @@ public class Sherbimet {
     private boolean is_active;
 
      @CreationTimestamp
-  @Column(name="created_at", insertable = false, updatable = false)
-private LocalDateTime created_at;
+    @Column(name="created_at", insertable = false, updatable = false)
+    private LocalDateTime created_at;
 
  @UpdateTimestamp
 @Column(name = "updated_at")
@@ -56,6 +56,17 @@ private LocalDateTime updated_at;
 
     @OneToMany(mappedBy = "sherbimi", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 private List<Atributet_sherbimeve> atributet;
+
+  @Column(name="imagepath")
+  private String imagepath;
+
+    public String getImagepath() {
+    return imagepath;
+}
+
+  public void setImagepath(String imagepath) {
+    this.imagepath = imagepath;
+  }
 
     public List<Atributet_sherbimeve> getAtributet() {
         return atributet;
