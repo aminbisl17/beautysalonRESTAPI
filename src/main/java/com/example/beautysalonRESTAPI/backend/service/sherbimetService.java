@@ -36,7 +36,13 @@ public List<Atributet_sherbimeve> getAtributet(Long id){
 
    public Sherbimet regiterService(Sherbimet s){
     return sherbimetRepo.save(s);
-
-
    }
+
+  public String getServiceIMGPath(Long id) {
+
+    Sherbimet sherbim = sherbimetRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Sherbimi not found"));
+
+    return sherbim.getImagepath();
+}
 }

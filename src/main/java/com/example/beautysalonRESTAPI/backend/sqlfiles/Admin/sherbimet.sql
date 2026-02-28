@@ -1,3 +1,2 @@
-use beautysalon;
 
-SELECT * FROM Sherbimet;
+SELECT len(imagepath) FROM Sherbimet;

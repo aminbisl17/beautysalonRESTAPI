@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.AtributetSherbimeveDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register.SherbimetRegisterDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Update.SherbimetUpdateDTO;
+import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
+import com.example.beautysalonRESTAPI.backend.service.SmsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -35,12 +38,19 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class AdminSherbimetController {
 
     @Autowired
+    SmsService smsService;
+
+  
+   // AdminUser user;
+
+    @Autowired
     private SherbimetRepository sherbimetRepo;
 
     @PostMapping("/register")
 public ResponseEntity<Map<String, Object>> registerService(
         @RequestPart("data") String dataJson,   // <- JSON as string
-        @RequestPart(value = "image", required = false) MultipartFile image
+        @RequestPart(value = "image", required = false) MultipartFile image,
+        Authentication authentication
 ) throws IOException {
 
   
@@ -73,7 +83,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
 
     // Handle image
     if (image != null && !image.isEmpty()) {
-        String uploadDir = "C:/Users/aminb/OneDrive/Desktop/BeautySalonManagementSystem/SherbimetImgPath/";
+        String uploadDir = "C:/Users/GNTC/Desktop/BeautySalonManagementSystem/SherbimetImgPath/";
         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
         Files.createDirectories(filePath.getParent());
@@ -82,6 +92,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
         sherbimi.setImagepath(fileName);
     }
 
+    smsService.sendSms("+38345380871", "Sherbimi " + sherbimi.getEmri_sherbimit() + " eshte regjistruar me sukses!");
     sherbimetRepo.save(sherbimi);
 
     return ResponseEntity.ok(Map.of("message", "Service registered successfully"));
