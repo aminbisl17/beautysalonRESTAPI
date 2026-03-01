@@ -8,6 +8,7 @@ import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.AtributetSherbimeveRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
+
 @Service
 public class SherbimetService {
     

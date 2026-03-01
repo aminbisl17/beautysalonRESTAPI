@@ -37,11 +37,19 @@ public ResponseEntity<AtributetImageResponse> getAtributet(@PathVariable Long id
     List<Atributet_sherbimeve> atributet =
             sherbimetService.getAtributet(id);
 
-    // Example: load image from disk
-    Path path = Paths.get("C:/Users/GNTC/Desktop/BeautySalonManagementSystem/SherbimetImgPath/" + sherbimetService.getServiceIMGPath(id));
-    byte[] imageBytes = Files.readAllBytes(path);
+    String imageName = sherbimetService.getServiceIMGPath(id);
 
-    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+    String base64Image = null;
+
+    if (imageName != null && !imageName.isBlank()) {
+
+        Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
+
+        if (Files.exists(path)) {
+            byte[] imageBytes = Files.readAllBytes(path);
+            base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        }
+    }
 
     AtributetImageResponse response = new AtributetImageResponse();
     response.setImagePath(base64Image);
@@ -49,5 +57,4 @@ public ResponseEntity<AtributetImageResponse> getAtributet(@PathVariable Long id
 
     return ResponseEntity.ok(response);
 }
-
 }

@@ -83,7 +83,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
 
     // Handle image
     if (image != null && !image.isEmpty()) {
-        String uploadDir = "C:/Users/GNTC/Desktop/BeautySalonManagementSystem/SherbimetImgPath/";
+        String uploadDir = "src/main/resources/SherbimetImgPath/";
         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
         Files.createDirectories(filePath.getParent());
