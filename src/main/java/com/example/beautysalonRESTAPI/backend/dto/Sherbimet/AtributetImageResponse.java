@@ -7,15 +7,15 @@ import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 public class AtributetImageResponse{
 
 
-    private String ImagePath;
+    private String imagePath;
     private List<Atributet_sherbimeve> atributet;
 
     
     public String getImagePath() {
-        return ImagePath;
+        return imagePath;
     }
     public void setImagePath(String imagePath) {
-        ImagePath = imagePath;
+        this.imagePath = imagePath;
     }
     public List<Atributet_sherbimeve> getAtributet() {
         return atributet;
