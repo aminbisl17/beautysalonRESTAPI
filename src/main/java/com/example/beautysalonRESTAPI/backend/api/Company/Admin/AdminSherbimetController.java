@@ -92,7 +92,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
         sherbimi.setImagepath(fileName);
     }
 
-    smsService.sendSms("+38345380871", "Sherbimi " + sherbimi.getEmri_sherbimit() + " eshte regjistruar me sukses!");
+    //smsService.sendSms("+38345380871", "Sherbimi " + sherbimi.getEmri_sherbimit() + " eshte regjistruar me sukses!");
     sherbimetRepo.save(sherbimi);
 
     return ResponseEntity.ok(Map.of("message", "Service registered successfully"));
