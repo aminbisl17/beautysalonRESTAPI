@@ -11,6 +11,10 @@ import com.example.beautysalonRESTAPI.backend.model.Client;
 public interface ClientRepository extends JpaRepository<Client, Long> {
      Optional<Client> findByEmri(String emri);
      Optional<Client> findByUsername(String username);
+
+     Optional<Client> findByEmail(String email);
+
+     Optional<Client> findByNumriTelefonit(String numriTelefonit);
      
 
         @Query("SELECT c FROM Client c LEFT JOIN FETCH c.clientHistory WHERE c.ID = :id")

@@ -22,8 +22,11 @@ public class Client {
     @Column(name = "gjinia")
     private String gjinia;
 
-    @Column(name = "numri_telefonit")
+    @Column(name = "numri_telefonit", unique = true, nullable = false)
     private String numriTelefonit;
+
+    @Column(name = "email", unique = false, nullable = true)
+    private String email;
 
     @Column(name = "data_regjistrimit", insertable = false, updatable = false)
     private LocalDateTime dataRegjistrimit;
@@ -57,6 +60,13 @@ public class Client {
     }
     public void setUserpassword(String userpassword) {
         this.userpassword = userpassword;
+    }
+
+      public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

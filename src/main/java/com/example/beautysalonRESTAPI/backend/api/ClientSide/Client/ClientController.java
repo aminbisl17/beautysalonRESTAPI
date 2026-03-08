@@ -1,5 +1,7 @@
 package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,21 +60,22 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) {
  
     //if (origin == null || !origin.equals("http://localhost:8080")) {
-     //   return ResponseEntity.status(403).body("Registration allowed only from website");
-    //}
-
-        if (clientRepo.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username already exists");
-        }
-    
-        var client = new com.example.beautysalonRESTAPI.backend.model.Client();
+     //   return ResponseEntity.status(403).body("Registration allowed only from website"); }
+     
+if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
+    clientRepo.findByEmail(request.getEmail()).isPresent() ||
+    clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent()) {
+    return ResponseEntity.badRequest().body("User already exists");
+}
+        var client = new Client();
         client.setEmri(request.getEmri());
         client.setMbiemri(request.getMbiemri());
         client.setNumriTelefonit(request.getNumri_telefonit());
         client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
                        : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
+        client.setEmail(request.getEmail());
       //  client.setGjinia(request.getGjinia());
-        //client.setUsername(request.getUsername());
+        client.setUsername(request.getUsername());
         client.setUserpassword(passwordEncoder.encode(request.getPassword()));
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 

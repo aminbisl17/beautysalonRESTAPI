@@ -4,7 +4,7 @@ public class ClientRegisterRequest {
     private String emri;
     private String mbiemri;
     private char gjinia;
-    private String numri_telefonit;
+    private String numri_telefonit, email;
     private String username;
     private String password;
 
@@ -23,6 +23,12 @@ public class ClientRegisterRequest {
     }
 
     // Getters and setters
+     public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
     public String getEmri() { return emri; }
     public void setEmri(String emri) { this.emri = emri; }
     public String getMbiemri() { return mbiemri; }
