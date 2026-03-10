@@ -1,6 +1,11 @@
 package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.backend.dto.OtpClient;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.service.SmsService;
 import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
 
 @RestController
@@ -26,6 +33,8 @@ public class ClientController {
         @Autowired
     private ClientRepository clientRepo;
 
+    @Autowired
+    private SmsService smsservice;
         
   @Autowired
  private BCryptPasswordEncoder passwordEncoder;
@@ -55,7 +64,9 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
 
     return ResponseEntity.ok(client);
 }
-  
+
+private Map<String, Client> pendingClients = new ConcurrentHashMap<>();
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) {
  
@@ -80,8 +91,35 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 
     
-        clientRepo.save(client);
+        pendingClients.put(client.getUsername(), client);
+        smsservice.sendOtp(client.getNumriTelefonit(), client.getUsername());
+
+
+     //   clientRepo.save(client);
     
-        return ResponseEntity.ok("Client registered successfully");
+        return ResponseEntity.ok("Client applied");
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<String> verify(@RequestBody OtpClient response){
+
+     boolean valid = smsservice.validateOTP(response.getOtpcode(), response.getUsername());
+
+    if(!valid){
+        return ResponseEntity.badRequest().body("Invalid or expired OTP");
+    }
+
+    Client client = pendingClients.get(response.getUsername());
+
+    if(client == null){
+        return ResponseEntity.badRequest().body("No pending registration found");
+    }
+
+    clientRepo.save(client);
+
+    pendingClients.remove(response.getUsername());
+
+    return ResponseEntity.ok("Client Verified and Registered!");
+
     }
 }

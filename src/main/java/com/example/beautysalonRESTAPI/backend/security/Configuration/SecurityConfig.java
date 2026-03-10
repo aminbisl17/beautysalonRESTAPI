@@ -72,6 +72,8 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/auth/refresh-token").permitAll()
                 .requestMatchers("/company/email/send").permitAll()
 
+                  .requestMatchers("/api/clients/verify").permitAll()
+
                 .requestMatchers("/api/admin/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/all").hasRole("ADMIN")

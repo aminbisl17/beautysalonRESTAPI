@@ -98,6 +98,12 @@
     <artifactId>twilio</artifactId>
     <version>8.34.1</version> <!-- Latest version -->
 </dependency>
+
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
     <build>
