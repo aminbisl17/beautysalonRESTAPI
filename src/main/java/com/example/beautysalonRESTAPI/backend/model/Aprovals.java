@@ -1,0 +1,74 @@
+package com.example.beautysalonRESTAPI.backend.model;
+
+import java.time.LocalDateTime;
+
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "Aprovals")
+public class Aprovals{
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long ID;
+
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
+
+    @Column(name="otp", nullable = false)
+    private int otp;
+
+    @Column(name="created", nullable = false)
+    private LocalDateTime created;
+
+    @Column(name="client_data", columnDefinition = "TEXT")
+    private String client_data;
+
+    public String getClient_data() {
+        return client_data;
+    }
+
+    public void setClient_data(String client_data) {
+        this.client_data = client_data;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long iD) {
+        ID = iD;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public void setOtp(int otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+}

@@ -1,12 +1,6 @@
 package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +15,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.OtpClient;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientRegisterRequest;
+import com.example.beautysalonRESTAPI.backend.model.Aprovals;
 import com.example.beautysalonRESTAPI.backend.model.Client;
+import com.example.beautysalonRESTAPI.backend.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.service.SmsService;
 import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/clients")
 public class ClientController {
 
-        @Autowired
+    @Autowired
     private ClientRepository clientRepo;
 
     @Autowired
     private SmsService smsservice;
+
+    @Autowired
+private AprovalsRepository aprovalsRepo;
         
   @Autowired
  private BCryptPasswordEncoder passwordEncoder;
@@ -65,10 +66,8 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
     return ResponseEntity.ok(client);
 }
 
-private Map<String, Client> pendingClients = new ConcurrentHashMap<>();
-
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) {
+    public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) throws JsonProcessingException {
  
     //if (origin == null || !origin.equals("http://localhost:8080")) {
      //   return ResponseEntity.status(403).body("Registration allowed only from website"); }
@@ -91,8 +90,21 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 
     
-        pendingClients.put(client.getUsername(), client);
-        smsservice.sendOtp(client.getNumriTelefonit(), client.getUsername());
+       ObjectMapper objectMapper = new ObjectMapper();
+    String clientJson = objectMapper.writeValueAsString(client);
+
+    // Generate OTP
+    String otp = smsservice.generateOTP();
+
+    Aprovals approval = new Aprovals();
+    approval.setUsername(client.getUsername());
+    approval.setOtp(Integer.parseInt(otp));
+    approval.setCreated(LocalDateTime.now());
+    approval.setClient_data(clientJson);
+
+    aprovalsRepo.save(approval);
+
+  smsservice.sendOtp(client.getNumriTelefonit(),otp);
 
 
      //   clientRepo.save(client);
@@ -100,26 +112,18 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
         return ResponseEntity.ok("Client applied");
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<String> verify(@RequestBody OtpClient response){
-
-     boolean valid = smsservice.validateOTP(response.getOtpcode(), response.getUsername());
-
-    if(!valid){
-        return ResponseEntity.badRequest().body("Invalid or expired OTP");
+  @PostMapping("/verify")
+public ResponseEntity<String> verify(@RequestBody OtpClient response) throws JsonProcessingException {
+    try {
+        smsservice.validateOTP(response.getOtpcode(), response.getUsername());
+    } catch (IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
-
-    Client client = pendingClients.get(response.getUsername());
-
-    if(client == null){
-        return ResponseEntity.badRequest().body("No pending registration found");
-    }
-
+    Aprovals approval = aprovalsRepo.findByUsername(response.getUsername()).orElse(null);
+    ObjectMapper objectMapper = new ObjectMapper();
+    Client client = objectMapper.readValue(approval.getClient_data(), Client.class);
     clientRepo.save(client);
 
-    pendingClients.remove(response.getUsername());
-
     return ResponseEntity.ok("Client Verified and Registered!");
-
-    }
+}
 }
