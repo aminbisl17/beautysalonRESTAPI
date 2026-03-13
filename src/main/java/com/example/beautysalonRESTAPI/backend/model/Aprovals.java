@@ -24,13 +24,13 @@ public class Aprovals{
     private String username;
 
     @Column(name="otp", nullable = false)
-    private int otp;
+    private String otp;
 
     @Column(name="created", nullable = false)
     private LocalDateTime created;
 
-    @Column(name="client_data", columnDefinition = "TEXT")
-    private String client_data;
+@Column(name="client_data", columnDefinition = "NVARCHAR(MAX)")
+private String client_data;
 
     public String getClient_data() {
         return client_data;
@@ -56,11 +56,11 @@ public class Aprovals{
         this.username = username;
     }
 
-    public int getOtp() {
+    public String getOtp() {
         return otp;
     }
 
-    public void setOtp(int otp) {
+    public void setOtp(String otp) {
         this.otp = otp;
     }
 

@@ -1,6 +1,8 @@
 package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,16 +95,16 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
        ObjectMapper objectMapper = new ObjectMapper();
     String clientJson = objectMapper.writeValueAsString(client);
 
-    // Generate OTP
     String otp = smsservice.generateOTP();
 
     Aprovals approval = new Aprovals();
     approval.setUsername(client.getUsername());
-    approval.setOtp(Integer.parseInt(otp));
+    approval.setOtp(otp);
     approval.setCreated(LocalDateTime.now());
     approval.setClient_data(clientJson);
 
-    aprovalsRepo.save(approval);
+   
+    aprovalsRepo.saveAndFlush(approval);
 
   smsservice.sendOtp(client.getNumriTelefonit(),otp);
 
@@ -112,18 +114,33 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
         return ResponseEntity.ok("Client applied");
     }
 
-  @PostMapping("/verify")
+    @PostMapping("/verify")
 public ResponseEntity<String> verify(@RequestBody OtpClient response) throws JsonProcessingException {
+
+    // Validate OTP first
     try {
         smsservice.validateOTP(response.getOtpcode(), response.getUsername());
     } catch (IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
-    Aprovals approval = aprovalsRepo.findByUsername(response.getUsername()).orElse(null);
+
+    // Fetch approval safely
+    Optional<Aprovals> approvalOpt = aprovalsRepo.findByUsername(response.getUsername());
+    if (approvalOpt.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("Approval not found for username: " + response.getUsername());
+    }
+
+    Aprovals approval = approvalOpt.get();
+
+    // Deserialize client data
     ObjectMapper objectMapper = new ObjectMapper();
     Client client = objectMapper.readValue(approval.getClient_data(), Client.class);
     clientRepo.save(client);
 
+    aprovalsRepo.delete(approval);
+
     return ResponseEntity.ok("Client Verified and Registered!");
 }
+
 }

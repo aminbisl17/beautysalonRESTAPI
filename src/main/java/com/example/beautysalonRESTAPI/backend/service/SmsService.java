@@ -50,7 +50,9 @@ public class SmsService {
 }
 
      public boolean validateOTP(String userInputOtp, String username) {
-        Aprovals approval = aproval.findByUsername(username).orElse(null);
+      
+       // String username = response.getUsername().trim();
+        Aprovals approval = aproval.findByUsername((username.trim())).orElse(null);
 
         if (approval == null) {
             throw new IllegalArgumentException("OTP not found");
@@ -60,11 +62,9 @@ public class SmsService {
             throw new IllegalArgumentException("OTP expired");
         }
 
-        if (approval.getOtp() != Integer.parseInt(userInputOtp)) {
+        if (!(approval.getOtp().equals(userInputOtp))) {
             throw new IllegalArgumentException("Invalid OTP");
         }
-        aproval.delete(approval);
-
         return true;
     }
 
