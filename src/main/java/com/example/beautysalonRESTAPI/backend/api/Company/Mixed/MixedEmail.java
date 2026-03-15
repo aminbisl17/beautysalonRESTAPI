@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.dto.mail.SimpleEmail;
-import com.example.beautysalonRESTAPI.backend.service.email.EmailService;
+import com.example.beautysalonRESTAPI.backend.service.EmailService;
 
 @RestController
 @RequestMapping("company/email/")

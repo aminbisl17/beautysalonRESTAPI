@@ -68,7 +68,7 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
         */
 
  
-        String jwtToken = jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN");
+        String jwtToken = jwtUtil.generateRefreshToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN");
 
         /* 
         Cookie refreshCookie = new Cookie("refreshToken", jwtToken);
@@ -96,7 +96,7 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
 
 response.addHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.ok(new AdminAuthResponse(adminUser, jwtUtil.generateToken(adminUser.getUsername(), "ROLE_ADMIN")));
+        return ResponseEntity.ok(new AdminAuthResponse(jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
 
    } catch (AuthenticationException e) {
        
@@ -106,7 +106,7 @@ response.addHeader("Set-Cookie", cookie.toString());
 }
 
 @PostMapping("/login/client")
-public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) { 
+public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServletResponse response) { 
     try { authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -114,7 +114,21 @@ public ResponseEntity<?> loginClient(@RequestBody AuthRequest request) {
         Client client = clientRepo.findByUsername(request.getUsername())
                                   .orElseThrow(() -> new RuntimeException("Client not found"));
 
-        return ResponseEntity.ok(new ClientAuthResponse(client, jwtUtil.generateToken(client.getUsername(), "ROLE_CLIENT")));
+       String jwtToken = jwtUtil.generateRefreshToken(client.getId(), client.getUsername(), "ROLE_CLIENT");
+
+       ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
+        .httpOnly(true)
+        .secure(false)         
+        .path("/")
+          .domain("localhost")
+        .maxAge(7 * 24 * 60 * 60)
+        .sameSite("Lax")     
+        .build();
+
+response.addHeader("Set-Cookie", cookie.toString());
+
+
+        return ResponseEntity.ok(new ClientAuthResponse(client.getId(), jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
   } catch (AuthenticationException e) {
     
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -133,7 +147,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
         Employees employee = employeeRepo.findByUsername(request.getUsername())
                                          .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        EmployeeAuthResponse response = new EmployeeAuthResponse(employee, jwtUtil.generateToken(employee.getUsername(), "ROLE_EMPLOYEE"));
+        EmployeeAuthResponse response = new EmployeeAuthResponse(employee, jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
 
         return ResponseEntity.ok(response);
 
@@ -162,7 +176,8 @@ public ResponseEntity<Map<String, String>> refreshToken(
 
     String username = jwtUtil.extractUsername(refreshToken);
     String role = jwtUtil.extractRole(refreshToken);
-    String newAccessToken = jwtUtil.generateToken(username, role);
+    Long ID = jwtUtil.extractId(refreshToken);
+    String newAccessToken = jwtUtil.generateToken(ID, username, role);
 
     return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 }

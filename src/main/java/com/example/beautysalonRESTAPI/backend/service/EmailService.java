@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.service.email;
+package com.example.beautysalonRESTAPI.backend.service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 

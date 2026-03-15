@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.service.SmsService;
-import com.example.beautysalonRESTAPI.backend.service.terminet.TerminetService;
+import com.example.beautysalonRESTAPI.backend.service.TerminetService;
 
 @RestController
 @RequestMapping("api/mixed/terminet/")

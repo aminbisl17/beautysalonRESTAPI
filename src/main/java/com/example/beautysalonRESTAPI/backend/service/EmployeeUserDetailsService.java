@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.service.admin;
+package com.example.beautysalonRESTAPI.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -6,25 +6,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
 
-import com.example.beautysalonRESTAPI.backend.repository.Admin.AdminUserRepository;
+@Service("employeeDetailsService")
+public class EmployeeUserDetailsService implements UserDetailsService {
 
-@Service("adminDetailsService")
-public class AdminUserDetailsService implements UserDetailsService {
-
-    
     @Autowired
-    private AdminUserRepository adminRepo;
+    private EmployeesRepository employeeRepo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var admin = adminRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
+        var client = employeeRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
 
         return User.builder()
-                .username(admin.getUsername())
-                .password(admin.getUserpassword())
-                .roles("ADMIN")
+                .username(client.getUsername())
+                .password(client.getUserpassword())
+                .roles("EMPLOYEE")
                 .build();
     }
 }

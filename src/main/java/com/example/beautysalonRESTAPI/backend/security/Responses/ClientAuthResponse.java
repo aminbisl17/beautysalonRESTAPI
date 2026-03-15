@@ -7,12 +7,15 @@ import com.example.beautysalonRESTAPI.backend.model.Client;
 public class ClientAuthResponse {
 
  private String token;
- private ClientDTO client;
+//private ClientDTO client;
 
-public ClientAuthResponse(Client client, String token) {
+private Long ID;
+
+public ClientAuthResponse(Long ID, String token) {
+    this.ID = ID;
     this.token = token;
-    this.client = new ClientDTO(client);
-    this.client.setClientHistory(client.getClientHistory().stream().map(ClientHistoryDTO::new).toList());
+   // this.client = new ClientDTO(client);
+    //this.client.setClientHistory(client.getClientHistory().stream().map(ClientHistoryDTO::new).toList());
 
 }
 
@@ -20,7 +23,15 @@ public ClientAuthResponse(Client client, String token) {
 
 public String getToken() { return token; }
 public void setToken(String token) { this.token = token; }
+public Long getID() {
+    return ID;
+}
 
+public void setID(Long iD) {
+    ID = iD;
+}
+
+/* 
 
 public ClientDTO getClient() {
     return client;
@@ -29,5 +40,5 @@ public ClientDTO getClient() {
  public void setClient(ClientDTO client) {
     this.client = client;
  }
-
+ */
 }

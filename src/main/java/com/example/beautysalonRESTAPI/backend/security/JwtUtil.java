@@ -20,24 +20,26 @@ public class JwtUtil {
     private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-    public String generateToken(String username, String role) {
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("role", role) 
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // System.currentTimeMillis() + 10 * 1000 (System.currentTimeMillis() + 1000 * 60 * 60 * 10)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-     
-public String generateRefreshToken(String username, String role) {
+    public String generateToken(Long id, String username, String role) {
     return Jwts.builder()
             .setSubject(username)
-            .claim("role", role) 
+            .claim("id", id)
+            .claim("role", role)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+}
+
+     
+public String generateRefreshToken(Long id, String username, String role) {
+    return Jwts.builder()
+            .setSubject(username)
+            .claim("id", id)
+            .claim("role", role)
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-            .signWith(key, SignatureAlgorithm.HS256) 
+            .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 }
 
@@ -50,10 +52,6 @@ public boolean validateRefreshToken(String token) {
     }
 }
 
-public String extractUsernameFromRefreshToken(String token) {
-    return getClaims(token).getSubject();
-}
-
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
@@ -63,7 +61,10 @@ public String extractUsernameFromRefreshToken(String token) {
         return (String) getClaims(token).get("role");
     }
 
-    // Validate token
+   public Long extractId(String token) {
+    return getClaims(token).get("id", Long.class);
+}
+
     public boolean validateToken(String token) {
         try {
             getClaims(token);

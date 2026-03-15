@@ -70,20 +70,18 @@ protected void doFilterInternal(HttpServletRequest request,
                                     userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 } else {
-                    // Invalid token → respond 401 immediately
+    
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Invalid JWT token");
-                    return;  // stop filter chain
+                    return; 
                 }
             }
         }
     } catch (Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write("Invalid JWT token");
-        return; // stop filter chain
+        return; 
     }
-
-    // Continue the chain for valid requests
     filterChain.doFilter(request, response);
 }
 }

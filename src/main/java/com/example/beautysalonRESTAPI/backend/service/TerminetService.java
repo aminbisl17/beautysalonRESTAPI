@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.service.terminet;
+package com.example.beautysalonRESTAPI.backend.service;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;

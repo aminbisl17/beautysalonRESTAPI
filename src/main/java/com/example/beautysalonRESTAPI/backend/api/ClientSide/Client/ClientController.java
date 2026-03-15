@@ -21,8 +21,8 @@ import com.example.beautysalonRESTAPI.backend.model.Aprovals;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.backend.service.ClientService;
 import com.example.beautysalonRESTAPI.backend.service.SmsService;
-import com.example.beautysalonRESTAPI.backend.service.clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,11 +57,7 @@ public ResponseEntity<Client> getClientById(@PathVariable Long id, Authenticatio
         return ResponseEntity.notFound().build();
     }
 
-    boolean isAdmin = auth.getAuthorities().stream()
-                          .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-    // Non-admins can only access their own data by username
-    if (!isAdmin && !client.getUsername().equals(auth.getName())) {
+    if (!client.getUsername().equals(auth.getName())) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
