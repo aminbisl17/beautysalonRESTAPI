@@ -3,6 +3,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import org.springframework.stereotype.Service;
+
+import com.example.beautysalonRESTAPI.backend.repository.EmailSender;
 @Service
 public class EmailService implements EmailSender{
 

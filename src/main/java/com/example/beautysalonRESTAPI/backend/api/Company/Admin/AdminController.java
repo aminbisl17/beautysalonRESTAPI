@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.backend.dto.admin.UserDTO;
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
-import com.example.beautysalonRESTAPI.backend.repository.Admin.AdminUserRepository;
+import com.example.beautysalonRESTAPI.backend.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
 
 @RestController

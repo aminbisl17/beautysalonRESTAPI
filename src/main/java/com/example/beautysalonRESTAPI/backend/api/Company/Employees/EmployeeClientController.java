@@ -14,7 +14,7 @@ import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.model.Historiku;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientHistoryRepository;
-import com.example.beautysalonRESTAPI.backend.service.ClientService;
+import com.example.beautysalonRESTAPI.backend.service.Clients.ClientService;
 
 @RestController
 @RequestMapping("/api/employee/clients")

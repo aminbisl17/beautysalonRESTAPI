@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.service.ClientService;
+import com.example.beautysalonRESTAPI.backend.service.Clients.ClientService;
 
 
 @RestController

@@ -1,8 +1,8 @@
-package com.example.beautysalonRESTAPI.backend.service;
+package com.example.beautysalonRESTAPI.backend.service.Employees;
 
 import org.springframework.stereotype.Service;
 
-import com.example.beautysalonRESTAPI.backend.repository.employees.EmployeesRepository;
+import com.example.beautysalonRESTAPI.backend.repository.EmployeesRepository;
 
 @Service
 public class EmployeeService {

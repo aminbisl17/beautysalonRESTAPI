@@ -21,8 +21,8 @@ import com.example.beautysalonRESTAPI.backend.model.Aprovals;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
-import com.example.beautysalonRESTAPI.backend.service.ClientService;
 import com.example.beautysalonRESTAPI.backend.service.SmsService;
+import com.example.beautysalonRESTAPI.backend.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
