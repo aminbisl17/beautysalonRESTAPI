@@ -1,7 +1,13 @@
 package com.example.beautysalonRESTAPI.backend.dto.Sherbimet;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Base64;
+
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 
 public class SherbimetAdminDTO {
@@ -14,6 +20,7 @@ public class SherbimetAdminDTO {
     private LocalDateTime update_at;
     private int zbritja;
     private LocalTime kohezgjatja;
+    private String imagePath;
 
         public SherbimetAdminDTO(Sherbimet s) {
         this.ID = s.getID();
@@ -26,7 +33,34 @@ public class SherbimetAdminDTO {
         this.zbritja = s.getZbritja();
         this.kohezgjatja = s.getKohezgjatja();
 
+         String imageName = s.getImagepath();
+
+       //  String base64Image = null;
+
+    if (imageName != null && !imageName.isBlank()) {
+
+        Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
+
+        if (Files.exists(path)) {
+           // byte[] imageBytes;
+            try {
+               // imageBytes = Files.readAllBytes(path);
+              //  base64Image = Base64.getEncoder().encodeToString((Files.readAllBytes(path)));
+                this.imagePath = (Base64.getEncoder().encodeToString((Files.readAllBytes(path))));
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
         }
+    }
+}
+
+          public String getImagePath() {
+        return imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
     public Long getID() {
         return ID;
     }

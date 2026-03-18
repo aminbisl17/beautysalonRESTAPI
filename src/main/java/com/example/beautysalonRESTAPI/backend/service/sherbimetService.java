@@ -1,4 +1,5 @@
 package com.example.beautysalonRESTAPI.backend.service;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class SherbimetService {
         //   this.atributetRepo = atributetRepo;
     }
 
-   public List<SherbimetAdminDTO> getAllServicesAdmin() {
+   public List<SherbimetAdminDTO> getAllServicesAdmin(){
     return sherbimetRepo.findAll()
             .stream()
             .map(SherbimetAdminDTO::new)
