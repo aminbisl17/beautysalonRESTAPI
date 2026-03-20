@@ -1,2 +1,2 @@
-delete from clients where ID = 22;
+delete from clients where ID = 29;
 select * from clients;
