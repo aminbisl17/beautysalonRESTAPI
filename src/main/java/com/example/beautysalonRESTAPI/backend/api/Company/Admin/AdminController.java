@@ -1,11 +1,16 @@
 package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
 
+import java.util.Map;
+
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,4 +79,33 @@ private AdminUserRepository adminRepo;
         return ResponseEntity.ok(new UserDTO(user));
     }
     
+@PutMapping("/update")
+public ResponseEntity<Map<String, String>> updateUser(@RequestBody UserDTO response) {
+
+    try {
+        AdminUser admin = adminRepo.findById(response.getID()).orElse(null);
+        if (admin == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found!"));
+        }
+
+        admin.setEmri(response.getEmri());
+        admin.setMbiemri(response.getMbiemri());
+        admin.setUsername(response.getUsername());
+        admin.setDateRegistered(admin.getDateRegistered());
+        if (response.getUserpassword() != null ) {
+            admin.setUserpassword(passwordEncoder.encode(response.getUserpassword()));
+        }
+
+
+        adminRepo.save(admin);
+
+        return ResponseEntity.ok(Map.of("message", "User has been successfully updated!"));
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Server error"));
+    }
+}
 }

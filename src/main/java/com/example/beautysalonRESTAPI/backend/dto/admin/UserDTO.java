@@ -6,6 +6,7 @@ import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 
 public class UserDTO {
     
+    private Long ID;
     private String emri;
     private String mbiemri;
     private String username;
@@ -15,10 +16,19 @@ public class UserDTO {
     public UserDTO(){}
 
     public UserDTO(AdminUser a){
+        this.ID = a.getId();
         this.emri = a.getEmri();
         this.mbiemri = a.getMbiemri();
         this.username = a.getUsername();
         this.dateRegistered = a.getDateRegistered();
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getEmri() {
