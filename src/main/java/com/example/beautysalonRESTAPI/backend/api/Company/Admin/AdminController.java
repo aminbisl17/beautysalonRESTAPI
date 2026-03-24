@@ -80,10 +80,17 @@ private AdminUserRepository adminRepo;
     }
     
 @PutMapping("/update")
-public ResponseEntity<Map<String, String>> updateUser(@RequestBody UserDTO response) {
+public ResponseEntity<Map<String, String>> updateUser(@RequestBody UserDTO response, @RequestHeader("Authorization") String authHeader) {
+
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));
+        }
 
     try {
-        AdminUser admin = adminRepo.findById(response.getID()).orElse(null);
+
+        String token = authHeader.substring(7);
+
+        AdminUser admin = adminRepo.findById(jwtUtil.extractId(token)).orElse(null);
         if (admin == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", "User not found!"));

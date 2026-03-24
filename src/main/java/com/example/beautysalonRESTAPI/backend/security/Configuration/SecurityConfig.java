@@ -74,6 +74,7 @@ public AuthenticationManager authenticationManager() {
 
                   .requestMatchers("/api/clients/verify").permitAll()
 
+                .requestMatchers("/api/admin/data").hasRole("ADMIN")
                 .requestMatchers("/api/admin/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/update").hasRole("ADMIN")
                 .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
@@ -84,7 +85,6 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/admin/sherbimet/update").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/delete/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/sherbimet/all").hasRole("ADMIN")
-                .requestMatchers("/api/admin/data").hasRole("ADMIN")
                 .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
 
 
