@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.AtributetSherbimeveDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Register.SherbimetRegisterDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Sherbimet.Update.SherbimetUpdateDTO;
-import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Atributet_sherbimeve;
 import com.example.beautysalonRESTAPI.backend.model.Sherbimet;
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;

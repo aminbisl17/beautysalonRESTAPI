@@ -3,7 +3,6 @@ package com.example.beautysalonRESTAPI.backend.api.Company.Employees;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.backend.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.backend.model.Client;
-import com.example.beautysalonRESTAPI.backend.model.Historiku;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientHistoryRepository;
 import com.example.beautysalonRESTAPI.backend.service.Clients.ClientService;
 

@@ -22,7 +22,6 @@ import com.example.beautysalonRESTAPI.backend.security.Responses.AdminAuthRespon
 import com.example.beautysalonRESTAPI.backend.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.Responses.EmployeeAuthResponse;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
