@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -19,6 +21,20 @@ public class JwtUtil {
 
     private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+
+
+private Date endOfDay() {
+    LocalDateTime now = LocalDateTime.now();
+
+    LocalDateTime endOfDay = now
+            .withHour(23)
+            .withMinute(59)
+            .withSecond(59)
+            .withNano(0);
+
+    return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant
+    ());
+}
 
     public String generateToken(Long id, String username, String role) {
     return Jwts.builder()
@@ -43,13 +59,45 @@ public String generateRefreshToken(Long id, String username, String role) {
             .compact();
 }
 
+public String generateTokenWithAttendance(Long id,String username, String role, String code) {
+    return Jwts.builder()
+            .setSubject(username)
+            .claim("role", role)
+            .claim("id", id)
+            .claim("code", code)
+            .claim("type", "ATTENDANCE")
+            .setIssuedAt(new Date())
+            .setExpiration(endOfDay())
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+}
+
 public boolean validateRefreshToken(String token) {
     try {
-        getClaims(token);  // reuse existing method
+        getClaims(token);  
         return true;
     } catch (Exception e) {
         return false;
     }
+}
+
+public boolean validateAttendanceToken(String token){
+    
+    try{
+
+   String type = getClaims(token).get("type", String.class);
+
+   if (!"ATTENDANCE".equals(type)) {
+    throw new RuntimeException("Invalid token type");
+    }
+
+    return true;
+} catch (Exception e) {
+            return false;
+        }
+}
+public String extractCode(String token){
+    return (String)getClaims(token).get("code");
 }
 
     public String extractUsername(String token) {

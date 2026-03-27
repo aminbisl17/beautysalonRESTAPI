@@ -91,6 +91,7 @@ public AuthenticationManager authenticationManager() {
           //      .requestMatchers("/api/employee/clients/all").hasRole("EMPLOYEE")
                 .requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
+                .requestMatchers("/auth/employee/attendance/**").hasRole("EMPLOYEE")
 
                 .requestMatchers("/api/mixed/sherbimet/all").permitAll() //hasAnyRole("ADMIN","EMPLOYEE")
              //   .requestMatchers("/api/admin/sherbimet/all").hasAnyRole("ADMIN", "EMPLOYEE")
