@@ -47,15 +47,15 @@ public class AdminSherbimetController {
 
     @PostMapping("/register")
 public ResponseEntity<Map<String, Object>> registerService(
-        @RequestPart("data") String dataJson,   // <- JSON as string
+        @RequestPart("data") String dataJson,  
         @RequestPart(value = "image", required = false) MultipartFile image,
         Authentication authentication
 ) throws IOException {
 
   
     ObjectMapper mapper = new ObjectMapper();
-mapper.registerModule(new JavaTimeModule()); // <-- this is the key
-mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // optional for proper format
+mapper.registerModule(new JavaTimeModule());
+mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); 
 SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.class);
 
 

@@ -19,8 +19,8 @@ public class QrSessionService {
 
 
     public String generateQrCode() {
+    repo.deleteAll();
     String code = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-
     qr_session session = new qr_session();
     session.setCode(code);
     session.setExpiresAt(LocalDateTime.now().plusSeconds(60));

@@ -37,29 +37,34 @@ public class AttendanceController {
     private EmployeesRepository employeesRepository;
 
   @GetMapping("/generate-qr_code")
-  public ResponseEntity<String> sendQrCode(){
-    return ResponseEntity.ok(SessionService.generateQrCode());
-  }
-
-  @PostMapping("/validate-qr_code")
-  public ResponseEntity<Map<String, String>> validateQrCode(@RequestBody QrSessionDTO request) {
-
-    if(SessionService.validateQr(request.getCode())){
-        String token = jwtUtil.generateTokenWithAttendance(request.getId(), request.getUsername(), "EMPLOYEE", request.getCode());
-
-        Employees employee = employeesRepository.findById(request.getId()).orElse(null);
-
-        var attendance = new attendance();
-         attendance.setEmployees(employee);
-         attendanceRepository.save(attendance);
-         return ResponseEntity.ok(Map.of("attendanceToken",token));
-    }
-
-
-    
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(Map.of("error", "something went wrong!"));
+  public ResponseEntity<Map<String, String>> sendQrCode(){
+    return ResponseEntity.ok(Map.of("code", SessionService.generateQrCode()));
   }
   
+@PostMapping("/validate-qr_code")
+public ResponseEntity<Map<String, String>> validateQrCode(@RequestBody QrSessionDTO request) {
+
+    if (!SessionService.validateQr(request.getCode())) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid or expired QR code"));
+    }
+
+    Employees employee = employeesRepository.findById(request.getId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    String token = jwtUtil.generateTokenWithAttendance(
+            request.getId(),
+            request.getUsername(),
+            "EMPLOYEE",
+            request.getCode()
+    );
+
+    attendance attendance = new attendance();
+    attendance.setEmployees(employee);
+    attendanceRepository.save(attendance);
+
+    return ResponseEntity.ok(Map.of("attendanceToken", token));
+}
 
 }
