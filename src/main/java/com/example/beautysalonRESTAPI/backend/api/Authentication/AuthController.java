@@ -146,7 +146,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
         Employees employee = employeeRepo.findByUsername(request.getUsername())
                                          .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        EmployeeAuthResponse response = new EmployeeAuthResponse(employee, jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
+        EmployeeAuthResponse response = new EmployeeAuthResponse(jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
 
         return ResponseEntity.ok(response);
 
