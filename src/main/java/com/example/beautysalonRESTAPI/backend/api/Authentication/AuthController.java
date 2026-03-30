@@ -5,14 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.beautysalonRESTAPI.backend.dto.QrSessionDTO;
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.model.Employees;
+import com.example.beautysalonRESTAPI.backend.model.attendance;
 import com.example.beautysalonRESTAPI.backend.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.backend.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
@@ -21,12 +24,19 @@ import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
 import com.example.beautysalonRESTAPI.backend.security.Responses.AdminAuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.Responses.EmployeeAuthResponse;
+import com.example.beautysalonRESTAPI.backend.service.QrSessionService;
 
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    @Autowired
+private SimpMessagingTemplate messagingTemplate
+;
+     @Autowired
+    QrSessionService SessionService;
 
       @Autowired
     private AdminUserRepository adminRepo;
@@ -155,6 +165,65 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body("Invalid username or password");
     }
+}
+
+@GetMapping("/generate-qr_code")
+  public ResponseEntity<Map<String, String>> sendQrCode(){
+    return ResponseEntity.ok(Map.of("code", SessionService.generateQrCode()));
+  }
+/* 
+  @PostMapping("/validate-qr_code")
+public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
+
+    if (!SessionService.validateQr(request.getCode())) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid or expired QR code"));
+    }
+
+    Employees employee = employeeRepo.findById(request.getId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    String token = jwtUtil.generateTokenWithAttendance(
+            request.getId(),
+            request.getUsername(),
+            "EMPLOYEE",
+            request.getCode()
+    );
+ 
+    //attendance attendance = new attendance();
+    //attendance.setEmployees(employee);
+    //+attendanceRepo.save(attendance);
+
+     EmployeeAuthResponse response = new EmployeeAuthResponse(jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
+
+  return ResponseEntity.ok(response);
+
+ //   return ResponseEntity.ok(Map.of("attendanceToken", token));
+}
+*/
+
+@PostMapping("/validate-qr_code")
+public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
+
+    if (!SessionService.validateQr(request.getCode())) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid or expired QR code"));
+    }
+
+    Employees employee = employeeRepo.findById(request.getId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    EmployeeAuthResponse response = new EmployeeAuthResponse(
+            jwtUtil.generateToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
+    );
+
+    messagingTemplate.convertAndSend(
+            "/topic/qr/" + request.getCode(),
+            response
+    );
+
+    return ResponseEntity.ok(response);
 }
 
 @PostMapping("/refresh-token")
