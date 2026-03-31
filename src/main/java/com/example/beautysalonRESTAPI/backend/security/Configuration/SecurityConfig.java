@@ -62,6 +62,7 @@ public AuthenticationManager authenticationManager() {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/test/generate-token").permitAll()
                 .requestMatchers("/test/test-token").permitAll()
                 .requestMatchers("/web/sherbimet/all").permitAll()
@@ -88,10 +89,10 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
 
 
+                .requestMatchers("/auth/employee/attendance/**").permitAll()
                 .requestMatchers("/api/employee/*").hasRole("EMPLOYEE")
                 .requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
                 .requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
-                .requestMatchers("/auth/employee/attendance/**").hasRole("EMPLOYEE")
 
                 .requestMatchers("/api/mixed/sherbimet/all").permitAll() //hasAnyRole("ADMIN","EMPLOYEE")
              //   .requestMatchers("/api/admin/sherbimet/all").hasAnyRole("ADMIN", "EMPLOYEE")
