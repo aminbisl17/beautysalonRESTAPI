@@ -175,32 +175,37 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
 
 @PostMapping("/validate-qr_code")
-public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
+public ResponseEntity<?> validateQrCode(@RequestHeader("Authorization") String authHeader, @RequestBody QrSessionDTO request) {
 
-        System.out.println("code " + request.getCode());
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
+        }
+
+        Long id = jwtUtil.extractId(token);
+
     if (!SessionService.validateQr(request.getCode())) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired QR code"));
     }
 
-    Employees employee = employeeRepo.findById(request.getId())
+    Employees employee = employeeRepo.findById(id)
             .orElseThrow(() -> new RuntimeException("Employee not found"));
 
     EmployeeAuthResponse response = new EmployeeAuthResponse(
             jwtUtil.generateToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
     );
-
-    System.out.println(response);
-
-    try{
+    
     messagingTemplate.convertAndSend(
             "/topic/qr/" + request.getCode(),
             response
     );
-}
- catch(Exception e){
-        e.printStackTrace();
- }
+
 
     return ResponseEntity.ok(response);
 }
