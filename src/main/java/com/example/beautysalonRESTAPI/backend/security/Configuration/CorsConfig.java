@@ -15,7 +15,8 @@ public WebMvcConfigurer corsConfigurer() {
             registry.addMapping("/**")
                     .allowedOriginPatterns(
                         "http://localhost:3000",
-                        "http://192.168.*:3000"
+                        "http://192.168.*:3000",
+                         "http://10.123.*:8000"
                     )
                     .allowedMethods("*")
                     .allowedHeaders("*")

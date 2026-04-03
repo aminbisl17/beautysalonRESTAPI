@@ -147,6 +147,7 @@ response.addHeader("Set-Cookie", cookie.toString());
 
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
+        System.out.println(request.getPassword());
     try {authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
@@ -171,41 +172,12 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
   public ResponseEntity<Map<String, String>> sendQrCode(){
     return ResponseEntity.ok(Map.of("code", SessionService.generateQrCode()));
   }
-/* 
-  @PostMapping("/validate-qr_code")
-public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
 
-    if (!SessionService.validateQr(request.getCode())) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Invalid or expired QR code"));
-    }
-
-    Employees employee = employeeRepo.findById(request.getId())
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-    String token = jwtUtil.generateTokenWithAttendance(
-            request.getId(),
-            request.getUsername(),
-            "EMPLOYEE",
-            request.getCode()
-    );
- 
-    //attendance attendance = new attendance();
-    //attendance.setEmployees(employee);
-    //+attendanceRepo.save(attendance);
-
-     EmployeeAuthResponse response = new EmployeeAuthResponse(jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
-
-  return ResponseEntity.ok(response);
-
- //   return ResponseEntity.ok(Map.of("attendanceToken", token));
-}
-*/
 
 @PostMapping("/validate-qr_code")
 public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
 
+        System.out.println("code " + request.getCode());
     if (!SessionService.validateQr(request.getCode())) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired QR code"));
@@ -218,10 +190,17 @@ public ResponseEntity<?> validateQrCode(@RequestBody QrSessionDTO request) {
             jwtUtil.generateToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
     );
 
+    System.out.println(response);
+
+    try{
     messagingTemplate.convertAndSend(
             "/topic/qr/" + request.getCode(),
             response
     );
+}
+ catch(Exception e){
+        e.printStackTrace();
+ }
 
     return ResponseEntity.ok(response);
 }
