@@ -72,9 +72,9 @@ public AuthenticationManager authenticationManager() {
                 .requestMatchers("/api/clients/register").permitAll()
                 .requestMatchers("/auth/refresh-token").permitAll()
                 .requestMatchers("/company/email/send").permitAll()
-                 .requestMatchers("/auth/**").permitAll()
                   .requestMatchers("/api/clients/verify").permitAll()
 
+                .requestMatchers("/auth/validate-qr_code").hasAnyRole("ADMIN", "EMPLOYEE")
                 .requestMatchers("/api/admin/data").hasRole("ADMIN")
                 .requestMatchers("/api/admin/register").hasRole("ADMIN")
                 .requestMatchers("/api/admin/update").hasRole("ADMIN")

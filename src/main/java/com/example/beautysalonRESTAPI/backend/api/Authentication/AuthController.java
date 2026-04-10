@@ -175,37 +175,67 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
 
 @PostMapping("/validate-qr_code")
-public ResponseEntity<?> validateQrCode(@RequestHeader("Authorization") String authHeader, @RequestBody QrSessionDTO request) {
+public ResponseEntity<?> validateQrCode(
+        @RequestHeader("Authorization") String authHeader,
+        @RequestBody QrSessionDTO request) {
 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
-        }
+        return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+    }
 
-        String token = authHeader.substring(7); // Remove "Bearer "
+    String token = authHeader.substring(7);
 
-        if (!jwtUtil.validateToken(token)) {
-            return ResponseEntity.status(401).body("Invalid or expired token");
-        }
-
-        Long id = jwtUtil.extractId(token);
+    if (!jwtUtil.validateToken(token)) {
+        return ResponseEntity.status(401).body("Invalid or expired token");
+    }
 
     if (!SessionService.validateQr(request.getCode())) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired QR code"));
     }
 
-    Employees employee = employeeRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+    String role = jwtUtil.extractRole(token);
+    Long id = jwtUtil.extractId(token);
 
-    EmployeeAuthResponse response = new EmployeeAuthResponse(
-            jwtUtil.generateToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
-    );
-    
+    Object response;
+
+    if ("EMPLOYEE".equals(role)) {
+
+        Employees employee = employeeRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        response = new EmployeeAuthResponse(
+                jwtUtil.generateToken(
+                        employee.getID(),
+                        employee.getUsername(),
+                        "ROLE_EMPLOYEE"
+                )
+        );
+
+    } 
+    else if ("ADMIN".equals(role)) {
+
+        AdminUser admin = adminRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        response = new AdminAuthResponse(
+                jwtUtil.generateToken(
+                        admin.getId(),
+                        admin.getUsername(),
+                        "ROLE_ADMIN"
+                )
+        );
+
+    } 
+    else {
+        return ResponseEntity.status(403)
+                .body(Map.of("error", "Unauthorized role"));
+    }
+
     messagingTemplate.convertAndSend(
             "/topic/qr/" + request.getCode(),
             response
     );
-
 
     return ResponseEntity.ok(response);
 }
