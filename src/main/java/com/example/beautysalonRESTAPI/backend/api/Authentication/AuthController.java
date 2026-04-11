@@ -196,10 +196,11 @@ public ResponseEntity<?> validateQrCode(
 
     String role = jwtUtil.extractRole(token);
     Long id = jwtUtil.extractId(token);
+    System.out.println(role+ " " + id);
 
     Object response;
 
-    if ("EMPLOYEE".equals(role)) {
+    if ("ROLE_EMPLOYEE".equals(role)) {
 
         Employees employee = employeeRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -213,7 +214,7 @@ public ResponseEntity<?> validateQrCode(
         );
 
     } 
-    else if ("ADMIN".equals(role)) {
+    else if ("ROLE_ADMIN".equals(role)) {
 
         AdminUser admin = adminRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
