@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.Authentication;
+package com.example.beautysalonRESTAPI.backend.api;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,7 +199,7 @@ public ResponseEntity<?> validateQrCode(
     System.out.println(role+ " " + id);
 
     Object response;
-
+/* 
     if ("ROLE_EMPLOYEE".equals(role)) {
 
         Employees employee = employeeRepo.findById(id)
@@ -228,6 +228,11 @@ public ResponseEntity<?> validateQrCode(
         );
 
     } 
+    */
+    if ("ROLE_EMPLOYEE".equals(role) ||  "ROLE_ADMIN".equals(role)) {
+        String cotoken = jwtUtil.generateCompanyToken(id, token, role);
+               response = Map.of("token",cotoken);
+    }
     else {
         return ResponseEntity.status(403)
                 .body(Map.of("error", "Unauthorized role"));

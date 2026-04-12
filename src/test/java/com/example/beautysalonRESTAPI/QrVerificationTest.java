@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import com.example.beautysalonRESTAPI.backend.api.Authentication.AuthController;
+import com.example.beautysalonRESTAPI.backend.api.AuthController;
 
 @SpringBootTest
 public class QrVerificationTest {

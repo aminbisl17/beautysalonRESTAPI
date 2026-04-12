@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.security.Configuration;
+package com.example.beautysalonRESTAPI.backend.Configuration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

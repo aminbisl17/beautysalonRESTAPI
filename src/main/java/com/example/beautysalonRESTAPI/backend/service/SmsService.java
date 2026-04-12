@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
+import com.example.beautysalonRESTAPI.backend.Configuration.TwilioConfig;
 import com.example.beautysalonRESTAPI.backend.dto.OtpData;
 import com.example.beautysalonRESTAPI.backend.model.Aprovals;
 import com.example.beautysalonRESTAPI.backend.repository.AprovalsRepository;
-import com.example.beautysalonRESTAPI.backend.security.Configuration.TwilioConfig;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 

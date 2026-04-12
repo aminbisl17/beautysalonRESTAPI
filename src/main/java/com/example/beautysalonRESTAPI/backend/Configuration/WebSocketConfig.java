@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.security.Configuration;
+package com.example.beautysalonRESTAPI.backend.Configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

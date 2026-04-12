@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.security.Configuration;
+package com.example.beautysalonRESTAPI.backend.Configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

@@ -23,19 +23,6 @@ public class JwtUtil {
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
 
-private Date endOfDay() {
-    LocalDateTime now = LocalDateTime.now();
-
-    LocalDateTime endOfDay = now
-            .withHour(23)
-            .withMinute(59)
-            .withSecond(59)
-            .withNano(0);
-
-    return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant
-    ());
-}
-
     public String generateToken(Long id, String username, String role) {
     return Jwts.builder()
             .setSubject(username)
@@ -59,15 +46,14 @@ public String generateRefreshToken(Long id, String username, String role) {
             .compact();
 }
 
-public String generateTokenWithAttendance(Long id,String username, String role, String code) {
+public String generateCompanyToken(Long id, String username, String role) {
     return Jwts.builder()
             .setSubject(username)
-            .claim("role", role)
             .claim("id", id)
-            .claim("code", code)
-            .claim("type", "ATTENDANCE")
+            .claim("role", role) 
+            .claim("type", "COMPANY_ACCESS")
             .setIssuedAt(new Date())
-            .setExpiration(endOfDay())
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 15 min
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 }
@@ -81,21 +67,20 @@ public boolean validateRefreshToken(String token) {
     }
 }
 
-public boolean validateAttendanceToken(String token){
-    
-    try{
+public boolean validateCompanyToken(String token) {
+    try {
+        String type = getClaims(token).get("type", String.class);
 
-   String type = getClaims(token).get("type", String.class);
-
-   if (!"ATTENDANCE".equals(type)) {
-    throw new RuntimeException("Invalid token type");
-    }
-
-    return true;
-} catch (Exception e) {
-            return false;
+        if (!"COMPANY_ACCESS".equals(type)) {
+            throw new RuntimeException("Invalid token type");
         }
+
+        return true;
+    } catch (Exception e) {
+        return false;
+    }
 }
+
 public String extractCode(String token){
     return (String)getClaims(token).get("code");
 }
@@ -129,4 +114,10 @@ public String extractCode(String token){
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public String extractType(String token) {
+    Object type = getClaims(token).get("type");
+    return type != null ? type.toString() : null;
+}
+
 }
