@@ -15,7 +15,6 @@ import com.example.beautysalonRESTAPI.backend.dto.QrSessionDTO;
 import com.example.beautysalonRESTAPI.backend.model.AdminUser;
 import com.example.beautysalonRESTAPI.backend.model.Client;
 import com.example.beautysalonRESTAPI.backend.model.Employees;
-import com.example.beautysalonRESTAPI.backend.model.attendance;
 import com.example.beautysalonRESTAPI.backend.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.backend.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
@@ -199,36 +198,7 @@ public ResponseEntity<?> validateQrCode(
     System.out.println(role+ " " + id);
 
     Object response;
-/* 
-    if ("ROLE_EMPLOYEE".equals(role)) {
 
-        Employees employee = employeeRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        response = new EmployeeAuthResponse(
-                jwtUtil.generateToken(
-                        employee.getID(),
-                        employee.getUsername(),
-                        "ROLE_EMPLOYEE"
-                )
-        );
-
-    } 
-    else if ("ROLE_ADMIN".equals(role)) {
-
-        AdminUser admin = adminRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-
-        response = new AdminAuthResponse(
-                jwtUtil.generateToken(
-                        admin.getId(),
-                        admin.getUsername(),
-                        "ROLE_ADMIN"
-                )
-        );
-
-    } 
-    */
     if ("ROLE_EMPLOYEE".equals(role) ||  "ROLE_ADMIN".equals(role)) {
         String cotoken = jwtUtil.generateCompanyToken(id, token, role);
                response = Map.of("token",cotoken);
