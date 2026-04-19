@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.backend.api;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,9 +60,15 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
     try {   authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
-        AdminUser adminUser = adminRepo.findByUsername(request.getUsername())
-                                       .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        
+        Optional<AdminUser> optionalUser = adminRepo.findByUsername(request.getUsername());
 
+         if (optionalUser.isEmpty()) {
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+               .body("Invalid username or password");}
+
+AdminUser adminUser = optionalUser.get();
 /* 
 
           Cookie refreshCookie = new Cookie("refreshToken", jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN"));
@@ -104,7 +111,7 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
 
 response.addHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.ok(new AdminAuthResponse(jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
+        return ResponseEntity.ok(Map.of("refreshToken",jwtToken, "token", jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
 
    } catch (AuthenticationException e) {
        
@@ -144,26 +151,39 @@ response.addHeader("Set-Cookie", cookie.toString());
     }
 }
 
+
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
-        System.out.println(request.getPassword());
-    try {authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+
+    try {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
         );
 
-        //UserDetails user = (UserDetails) authentication.getPrincipal();
+        Optional<Employees> optionalEmployee =
+                employeeRepo.findByUsername(request.getUsername());
 
-        Employees employee = employeeRepo.findByUsername(request.getUsername())
-                                         .orElseThrow(() -> new RuntimeException("Employee not found"));
+        if (optionalEmployee.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
+        }
 
-        EmployeeAuthResponse response = new EmployeeAuthResponse(jwtUtil.generateToken(employee.getID(),employee.getUsername(), "ROLE_EMPLOYEE"));
+        Employees employee = optionalEmployee.get();
+        return ResponseEntity.ok(Map.of(
+            
+            "refreshToken", jwtUtil.generateRefreshToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
+              ,"token", jwtUtil.generateToken(
+                        employee.getID(),
+                        employee.getUsername(),
+                        "ROLE_EMPLOYEE"
+                )));
 
-        return ResponseEntity.ok(response);
-
-  } catch (AuthenticationException e) {
-        // This catches BadCredentialsException, UsernameNotFoundException, etc.
+    } catch (AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body("Invalid username or password");
+                .body("Invalid username or password");
     }
 }
 
@@ -215,7 +235,7 @@ public ResponseEntity<?> validateQrCode(
 
     return ResponseEntity.ok(response);
 }
-
+/*
 @PostMapping("/refresh-token")
 public ResponseEntity<Map<String, String>> refreshToken(
         @CookieValue(value = "refreshToken", required = false) String refreshToken) {
@@ -238,5 +258,26 @@ public ResponseEntity<Map<String, String>> refreshToken(
     String newAccessToken = jwtUtil.generateToken(ID, username, role);
 
     return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+} */
+
+    @PostMapping("/refresh-token")
+public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
+
+    String refreshToken = body.get("refreshToken");
+
+    if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+    String username = jwtUtil.extractUsername(refreshToken);
+    String role = jwtUtil.extractRole(refreshToken);
+    Long id = jwtUtil.extractId(refreshToken);
+
+    String newAccessToken = jwtUtil.generateToken(id, username, role);
+
+    return ResponseEntity.ok(Map.of(
+            "accessToken", newAccessToken
+    ));
 }
 }
