@@ -11,7 +11,7 @@ import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository
 import com.example.beautysalonRESTAPI.backend.repository.Sherbimet.SherbimetRepository;
 
 @RestController
-@RequestMapping("api/admin/dashboard")
+@RequestMapping("/api/admin/dashboard")
 public class AdminDashboardController {
     
 
