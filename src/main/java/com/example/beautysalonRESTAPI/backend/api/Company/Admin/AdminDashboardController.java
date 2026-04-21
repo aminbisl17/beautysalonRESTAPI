@@ -1,4 +1,6 @@
 package com.example.beautysalonRESTAPI.backend.api.Company.Admin;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +29,9 @@ public class AdminDashboardController {
   
 
     @GetMapping("/statistics")
-    ResponseEntity<DashboardDTO> getStatistics(){
-        var dashboard = new DashboardDTO();
-        dashboard.setClients(clientRepo.count());
-        dashboard.setEmployees(employeeRepo.count());
-        dashboard.setServices(sherbimetRepo.count());
-
-    return ResponseEntity.ok(dashboard);
+    ResponseEntity<?> getStatistics(){
+    return ResponseEntity.ok(Map.of("clients", clientRepo.count(), 
+                                    "employees", employeeRepo.count(),
+                                     "services", sherbimetRepo.count()));
     }
 }

@@ -24,7 +24,7 @@ public class SherbimetService {
         //   this.atributetRepo = atributetRepo;
     }
 
-   public List<SherbimetAdminDTO> getAllServicesAdmin(){
+   public List<SherbimetAdminDTO> getAllServices(){
     return sherbimetRepo.findAll()
             .stream()
             .map(SherbimetAdminDTO::new)

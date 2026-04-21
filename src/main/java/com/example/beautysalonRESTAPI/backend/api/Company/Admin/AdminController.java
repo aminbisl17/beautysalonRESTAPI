@@ -33,7 +33,7 @@ private AdminUserRepository adminRepo;
     private JwtUtil jwtUtil;
 
  @PostMapping("/register")
- public ResponseEntity<String> register(@RequestBody UserDTO request){
+  public ResponseEntity<?> register(@RequestBody UserDTO request){
 
 
     if(adminRepo.findByUsername(request.getUsername()).isPresent()){
@@ -77,7 +77,7 @@ private AdminUserRepository adminRepo;
     }
     
 @PutMapping("/update")
-public ResponseEntity<Map<String, String>> updateUser(@RequestBody UserDTO response, @RequestHeader("Authorization") String authHeader) {
+public ResponseEntity<?> updateUser(@RequestBody UserDTO response, @RequestHeader("Authorization") String authHeader) {
 
       if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));

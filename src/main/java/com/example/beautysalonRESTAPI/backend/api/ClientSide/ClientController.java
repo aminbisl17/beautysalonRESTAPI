@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.backend.api.ClientSide.Client;
+package com.example.beautysalonRESTAPI.backend.api.ClientSide;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

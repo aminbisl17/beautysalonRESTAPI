@@ -21,9 +21,7 @@ import com.example.beautysalonRESTAPI.backend.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.backend.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.backend.security.AuthRequest;
 import com.example.beautysalonRESTAPI.backend.security.JwtUtil;
-import com.example.beautysalonRESTAPI.backend.security.Responses.AdminAuthResponse;
 import com.example.beautysalonRESTAPI.backend.security.Responses.ClientAuthResponse;
-import com.example.beautysalonRESTAPI.backend.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.backend.service.QrSessionService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -215,7 +213,6 @@ public ResponseEntity<?> validateQrCode(
 
     String role = jwtUtil.extractRole(token);
     Long id = jwtUtil.extractId(token);
-    System.out.println(role+ " " + id);
 
     Object response;
 
@@ -228,37 +225,10 @@ public ResponseEntity<?> validateQrCode(
                 .body(Map.of("error", "Unauthorized role"));
     }
 
-    messagingTemplate.convertAndSend(
-            "/topic/qr/" + request.getCode(),
-            response
-    );
+    messagingTemplate.convertAndSend("/topic/qr/" + request.getCode(),response);
 
     return ResponseEntity.ok(response);
 }
-/*
-@PostMapping("/refresh-token")
-public ResponseEntity<Map<String, String>> refreshToken(
-        @CookieValue(value = "refreshToken", required = false) String refreshToken) {
-
-    // No cookie found
-    if (refreshToken == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Refresh token missing"));
-    }
-
-    // Validate refresh token
-    if (!jwtUtil.validateRefreshToken(refreshToken)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("error", "Invalid refresh token"));
-    }
-
-    String username = jwtUtil.extractUsername(refreshToken);
-    String role = jwtUtil.extractRole(refreshToken);
-    Long ID = jwtUtil.extractId(refreshToken);
-    String newAccessToken = jwtUtil.generateToken(ID, username, role);
-
-    return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-} */
 
     @PostMapping("/refresh-token")
 public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {

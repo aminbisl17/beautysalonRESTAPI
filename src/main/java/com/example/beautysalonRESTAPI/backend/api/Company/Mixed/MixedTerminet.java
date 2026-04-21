@@ -40,8 +40,8 @@ public class MixedTerminet {
                 return ResponseEntity.status(500).body("Failed to create appointment");
             }
     } catch (Exception e) {
-        // Log the error but don’t block appointment creation
-        e.printStackTrace(); // Or use a logger: log.error("Failed to send SMS", e);
+      
+        e.printStackTrace();
     }
         return ResponseEntity.status(500).body("Termini nuk u krijua!");
     }

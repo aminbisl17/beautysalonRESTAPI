@@ -28,7 +28,7 @@ public class MixedSherbimet {
 
     @GetMapping("all")
     public List<SherbimetAdminDTO> getAllServices() {
-        return sherbimetService.getAllServicesAdmin();
+        return sherbimetService.getAllServices();
     }
 
     @GetMapping("atributet/{id}")
