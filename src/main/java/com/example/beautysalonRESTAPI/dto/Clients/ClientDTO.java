@@ -1,0 +1,75 @@
+package com.example.beautysalonRESTAPI.dto.Clients;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.example.beautysalonRESTAPI.model.Client;
+
+public class ClientDTO {
+    
+    private Long ID;
+    private String emri, mbiemri, username, gjinia, numri_telefonit;
+    private LocalDateTime data_regjistrimit;
+     private List<ClientHistoryDTO> clientHistory;
+
+     public ClientDTO(){
+
+     }
+     public ClientDTO(Client c){
+     this.ID = c.getId();
+     this.emri = c.getEmri();
+     this.mbiemri = c.getMbiemri();
+     this.gjinia = c.getGjinia();
+     this.numri_telefonit = c.getNumriTelefonit();
+     this.data_regjistrimit = c.getDataRegjistrimit();
+     this.username = c.getUsername();
+     }
+      public List<ClientHistoryDTO> getClientHistory() {
+        return clientHistory;
+    }
+     public void setClientHistory(List<ClientHistoryDTO> clientHistory) {
+         this.clientHistory = clientHistory;
+     }
+     public Long getID() {
+        return ID;
+    }
+    public void setID(Long iD) {
+        ID = iD;
+    }
+    public String getEmri() {
+        return emri;
+    }
+    public void setEmri(String emri) {
+        this.emri = emri;
+    }
+    public String getMbiemri() {
+        return mbiemri;
+    }
+    public void setMbiemri(String mbiemri) {
+        this.mbiemri = mbiemri;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public String getGjinia() {
+        return gjinia;
+    }
+    public void setGjinia(String gjinia) {
+        this.gjinia = gjinia;
+    }
+    public String getNumri_telefonit() {
+        return numri_telefonit;
+    }
+    public void setNumri_telefonit(String numri_telefonit) {
+        this.numri_telefonit = numri_telefonit;
+    }
+    public LocalDateTime getData_regjistrimit() {
+        return data_regjistrimit;
+    }
+    public void setData_regjistrimit(LocalDateTime data_regjistrimit) {
+        this.data_regjistrimit = data_regjistrimit;
+    }
+}
