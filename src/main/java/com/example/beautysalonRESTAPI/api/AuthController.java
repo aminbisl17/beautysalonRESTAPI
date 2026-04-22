@@ -67,44 +67,17 @@ public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServle
                .body("Invalid username or password");}
 
 AdminUser adminUser = optionalUser.get();
-/* 
 
-          Cookie refreshCookie = new Cookie("refreshToken", jwtUtil.generateRefreshToken(adminUser.getUsername(), "ROLE_ADMIN"));
-        refreshCookie.setHttpOnly(true);          // Prevent JS access
-        refreshCookie.setSecure(true);            // Only HTTPS
-        refreshCookie.setPath("/");               // Cookie valid for entire domain
-        refreshCookie.setMaxAge(7 * 24 * 60 * 60); 
-        refreshCookie.setSecure(true);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-
-        */
-
- 
         String jwtToken = jwtUtil.generateRefreshToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN");
 
-        /* 
-        Cookie refreshCookie = new Cookie("refreshToken", jwtToken);
-refreshCookie.setHttpOnly(true);        // JS cannot access
-refreshCookie.setSecure(false);         // Must be false for HTTP
-refreshCookie.setPath("/");             // Valid for entire domain
-refreshCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-
-// Add SameSite=None via response header for cross-origin
-response.addHeader("Set-Cookie",
-    "refreshToken=" + jwtToken +
-    "; Path=/; Max-Age=" + (7*24*60*60) +
-    "; HttpOnly; SameSite=None; Secure=false"
-);
-        response.addCookie(refreshCookie);
- */
+ 
 ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .httpOnly(true)
-        .secure(false)          // false because localhost is HTTP
+        .secure(false)         
         .path("/")
           .domain("localhost")
         .maxAge(7 * 24 * 60 * 60)
-        .sameSite("Lax")       // allows cross-origin POST
+        .sameSite("Lax")     
         .build();
 
 response.addHeader("Set-Cookie", cookie.toString());

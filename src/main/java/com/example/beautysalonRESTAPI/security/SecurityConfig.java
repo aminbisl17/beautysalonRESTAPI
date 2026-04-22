@@ -80,7 +80,6 @@ public AuthenticationManager authenticationManager() {
     .requestMatchers("/api/admin/register").hasRole("ADMIN")
     .requestMatchers("/api/admin/update").hasRole("ADMIN")
 
-    // Employees management
     .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
     .requestMatchers("/api/admin/employees/all").hasRole("ADMIN")
     .requestMatchers("/api/admin/employees/delete/**").hasRole("ADMIN")
