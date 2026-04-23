@@ -103,13 +103,12 @@ public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServ
        String jwtToken = jwtUtil.generateRefreshToken(client.getId(), client.getUsername(), "ROLE_CLIENT");
 
        ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
-        .httpOnly(true)
-        .secure(false)         
-        .path("/")
-          .domain("localhost")
-        .maxAge(7 * 24 * 60 * 60)
-        .sameSite("Lax")     
-        .build();
+    .httpOnly(true)
+    .secure(false) // true ONLY in HTTPS production
+    .path("/")
+    .maxAge(7 * 24 * 60 * 60)
+    .sameSite("Lax") // OK for same-site localhost dev
+    .build();
 
 response.addHeader("Set-Cookie", cookie.toString());
 
@@ -203,10 +202,15 @@ public ResponseEntity<?> validateQrCode(
     return ResponseEntity.ok(response);
 }
 
-    @PostMapping("/refresh-token")
-public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
+@PostMapping("/refresh-token")
+public ResponseEntity<?> refresh(
+        @CookieValue(value = "refreshToken", required = false) String cookieToken,
+        @RequestBody(required = false) Map<String, String> body
+) {
 
-    String refreshToken = body.get("refreshToken");
+    String refreshToken = cookieToken != null
+            ? cookieToken
+            : (body != null ? body.get("refreshToken") : null);
 
     if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -219,8 +223,6 @@ public ResponseEntity<?> refresh(@RequestBody Map<String, String> body) {
 
     String newAccessToken = jwtUtil.generateToken(id, username, role);
 
-    return ResponseEntity.ok(Map.of(
-            "accessToken", newAccessToken
-    ));
+    return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 }
 }
