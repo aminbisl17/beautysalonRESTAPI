@@ -36,23 +36,6 @@ public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
 }
 
-/* 
- 
-@Bean
-@Primary
-public AuthenticationManager authenticationManager() {
-    DaoAuthenticationProvider adminProvider = new DaoAuthenticationProvider(adminDetailsService);
-    adminProvider.setPasswordEncoder(passwordEncoder());
-
-    DaoAuthenticationProvider clientProvider = new DaoAuthenticationProvider(clientDetailsService);
-    clientProvider.setPasswordEncoder(passwordEncoder());
-
-    DaoAuthenticationProvider employeeProvider = new DaoAuthenticationProvider(employeeDetailsService);
-    employeeProvider.setPasswordEncoder(passwordEncoder());
-
-    return new ProviderManager(adminProvider, clientProvider, employeeProvider);
-}
-*/
 @Primary
 @Bean("adminAuthManager")
 public AuthenticationManager adminAuthManager() {
