@@ -3,6 +3,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -46,16 +47,29 @@ private SimpMessagingTemplate messagingTemplate
     private EmployeesRepository employeeRepo;
 
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    //@Autowired
+   // private AuthenticationManager authenticationManager;
 
+   private final AuthenticationManager adminAuthManager;
+private final AuthenticationManager clientAuthManager;
+private final AuthenticationManager employeeAuthManager;
+
+   public AuthController(
+    @Qualifier("adminAuthManager") AuthenticationManager adminAuthManager,
+    @Qualifier("clientAuthManager") AuthenticationManager clientAuthManager,
+    @Qualifier("employeeAuthManager") AuthenticationManager employeeAuthManager
+) {
+    this.adminAuthManager = adminAuthManager;
+    this.clientAuthManager = clientAuthManager;
+    this.employeeAuthManager = employeeAuthManager;
+}
     @Autowired
     private JwtUtil jwtUtil;
 
 
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
-    try {   authenticationManager.authenticate(
+    try {   adminAuthManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         
@@ -93,7 +107,7 @@ response.addHeader("Set-Cookie", cookie.toString());
 
 @PostMapping("/login/client")
 public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServletResponse response) { 
-    try { authenticationManager.authenticate(
+    try { clientAuthManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
@@ -126,7 +140,7 @@ response.addHeader("Set-Cookie", cookie.toString());
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
     try {
-        authenticationManager.authenticate(
+         employeeAuthManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
@@ -153,7 +167,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
     } catch (AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Invalid username or password");
+                .body(Map.of("error", "Invalid username or password"));
     }
 }
 

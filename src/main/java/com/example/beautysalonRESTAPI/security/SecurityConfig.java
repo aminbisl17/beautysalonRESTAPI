@@ -36,6 +36,7 @@ public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
 }
 
+/* 
  
 @Bean
 @Primary
@@ -51,7 +52,31 @@ public AuthenticationManager authenticationManager() {
 
     return new ProviderManager(adminProvider, clientProvider, employeeProvider);
 }
+*/
+@Primary
+@Bean("adminAuthManager")
+public AuthenticationManager adminAuthManager() {
+    DaoAuthenticationProvider provider =
+        new DaoAuthenticationProvider(adminDetailsService);
+    provider.setPasswordEncoder(passwordEncoder());
+    return new ProviderManager(provider);
+}
 
+@Bean("clientAuthManager")
+public AuthenticationManager clientAuthManager() {
+    DaoAuthenticationProvider provider =
+        new DaoAuthenticationProvider(clientDetailsService);
+    provider.setPasswordEncoder(passwordEncoder());
+    return new ProviderManager(provider);
+}
+
+@Bean("employeeAuthManager")
+public AuthenticationManager employeeAuthManager() {
+    DaoAuthenticationProvider provider =
+        new DaoAuthenticationProvider(employeeDetailsService);
+    provider.setPasswordEncoder(passwordEncoder());
+    return new ProviderManager(provider);
+}
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
