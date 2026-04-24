@@ -204,7 +204,7 @@ public ResponseEntity<?> validateQrCode(
 
     if ("ROLE_EMPLOYEE".equals(role) ||  "ROLE_ADMIN".equals(role)) {
         String cotoken = jwtUtil.generateCompanyToken(id, token, role);
-               response = Map.of("token",cotoken);
+               response = Map.of("token",cotoken, "role", role, "username", jwtUtil.extractUsername(token));
     }
     else {
         return ResponseEntity.status(403)
