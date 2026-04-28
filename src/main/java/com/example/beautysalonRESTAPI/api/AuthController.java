@@ -89,7 +89,7 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .httpOnly(true)
         .secure(false)         
         .path("/")
-          .domain("localhost")
+     //     .domain("localhost")
         .maxAge(7 * 24 * 60 * 60)
         .sameSite("Lax")     
         .build();
