@@ -54,7 +54,13 @@ private LocalDateTime updated_at;
     @Column(name="kohezgjatja")
     private LocalTime kohezgjatja;
 
-    @OneToMany(mappedBy = "sherbimi", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   // @OneToMany(mappedBy = "sherbimi", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//private List<Atributet_sherbimeve> atributet;
+
+@OneToMany(mappedBy = "sherbimi",
+           cascade = CascadeType.ALL,
+           orphanRemoval = true,
+           fetch = FetchType.EAGER)
 private List<Atributet_sherbimeve> atributet;
 
   @Column(name="imagepath")

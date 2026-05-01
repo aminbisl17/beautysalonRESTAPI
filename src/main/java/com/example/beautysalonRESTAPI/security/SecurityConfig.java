@@ -80,7 +80,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/clients/verify").permitAll()
     .requestMatchers("/company/email/send").permitAll()
 
-    .requestMatchers("/auth/refresh-token").permitAll()
+   // .requestMatchers("/auth/refresh-token").permitAll()
+   // .requestMatchers("/auth/delete-refresh-token").permitAll()
     .requestMatchers("/auth/**").permitAll()
     .requestMatchers("/auth/validate-qr_code").hasAnyRole("ADMIN", "EMPLOYEE")
 

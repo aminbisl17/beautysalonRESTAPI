@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,17 +114,34 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
         sh.setIs_active(request.getIs_active());
         sh.setZbritja(request.getZbritja());
         sh.setKohezgjatja(request.getKohezgjatja());
-     
-if (request.getAtributet() != null) {
 
+ 
+        if (request.getAtributet() != null) {
+
+    // existing attributes from DB
     Map<Long, Atributet_sherbimeve> existingMap =
             sh.getAtributet().stream()
+            .filter(a -> a.getId_atributit() != null)
             .collect(Collectors.toMap(Atributet_sherbimeve::getId_atributit, a -> a));
 
+    // IDs coming from frontend
+    Set<Long> incomingIds = request.getAtributet().stream()
+            .filter(dto -> dto.getId_atributit() != null)
+            .map(AtributetSherbimeveDTO::getId_atributit)
+            .collect(Collectors.toSet());
+
+    // ❌ DELETE removed attributes
+    List<Atributet_sherbimeve> toRemove = sh.getAtributet().stream()
+            .filter(a -> a.getId_atributit() != null && !incomingIds.contains(a.getId_atributit()))
+            .toList();
+
+    sh.getAtributet().removeAll(toRemove);
+
+    // UPDATE + ADD
     for (AtributetSherbimeveDTO dto : request.getAtributet()) {
 
         if (dto.getId_atributit() != null && existingMap.containsKey(dto.getId_atributit())) {
-            // UPDATE existing attribute
+            // UPDATE
             Atributet_sherbimeve attr = existingMap.get(dto.getId_atributit());
             attr.setOpsioni(dto.getOpsioni());
             attr.setPershkrimi(dto.getPershkrimi());
@@ -130,7 +150,7 @@ if (request.getAtributet() != null) {
             attr.setZbritja(dto.getZbritja());
 
         } else {
-            // ADD new attribute
+            // ADD
             Atributet_sherbimeve attr = new Atributet_sherbimeve();
             attr.setOpsioni(dto.getOpsioni());
             attr.setPershkrimi(dto.getPershkrimi());
@@ -142,7 +162,8 @@ if (request.getAtributet() != null) {
             sh.getAtributet().add(attr);
         }
     }
-}// 
+}
+
       sherbimetRepo.save(sh);
       return ResponseEntity.ok("Service updated successfully");
     }

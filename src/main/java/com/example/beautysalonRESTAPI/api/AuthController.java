@@ -216,6 +216,22 @@ public ResponseEntity<?> validateQrCode(
     return ResponseEntity.ok(response);
 }
 
+
+@PostMapping("/delete-refresh-token")
+public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response){
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false)   
+            .path("/")       
+            .maxAge(0)       
+            .sameSite("Lax")
+            .build();
+
+    response.setHeader("Set-Cookie", cookie.toString());
+
+       return ResponseEntity.noContent().build();
+}
+
 @PostMapping("/refresh-token")
 public ResponseEntity<?> refresh(
         @CookieValue(value = "refreshToken", required = false) String cookieToken,
