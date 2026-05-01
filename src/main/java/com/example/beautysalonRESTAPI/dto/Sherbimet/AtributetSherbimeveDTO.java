@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.dto.Sherbimet;
 
-import java.time.LocalTime;
-
 import com.example.beautysalonRESTAPI.model.Atributet_sherbimeve;
 
 public class AtributetSherbimeveDTO {
@@ -10,8 +8,7 @@ public class AtributetSherbimeveDTO {
     private String opsioni;
     private String pershkrimi_opsionit;
     private Double qmimi;
-    private Integer zbritja;
-    private LocalTime kohezgjatja;
+    private int zbritja, kohezgjatja;
 
     
     public AtributetSherbimeveDTO(Atributet_sherbimeve a) {
@@ -70,11 +67,11 @@ public class AtributetSherbimeveDTO {
         this.zbritja = zbritja;
     }
 
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
 
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 }

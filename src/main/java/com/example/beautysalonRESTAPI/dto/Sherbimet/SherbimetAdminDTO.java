@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Base64;
 
 import com.example.beautysalonRESTAPI.model.Sherbimet;
@@ -18,8 +17,7 @@ public class SherbimetAdminDTO {
     private Boolean is_active;
     private LocalDateTime created_at;
     private LocalDateTime update_at;
-    private int zbritja;
-    private LocalTime kohezgjatja;
+    private int zbritja, kohezgjatja;
     private String imagePath;
 
         public SherbimetAdminDTO(Sherbimet s) {
@@ -109,10 +107,10 @@ public class SherbimetAdminDTO {
     public void setZbritja(int zbritja) {
         this.zbritja = zbritja;
     }
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 }

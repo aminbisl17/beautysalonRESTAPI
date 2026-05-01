@@ -1,6 +1,5 @@
 package com.example.beautysalonRESTAPI.dto.Sherbimet.Update;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import com.example.beautysalonRESTAPI.dto.Sherbimet.AtributetSherbimeveDTO;
@@ -10,8 +9,7 @@ public class SherbimetUpdateDTO {
   private String emri_sherbimit;
     private String pershkrimi;
     private Double qmimi_baze;
-    private int zbritja;
-    private LocalTime kohezgjatja;
+    private int zbritja, kohezgjatja;
     private List<AtributetSherbimeveDTO> atributet;
     private boolean is_active;
 
@@ -45,10 +43,10 @@ public class SherbimetUpdateDTO {
     public void setZbritja(int zbritja) {
         this.zbritja = zbritja;
     }
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
     public List<AtributetSherbimeveDTO> getAtributet() {

@@ -1,13 +1,10 @@
 package com.example.beautysalonRESTAPI.dto.Sherbimet.Register;
 
-import java.time.LocalTime;
-
 public class AtributetSherbimeveRegisterDTO {
     private String opsioni;
     private String pershkrimi_opsionit;
     private Double qmimi;
-    private Integer zbritja;
-    private LocalTime kohezgjatja;
+    private int zbritja, kohezgjatja;
 
     public AtributetSherbimeveRegisterDTO() {
    
@@ -45,11 +42,11 @@ public class AtributetSherbimeveRegisterDTO {
         this.zbritja = zbritja;
     }
 
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
 
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 }

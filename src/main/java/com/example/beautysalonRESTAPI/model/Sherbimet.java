@@ -2,7 +2,6 @@ package com.example.beautysalonRESTAPI.model;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -52,7 +51,7 @@ private LocalDateTime updated_at;
     private int zbritja;
     
     @Column(name="kohezgjatja")
-    private LocalTime kohezgjatja;
+    private int kohezgjatja;
 
    // @OneToMany(mappedBy = "sherbimi", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //private List<Atributet_sherbimeve> atributet;
@@ -146,11 +145,11 @@ private List<Atributet_sherbimeve> atributet;
         this.zbritja = zbritja;
     }
 
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
 
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 }

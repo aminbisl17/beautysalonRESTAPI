@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.model;
 
-import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -34,7 +32,7 @@ public class Atributet_sherbimeve {
     private String pershkrimi;
 
     @Column(name="kohezgjatja")
-    private LocalTime kohezgjatja;
+    private int kohezgjatja;
 
     @Column(name="qmimi")
     private Double qmimi;
@@ -58,7 +56,7 @@ public class Atributet_sherbimeve {
         this.pershkrimi = pershkrimi;
     }
 
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 
@@ -86,7 +84,7 @@ public class Atributet_sherbimeve {
         return pershkrimi;
     }
 
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
 
