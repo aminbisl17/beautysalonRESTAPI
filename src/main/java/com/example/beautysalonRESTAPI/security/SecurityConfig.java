@@ -73,6 +73,7 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/test/generate-token").permitAll()
     .requestMatchers("/test/test-token").permitAll()
     .requestMatchers("/server/**").permitAll()
+    .requestMatchers("/notification/**").permitAll()
 
     .requestMatchers("/web/sherbimet/all").permitAll()
     .requestMatchers("/api/mixed/sherbimet/all").permitAll()
