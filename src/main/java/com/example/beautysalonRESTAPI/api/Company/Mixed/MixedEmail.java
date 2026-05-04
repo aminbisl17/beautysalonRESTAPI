@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.beautysalonRESTAPI.dto.mail.SimpleEmail;
+import com.example.beautysalonRESTAPI.dto.SimpleEmail;
 import com.example.beautysalonRESTAPI.service.EmailService;
 
 @RestController

@@ -36,7 +36,7 @@ public class Sherbimet {
     @Column(name="qmimi_baze")
     private Double qmimi_baze;
 
-      @Column(name = "is_active", insertable = false, updatable = false)
+      @Column(name = "is_active")
     private boolean is_active;
 
      @CreationTimestamp

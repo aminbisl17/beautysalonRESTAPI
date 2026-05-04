@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.dto.mail;
+package com.example.beautysalonRESTAPI.dto;
 
 public class SimpleEmail {
     

@@ -11,8 +11,14 @@ public class SherbimetUpdateDTO {
     private Double qmimi_baze;
     private int zbritja, kohezgjatja;
     private List<AtributetSherbimeveDTO> atributet;
-    private boolean is_active;
+    private boolean is_active, removeImage;
 
+    public boolean getRemoveImage() {
+        return removeImage;
+    }
+    public void setRemoveImage(boolean removeImage) {
+        this.removeImage = removeImage;
+    }
     public boolean getIs_active() {
         return is_active;
     }

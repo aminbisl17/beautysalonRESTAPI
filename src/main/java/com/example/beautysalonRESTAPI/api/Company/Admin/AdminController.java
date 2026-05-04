@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.beautysalonRESTAPI.dto.admin.UserDTO;
+import com.example.beautysalonRESTAPI.dto.UserDTO;
 import com.example.beautysalonRESTAPI.model.AdminUser;
 import com.example.beautysalonRESTAPI.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;

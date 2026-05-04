@@ -68,6 +68,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
     sherbimi.setQmimi_baze(request.getQmimi_baze());
     sherbimi.setZbritja(request.getZbritja());
     sherbimi.setKohezgjatja(request.getKohezgjatja());
+    sherbimi.setIs_active(true);
 
     // Map attributes
     if (request.getAtributet() != null) {
@@ -99,74 +100,112 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
 
     return ResponseEntity.ok(Map.of("message", "Service registered successfully"));
 }
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateService(@PathVariable Long id, @RequestBody SherbimetUpdateDTO request){
+  @PutMapping("/update/{id}")
+public ResponseEntity<?> updateService(
+        @PathVariable Long id,
+        @RequestPart("data") String dataJson,
+        @RequestPart(value = "image", required = false) MultipartFile image
+) throws IOException {
 
-        Sherbimet sh = sherbimetRepo.findById(id).orElse(null);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        if(sh == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sherbimi nuk u gjet!");
-        }
+    SherbimetUpdateDTO request = mapper.readValue(dataJson, SherbimetUpdateDTO.class);
 
-        sh.setEmri_sherbimit(request.getEmri_sherbimit());
-        sh.setPershkrimi(request.getPershkrimi());
-        sh.setQmimi_baze(request.getQmimi_baze());
-        sh.setIs_active(request.getIs_active());
-        sh.setZbritja(request.getZbritja());
-        sh.setKohezgjatja(request.getKohezgjatja());
+    Sherbimet sh = sherbimetRepo.findById(id).orElse(null);
 
- 
-        if (request.getAtributet() != null) {
+    if (sh == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sherbimi nuk u gjet!");
+    }
 
-    // existing attributes from DB
-    Map<Long, Atributet_sherbimeve> existingMap =
-            sh.getAtributet().stream()
-            .filter(a -> a.getId_atributit() != null)
-            .collect(Collectors.toMap(Atributet_sherbimeve::getId_atributit, a -> a));
+    // ✅ update basic fields
+    sh.setEmri_sherbimit(request.getEmri_sherbimit());
+    sh.setPershkrimi(request.getPershkrimi());
+    sh.setQmimi_baze(request.getQmimi_baze());
+    sh.setIs_active(request.getIs_active());
+    sh.setZbritja(request.getZbritja());
+    sh.setKohezgjatja(request.getKohezgjatja());
 
-    // IDs coming from frontend
-    Set<Long> incomingIds = request.getAtributet().stream()
-            .filter(dto -> dto.getId_atributit() != null)
-            .map(AtributetSherbimeveDTO::getId_atributit)
-            .collect(Collectors.toSet());
+    if (request.getRemoveImage()){
+    String uploadDir = "src/main/resources/SherbimetImgPath/";
 
-    // ❌ DELETE removed attributes
-    List<Atributet_sherbimeve> toRemove = sh.getAtributet().stream()
-            .filter(a -> a.getId_atributit() != null && !incomingIds.contains(a.getId_atributit()))
-            .toList();
-
-    sh.getAtributet().removeAll(toRemove);
-
-    // UPDATE + ADD
-    for (AtributetSherbimeveDTO dto : request.getAtributet()) {
-
-        if (dto.getId_atributit() != null && existingMap.containsKey(dto.getId_atributit())) {
-            // UPDATE
-            Atributet_sherbimeve attr = existingMap.get(dto.getId_atributit());
-            attr.setOpsioni(dto.getOpsioni());
-            attr.setPershkrimi(dto.getPershkrimi());
-            attr.setKohezgjatja(dto.getKohezgjatja());
-            attr.setQmimi(dto.getQmimi());
-            attr.setZbritja(dto.getZbritja());
-
-        } else {
-            // ADD
-            Atributet_sherbimeve attr = new Atributet_sherbimeve();
-            attr.setOpsioni(dto.getOpsioni());
-            attr.setPershkrimi(dto.getPershkrimi());
-            attr.setKohezgjatja(dto.getKohezgjatja());
-            attr.setQmimi(dto.getQmimi());
-            attr.setZbritja(dto.getZbritja());
-            attr.setSherbimi(sh);
-
-            sh.getAtributet().add(attr);
-        }
+    if (sh.getImagepath() != null) {
+        Path oldPath = Paths.get(uploadDir + sh.getImagepath());
+        Files.deleteIfExists(oldPath);
+        sh.setImagepath(null);
     }
 }
 
-      sherbimetRepo.save(sh);
-      return ResponseEntity.ok("Service updated successfully");
+  if (image != null && !image.isEmpty()) {
+
+    String uploadDir = "src/main/resources/SherbimetImgPath/";
+
+    if (sh.getImagepath() != null) {
+        Path oldPath = Paths.get(uploadDir + sh.getImagepath());
+        try {
+            Files.deleteIfExists(oldPath);
+        } catch (IOException e) {
+            System.out.println("Failed to delete old image: " + e.getMessage());
+        }
     }
+
+    String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+    Path filePath = Paths.get(uploadDir + fileName);
+
+    Files.createDirectories(filePath.getParent());
+    Files.write(filePath, image.getBytes());
+
+    sh.setImagepath(fileName);
+}
+
+    if (request.getAtributet() != null) {
+
+        Map<Long, Atributet_sherbimeve> existingMap =
+                sh.getAtributet().stream()
+                        .filter(a -> a.getId_atributit() != null)
+                        .collect(Collectors.toMap(Atributet_sherbimeve::getId_atributit, a -> a));
+
+        Set<Long> incomingIds = request.getAtributet().stream()
+                .filter(dto -> dto.getId_atributit() != null)
+                .map(AtributetSherbimeveDTO::getId_atributit)
+                .collect(Collectors.toSet());
+
+        List<Atributet_sherbimeve> toRemove = sh.getAtributet().stream()
+                .filter(a -> a.getId_atributit() != null && !incomingIds.contains(a.getId_atributit()))
+                .toList();
+
+        sh.getAtributet().removeAll(toRemove);
+
+        for (AtributetSherbimeveDTO dto : request.getAtributet()) {
+
+            if (dto.getId_atributit() != null && existingMap.containsKey(dto.getId_atributit())) {
+
+                Atributet_sherbimeve attr = existingMap.get(dto.getId_atributit());
+                attr.setOpsioni(dto.getOpsioni());
+                attr.setPershkrimi(dto.getPershkrimi());
+                attr.setKohezgjatja(dto.getKohezgjatja());
+                attr.setQmimi(dto.getQmimi());
+                attr.setZbritja(dto.getZbritja());
+
+            } else {
+
+                Atributet_sherbimeve attr = new Atributet_sherbimeve();
+                attr.setOpsioni(dto.getOpsioni());
+                attr.setPershkrimi(dto.getPershkrimi());
+                attr.setKohezgjatja(dto.getKohezgjatja());
+                attr.setQmimi(dto.getQmimi());
+                attr.setZbritja(dto.getZbritja());
+                attr.setSherbimi(sh);
+
+                sh.getAtributet().add(attr);
+            }
+        }
+    }
+
+    sherbimetRepo.save(sh);
+    return ResponseEntity.ok("Service updated successfully");
+}
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteService(@PathVariable Long id){
@@ -176,6 +215,19 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
          if(sh == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sherbimi nuk u gjet!");
          }
+
+          String uploadDir = "src/main/resources/SherbimetImgPath/";
+
+    if (sh.getImagepath() != null) {
+        Path oldPath = Paths.get(uploadDir + sh.getImagepath());
+        try {
+            Files.deleteIfExists(oldPath);
+        } catch (IOException e) {
+    
+//        e.printStackTrace();
+        }
+        sh.setImagepath(null);
+    }
 
          sherbimetRepo.delete(sh);
         return ResponseEntity.ok("Sherbimi u fshi!");
