@@ -19,8 +19,9 @@ public class ClientHistoryDTO {
          this.emri_mbiemri_klientit = h.getClient().getEmri() + " " + h.getClient().getMbiemri();
          this.emri_mbiemri_puntorit = h.getEmployee().getEmri() + " " + h.getEmployee().getMbiemri();
          this.data_sherbimit = h.getData_sherbimit();
-         this.detajet = h.getDetajet().stream().map(ClientDetajetHistorikutDTO::new).toList();
-
+    this.detajet = h.getDetajet() == null
+        ? List.of()
+        : h.getDetajet().stream().map(ClientDetajetHistorikutDTO::new).toList();
     }
 
        public List<ClientDetajetHistorikutDTO> getDetajet() {

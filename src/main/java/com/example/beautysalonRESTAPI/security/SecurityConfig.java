@@ -81,6 +81,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/clients/verify").permitAll()
     .requestMatchers("/company/email/send").permitAll()
 
+    .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
+
    // .requestMatchers("/auth/refresh-token").permitAll()
    // .requestMatchers("/auth/delete-refresh-token").permitAll()
     .requestMatchers("/auth/**").permitAll()
@@ -102,10 +104,6 @@ public AuthenticationManager employeeAuthManager() {
 
 
     .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
-
-
-    .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
-
 
     .requestMatchers("/api/employee/*").hasRole("EMPLOYEE")
     .requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")

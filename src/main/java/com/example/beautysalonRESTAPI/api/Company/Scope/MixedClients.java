@@ -20,7 +20,7 @@ import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 
 
 @RestController
-@RequestMapping("scope/company/clients/")
+@RequestMapping("/scope/company/clients/")
 public class MixedClients {
 
     @Autowired
@@ -38,8 +38,9 @@ public class MixedClients {
 }
 
 
-@GetMapping("/{id}")
+@GetMapping("/history/{id}")
 public List<ClientHistoryDTO> getClientHistory(@PathVariable Long id) {
+    System.out.println(id);
     return historyRepo.getSpecificClientHistory(id).stream().map(ClientHistoryDTO::new).toList();
 }
 
