@@ -27,11 +27,6 @@ public class Historiku {
     @JsonIgnore
     private Long id_historiku;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_employee")
-    private Employees employee;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID") 
     private Client client;
@@ -42,6 +37,17 @@ public class Historiku {
      @OneToMany(mappedBy = "historiku", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
      private List<Historiku_detajet> detajet;
 
+     @Column(name="emri_mbiemri_punonjesit")
+     private String emri_mbiemri_punonjesit;
+
+
+    public String getEmri_mbiemri_punonjesit() {
+        return emri_mbiemri_punonjesit;
+    }
+
+     public void setEmri_mbiemri_punonjesit(String emri_mbiemri_punonjesit) {
+         this.emri_mbiemri_punonjesit = emri_mbiemri_punonjesit;
+     }
 
     public List<Historiku_detajet> getDetajet() {
         return detajet;
@@ -59,13 +65,6 @@ public class Historiku {
         this.data_sherbimit = data_sherbimit;
     }
 
-    public Employees getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employees employee) {
-        this.employee = employee;
-    }
 
     public Client getClient() {
         return client;

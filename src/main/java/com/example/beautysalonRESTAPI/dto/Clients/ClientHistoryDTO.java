@@ -7,7 +7,7 @@ import com.example.beautysalonRESTAPI.model.Historiku;
 
 public class ClientHistoryDTO {
     private String emri_mbiemri_klientit;
-    private String emri_mbiemri_puntorit;
+    private String emri_mbiemri_punonjesit;
        private LocalDateTime data_sherbimit;
    private List<ClientDetajetHistorikutDTO> detajet;
        
@@ -17,7 +17,7 @@ public class ClientHistoryDTO {
     
         public ClientHistoryDTO(Historiku h){
          this.emri_mbiemri_klientit = h.getClient().getEmri() + " " + h.getClient().getMbiemri();
-         this.emri_mbiemri_puntorit = h.getEmployee().getEmri() + " " + h.getEmployee().getMbiemri();
+         this.emri_mbiemri_punonjesit = h.getEmri_mbiemri_punonjesit();
          this.data_sherbimit = h.getData_sherbimit();
     this.detajet = h.getDetajet() == null
         ? List.of()
@@ -43,13 +43,13 @@ public class ClientHistoryDTO {
        }
 
 
-       public String getEmri_mbiemri_puntorit() {
-           return emri_mbiemri_puntorit;
+       public String getEmri_mbiemri_punonjesit() {
+           return emri_mbiemri_punonjesit;
        }
 
 
-       public void setEmri_mbiemri_puntorit(String emri_mbiemri_puntorit) {
-           this.emri_mbiemri_puntorit = emri_mbiemri_puntorit;
+       public void setEmri_mbiemri_punonjesit(String emri_mbiemri_punonjesit) {
+           this.emri_mbiemri_punonjesit = emri_mbiemri_punonjesit;
        }
 
 
