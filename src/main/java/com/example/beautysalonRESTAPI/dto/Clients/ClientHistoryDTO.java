@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.beautysalonRESTAPI.model.Historiku;
 
 public class ClientHistoryDTO {
+    private Long id_historikut;
     private String emri_mbiemri_klientit;
     private String emri_mbiemri_punonjesit;
        private LocalDateTime data_sherbimit;
@@ -16,12 +17,21 @@ public class ClientHistoryDTO {
     }
     
         public ClientHistoryDTO(Historiku h){
+            this.id_historikut = h.getId_historiku();
          this.emri_mbiemri_klientit = h.getClient().getEmri() + " " + h.getClient().getMbiemri();
          this.emri_mbiemri_punonjesit = h.getEmri_mbiemri_punonjesit();
          this.data_sherbimit = h.getData_sherbimit();
     this.detajet = h.getDetajet() == null
         ? List.of()
         : h.getDetajet().stream().map(ClientDetajetHistorikutDTO::new).toList();
+    }
+
+     public Long getId_historikut() {
+        return id_historikut;
+    }
+
+    public void setId_historikut(Long id_historikut) {
+        this.id_historikut = id_historikut;
     }
 
        public List<ClientDetajetHistorikutDTO> getDetajet() {

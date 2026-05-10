@@ -3,6 +3,7 @@ package com.example.beautysalonRESTAPI.dto.Clients;
 import com.example.beautysalonRESTAPI.model.Historiku_detajet;
 
 public class ClientDetajetHistorikutDTO {
+    private Long id_historikut_detajet;
      private String emri_sherbimit;
      private String emri_atributit;
        private Double pagesa;
@@ -13,12 +14,19 @@ public class ClientDetajetHistorikutDTO {
     
     // Constructor with Historiku_detajet parameter
     public ClientDetajetHistorikutDTO(Historiku_detajet historiku_detajet) {
+        this.id_historikut_detajet = historiku_detajet.getId_historikut_detajet();
         this.emri_sherbimit = historiku_detajet.getEmri_sherbimit();
         this.emri_atributit = historiku_detajet.getEmri_atributit();
         this.pagesa = historiku_detajet.getPagesa();
         this.pershkrimi = historiku_detajet.getPershkrimi();
     }
-    
+         public Long getId_historikut_detajet() {
+        return id_historikut_detajet;
+    }
+
+    public void setId_historikut_detajet(Long id_historikut_detajet) {
+        this.id_historikut_detajet = id_historikut_detajet;
+    }
     
     public String getEmri_sherbimit() {
         return emri_sherbimit;
