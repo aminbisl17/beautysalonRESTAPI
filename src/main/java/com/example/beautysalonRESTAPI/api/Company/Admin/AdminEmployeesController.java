@@ -30,7 +30,7 @@ public class AdminEmployeesController {
     @Autowired
  private BCryptPasswordEncoder passwordEncoder;
 
-  @PostMapping("/employees/register")
+   @PostMapping("/employees/register")
   public ResponseEntity<Map<String, String>> register(@RequestBody EmployeeCredentialsDTO request){
 
        if(employeesRepo.findByUsername(request.getUsername()).isPresent()){
@@ -47,11 +47,12 @@ public class AdminEmployeesController {
        employees.setNumri_telefonit(request.getNumri_telefonit());
        employees.setUsername(request.getUsername());
        employees.setUserpassword(passwordEncoder.encode(request.getUserpassword()));
-
+       employees.setIs_active(true);
        employeesRepo.save(employees);
        
         return ResponseEntity.ok(Map.of("message", "Employee registered successfully"));
   }
+
 
   @DeleteMapping("/employees/delete/{id}")
   public ResponseEntity<String> deleteEmploye(@PathVariable Long id){
@@ -86,6 +87,7 @@ public ResponseEntity<?> updateEmployee(
     employee.setEmail(request.getEmail());
     employee.setNumri_telefonit(request.getNumri_telefonit());
     employee.setUsername(request.getUsername());
+    employee.setIs_active(request.getIsActive());
 
     if (request.getUserpassword() != null && !request.getUserpassword().isBlank()) {
         employee.setUserpassword(

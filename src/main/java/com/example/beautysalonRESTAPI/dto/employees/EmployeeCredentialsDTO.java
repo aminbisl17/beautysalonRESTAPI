@@ -6,7 +6,15 @@ public class EmployeeCredentialsDTO {
  
     private String emri, mbiemri, gjinia, pershkrimi, username, userpassword, numri_telefonit, email;
       private LocalDateTime data_regjistrimit;
+  private Boolean isActive;
 
+  public Boolean getIsActive() {
+    return isActive;
+}
+
+public void setIsActive(Boolean isActive) {
+    this.isActive = isActive;
+}
     public LocalDateTime getData_regjistrimit() {
         return data_regjistrimit;
     }

@@ -51,7 +51,7 @@ public class Employees {
     @Column(name="data_regjistrimit", nullable = false,  updatable = false)
     private LocalDateTime data_regjistrimit;
 
-  @Column(name = "is_active", insertable = false, updatable = false)
+  @Column(name = "is_active")
     private boolean is_active;
 
     
