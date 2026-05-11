@@ -28,5 +28,7 @@ CREATE PROCEDURE clientHistory
 */
 
  -- Exec clientHistory @ClientId = 26;
- SELECT * FROM historiku_detajet;
+
+
+ --SELECT * FROM historiku_detajet;
 
