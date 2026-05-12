@@ -8,7 +8,7 @@ import com.example.beautysalonRESTAPI.model.Client;
 public class ClientDTO {
     
     private Long ID;
-    private String emri, mbiemri, username, gjinia, numri_telefonit;
+    private String emri, mbiemri, username, gjinia, numri_telefonit, pershkrimi, email;
     private LocalDateTime data_regjistrimit;
      private List<ClientHistoryDTO> clientHistory;
 
@@ -35,6 +35,19 @@ public class ClientDTO {
     }
     public void setID(Long iD) {
         ID = iD;
+    }
+
+       public String getPershkrimi() {
+        return pershkrimi;
+    }
+    public void setPershkrimi(String pershkrimi) {
+        this.pershkrimi = pershkrimi;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
     public String getEmri() {
         return emri;

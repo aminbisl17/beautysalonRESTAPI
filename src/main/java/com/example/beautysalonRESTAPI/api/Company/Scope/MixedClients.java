@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.api.Company.Scope;
 
+import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,27 @@ import com.example.beautysalonRESTAPI.dto.Clients.ClientHistoryDTO;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.repository.Client.ClientHistoryRepository;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
 @RequestMapping("/scope/company/clients/")
 public class MixedClients {
 
+    
+
     @Autowired
     private ClientService clientService;
 
        @Autowired
     ClientHistoryRepository historyRepo;
-    
-    @GetMapping("/all")
+
+    @Autowired
+    ClientRepository clientRepo;
+
+    @GetMapping("all")
  public List<ClientDTO> getAllClientsDTO() {
     return clientService.getAllClients()
             .stream()
@@ -38,7 +47,7 @@ public class MixedClients {
 }
 
 
-@GetMapping("/history/{id}")
+@GetMapping("history/{id}")
 public List<ClientHistoryDTO> getClientHistory(@PathVariable Long id) {
     System.out.println(id);
     return historyRepo.getSpecificClientHistory(id).stream().map(ClientHistoryDTO::new).toList();
@@ -51,22 +60,34 @@ private ClientDTO toDTO(Client client) {
 
 
 @DeleteMapping("delete/{id}")
-public ResponseEntity<String> deleteClient(@PathVariable Long id, Authentication auth) {
+public ResponseEntity<String> deleteClient(@PathVariable Long id) {
 
     Client client = clientService.getClientById(id);
     if (client == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
     }
 
-    String username = auth.getName();
-    boolean isAdmin = auth.getAuthorities().stream()
-                          .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"));
-
-    if (!isAdmin && !client.getUsername().equals(username)) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You cannot delete this client");
-    }
-
     clientService.delete(client);
     return ResponseEntity.ok("Client deleted successfully");
 }
+
+@PutMapping("update")
+public String updateClient(@RequestBody ClientDTO request) {
+    Client client = clientService.getClientById(request.getID());
+    if (client == null) {
+        return "Client not found!";
+    }
+
+    client.setEmri(request.getEmri());
+    client.setMbiemri(request.getMbiemri());
+    client.setUsername(request.getUsername());
+    client.setNumriTelefonit(request.getNumri_telefonit());
+    client.setPershkrimi(request.getPershkrimi());
+    client.setEmail(request.getEmail());
+    client.setGjinia(request.getGjinia().toLowerCase() == "m" ? "Mashkull" : "Femer");
+    clientRepo.save(client);
+
+    return "Client updated!";
+}
+
 }
