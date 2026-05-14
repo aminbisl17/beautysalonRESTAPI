@@ -20,6 +20,8 @@ public class ClientDTO {
      this.emri = c.getEmri();
      this.mbiemri = c.getMbiemri();
      this.gjinia = c.getGjinia();
+     this.email = c.getEmail();
+     this.pershkrimi = c.getPershkrimi();
      this.numri_telefonit = c.getNumriTelefonit();
      this.data_regjistrimit = c.getDataRegjistrimit();
      this.username = c.getUsername();

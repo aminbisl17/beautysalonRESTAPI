@@ -49,7 +49,6 @@ public class MixedClients {
 
 @GetMapping("history/{id}")
 public List<ClientHistoryDTO> getClientHistory(@PathVariable Long id) {
-    System.out.println(id);
     return historyRepo.getSpecificClientHistory(id).stream().map(ClientHistoryDTO::new).toList();
 }
 
@@ -73,6 +72,7 @@ public ResponseEntity<String> deleteClient(@PathVariable Long id) {
 
 @PutMapping("update")
 public String updateClient(@RequestBody ClientDTO request) {
+    try{
     Client client = clientService.getClientById(request.getID());
     if (client == null) {
         return "Client not found!";
@@ -86,6 +86,9 @@ public String updateClient(@RequestBody ClientDTO request) {
     client.setEmail(request.getEmail());
     client.setGjinia(request.getGjinia().toLowerCase() == "m" ? "Mashkull" : "Femer");
     clientRepo.save(client);
+} catch(Exception e){
+ e.printStackTrace();
+}
 
     return "Client updated!";
 }
