@@ -83,8 +83,8 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
                        : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
         client.setEmail(request.getEmail());
       //  client.setGjinia(request.getGjinia());
-        client.setUsername(request.getUsername());
-        client.setUserpassword(passwordEncoder.encode(request.getPassword()));
+      //  client.setUsername(request.getUsername());
+      //  client.setUserpassword(passwordEncoder.encode(request.getPassword()));
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 
     

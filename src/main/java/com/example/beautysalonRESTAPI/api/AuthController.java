@@ -1,4 +1,5 @@
 package com.example.beautysalonRESTAPI.api;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,19 +14,27 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.beautysalonRESTAPI.dto.OtpClient;
 import com.example.beautysalonRESTAPI.dto.QrSessionDTO;
+import com.example.beautysalonRESTAPI.dto.Clients.ClientLogin;
 import com.example.beautysalonRESTAPI.model.AdminUser;
+import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.repository.AdminUserRepository;
+import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.AuthRequest;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
+import com.example.beautysalonRESTAPI.service.SmsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import jakarta.servlet.http.HttpServletResponse;
+
+
 
 @RestController
 @RequestMapping("/auth")
@@ -46,7 +55,11 @@ private SimpMessagingTemplate messagingTemplate
     @Autowired
     private EmployeesRepository employeeRepo;
 
+        @Autowired
+    private SmsService smsservice;
 
+@Autowired
+private AprovalsRepository aprovalsRepo;
     //@Autowired
    // private AuthenticationManager authenticationManager;
 
@@ -105,6 +118,7 @@ response.addHeader("Set-Cookie", cookie.toString());
     }
 }
 
+/* 
 @PostMapping("/login/client")
 public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServletResponse response) { 
     try { clientAuthManager.authenticate(
@@ -127,14 +141,63 @@ public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServ
 response.addHeader("Set-Cookie", cookie.toString());
 
 
-        return ResponseEntity.ok(new ClientAuthResponse(client.getId(), jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
+        return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
   } catch (AuthenticationException e) {
     
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body("Invalid username or password");
     }
 }
+*/
 
+@PostMapping("/login/client")
+public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) { 
+
+   Client client = clientRepo.findByNumriTelefonit(response.getNumri_telefonit()).orElse(null);
+
+    if(client == null){
+        return ResponseEntity.badRequest().body("ky numer nuk ekziston!");
+    }
+
+    String otp = smsservice.generateOTP();
+        Aprovals approval = new Aprovals();
+    approval.setUsername(client.getUsername());
+    approval.setOtp(otp);
+    approval.setCreated(LocalDateTime.now());
+   
+    aprovalsRepo.saveAndFlush(approval);
+
+      smsservice.sendOtp(response.getNumri_telefonit(), otp);
+
+    return ResponseEntity.ok("sent to verify");
+}
+
+@PostMapping("/login/client/verify")
+public ResponseEntity<?> verify(@RequestBody ClientLogin response) {
+ 
+
+ Aprovals approval = aprovalsRepo.findByOtp(response.getOtp()).orElse(null);
+
+      if (approval == null) {
+            throw new IllegalArgumentException("OTP not found");
+        }
+        if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
+            aprovalsRepo.delete(approval); // remove expired row
+            throw new IllegalArgumentException("OTP expired");
+        }
+
+       // if (!(approval.getOtp().equals(userInputOtp))) {
+          //  throw new IllegalArgumentException("Invalid OTP");
+       // }
+
+       Client client = clientRepo.findByUsername(approval.getUsername()).orElse(null);
+
+       if(client == null){
+           throw new IllegalArgumentException("Client not found");
+       }
+
+return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
+}
 
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {

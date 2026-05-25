@@ -9,4 +9,6 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 public interface AprovalsRepository extends JpaRepository<Aprovals, Long> {
     
     Optional<Aprovals> findByUsername(String username);
+
+    Optional<Aprovals> findByOtp(String otp);
 }
