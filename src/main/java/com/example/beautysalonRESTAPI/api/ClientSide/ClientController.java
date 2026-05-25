@@ -21,6 +21,7 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.service.ApprovalService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,6 +39,8 @@ public class ClientController {
 
     @Autowired
 private AprovalsRepository aprovalsRepo;
+
+@Autowired ApprovalService approvalService;
         
   @Autowired
  private BCryptPasswordEncoder passwordEncoder;
@@ -88,19 +91,22 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
     //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
 
     
-       ObjectMapper objectMapper = new ObjectMapper();
-    String clientJson = objectMapper.writeValueAsString(client);
+      // ObjectMapper objectMapper = new ObjectMapper();
+    //String clientJson = objectMapper.writeValueAsString(client);
 
     String otp = smsservice.generateOTP();
 
-    Aprovals approval = new Aprovals();
-    approval.setUsername(client.getUsername());
-    approval.setOtp(otp);
-    approval.setCreated(LocalDateTime.now());
-    approval.setClient_data(clientJson);
-
+    //Aprovals approval = new Aprovals();
+    //approval.setUsername(client.getUsername());
+    //approval.setOtp(otp);
+    //approval.setCreated(LocalDateTime.now());
+    //approval.setClient_data(clientJson);
    
-    aprovalsRepo.saveAndFlush(approval);
+ //  aprovalsRepo.deleteByUsername(otp);
+
+  //  aprovalsRepo.saveAndFlush(approval);
+
+  approvalService.createOtp(otp, client.getUsername(), client);
 
   smsservice.sendOtp(client.getNumriTelefonit(),otp);
 

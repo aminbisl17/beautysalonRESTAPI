@@ -28,6 +28,7 @@ import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.AuthRequest;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.ClientAuthResponse;
+import com.example.beautysalonRESTAPI.service.ApprovalService;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,6 +58,9 @@ private SimpMessagingTemplate messagingTemplate
 
         @Autowired
     private SmsService smsservice;
+
+    @Autowired ApprovalService approvalService;
+        
 
 @Autowired
 private AprovalsRepository aprovalsRepo;
@@ -160,12 +164,8 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
     }
 
     String otp = smsservice.generateOTP();
-        Aprovals approval = new Aprovals();
-    approval.setUsername(client.getUsername());
-    approval.setOtp(otp);
-    approval.setCreated(LocalDateTime.now());
-   
-    aprovalsRepo.saveAndFlush(approval);
+
+     approvalService.createOtp(otp, client.getUsername(), null);
 
       smsservice.sendOtp(response.getNumri_telefonit(), otp);
 
@@ -181,21 +181,21 @@ public ResponseEntity<?> verify(@RequestBody ClientLogin response) {
       if (approval == null) {
             throw new IllegalArgumentException("OTP not found");
         }
+         System.out.println(approval.getOtp() + " " + response.getOtp());
         if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
             aprovalsRepo.delete(approval); // remove expired row
             throw new IllegalArgumentException("OTP expired");
         }
 
-       // if (!(approval.getOtp().equals(userInputOtp))) {
-          //  throw new IllegalArgumentException("Invalid OTP");
-       // }
+         if (!(approval.getOtp().equals(response.getOtp()))) {
+            throw new IllegalArgumentException("Invalid OTP");
+        }
 
        Client client = clientRepo.findByUsername(approval.getUsername()).orElse(null);
-
+   aprovalsRepo.delete(approval); 
        if(client == null){
            throw new IllegalArgumentException("Client not found");
        }
-
 return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
 }
 

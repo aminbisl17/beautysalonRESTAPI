@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.beautysalonRESTAPI.Configuration.TwilioConfig;
@@ -28,6 +29,9 @@ public class SmsService {
         this.aproval = aproval;
     
     }
+
+    @Autowired
+    private ApprovalService approvalService;
 
     public String sendSms(String to, String messageBody) {
         Message message = Message.creator(
