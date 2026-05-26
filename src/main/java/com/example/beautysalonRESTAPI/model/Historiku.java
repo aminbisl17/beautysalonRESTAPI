@@ -29,6 +29,7 @@ public class Historiku {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID") 
+    @JsonIgnore
     private Client client;
 
     @Column(name="data_sherbimit")

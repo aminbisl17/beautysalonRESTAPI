@@ -1,6 +1,7 @@
 package com.example.beautysalonRESTAPI.api.ClientSide;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +23,7 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
@@ -42,8 +45,10 @@ private AprovalsRepository aprovalsRepo;
 
 @Autowired ApprovalService approvalService;
         
+
   @Autowired
- private BCryptPasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
+
 
     private final ClientService clientService;
 
@@ -53,16 +58,24 @@ private AprovalsRepository aprovalsRepo;
     }
 
     // GET client by ID
-@GetMapping("/{id}")
-public ResponseEntity<Client> getClientById(@PathVariable Long id, Authentication auth) {
-    Client client = clientService.getClientById(id);
+@GetMapping("/data")
+public ResponseEntity<?> getClientById(@RequestHeader("Authorization") String authHeader) {
+
+     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));
+        }
+
+    String token = authHeader.substring(7);
+
+    Client client = clientService.getClientById(jwtUtil.extractId(token));
+
     if (client == null) {
         return ResponseEntity.notFound().build();
     }
 
-    if (!client.getUsername().equals(auth.getName())) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
+   // if (!client.getUsername().equals(auth.getName())) {
+     //   return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //}
 
     return ResponseEntity.ok(client);
 }
