@@ -167,13 +167,13 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 
      approvalService.createOtp(otp, client.getUsername(), null);
 
-      smsservice.sendOtp(response.getNumri_telefonit(), otp);
-
+      //smsservice.sendOtp(response.getNumri_telefonit(), otp);
+      System.out.println("OTP: " + otp);
     return ResponseEntity.ok("sent to verify");
 }
 
 @PostMapping("/login/client/verify")
-public ResponseEntity<?> verify(@RequestBody ClientLogin response) {
+public ResponseEntity<?> verify(@RequestBody ClientLogin response, HttpServletResponse res) {
  
 
  Aprovals approval = aprovalsRepo.findByOtp(response.getOtp()).orElse(null);
@@ -196,8 +196,23 @@ public ResponseEntity<?> verify(@RequestBody ClientLogin response) {
        if(client == null){
            throw new IllegalArgumentException("Client not found");
        }
+       
+       
+       String jwtToken = jwtUtil.generateRefreshToken(client.getId(), client.getUsername(), "ROLE_CLIENT");
+
+       ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
+    .httpOnly(true)
+    .secure(false) // true ONLY in HTTPS production
+    .path("/")
+    .maxAge(7 * 24 * 60 * 60)
+    .sameSite("Lax") // OK for same-site localhost dev
+    .build();
+
+res.addHeader("Set-Cookie", cookie.toString());
+
 return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
 }
+
 
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
