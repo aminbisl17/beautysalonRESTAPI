@@ -83,14 +83,11 @@ public ResponseEntity<?> getClientById(@RequestHeader("Authorization") String au
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) throws JsonProcessingException {
  
-    //if (origin == null || !origin.equals("http://localhost:8080")) {
-     //   return ResponseEntity.status(403).body("Registration allowed only from website"); }
-     
-if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
-    clientRepo.findByEmail(request.getEmail()).isPresent() ||
-    clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent()) {
+    
+if (clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent()) {
     return ResponseEntity.badRequest().body("User already exists");
-}
+}       System.out.println(request.getNumri_telefonit());
+try{
         var client = new Client();
         client.setEmri(request.getEmri());
         client.setMbiemri(request.getMbiemri());
@@ -98,35 +95,22 @@ if (clientRepo.findByUsername(request.getUsername()).isPresent() ||
         client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
                        : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
         client.setEmail(request.getEmail());
-      //  client.setGjinia(request.getGjinia());
-      //  client.setUsername(request.getUsername());
-      //  client.setUserpassword(passwordEncoder.encode(request.getPassword()));
-    //    client.setDataRegjistrimit(request.getData_regjistrimit().toLocalDateTime());
-
     
-      // ObjectMapper objectMapper = new ObjectMapper();
-    //String clientJson = objectMapper.writeValueAsString(client);
 
     String otp = smsservice.generateOTP();
 
-    //Aprovals approval = new Aprovals();
-    //approval.setUsername(client.getUsername());
-    //approval.setOtp(otp);
-    //approval.setCreated(LocalDateTime.now());
-    //approval.setClient_data(clientJson);
-   
- //  aprovalsRepo.deleteByUsername(otp);
 
-  //  aprovalsRepo.saveAndFlush(approval);
-
-  approvalService.createOtp(otp, client.getUsername(), client);
+  approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
   smsservice.sendOtp(client.getNumriTelefonit(),otp);
-
-
-     //   clientRepo.save(client);
+  
     
-        return ResponseEntity.ok("Client applied");
+}
+catch(Exception e){
+         return ResponseEntity.badRequest().body("Unverified number!");   
+}
+   return ResponseEntity.ok("Client applied");
+    
     }
 
     @PostMapping("/verify")
@@ -134,16 +118,16 @@ public ResponseEntity<String> verify(@RequestBody OtpClient response) throws Jso
 
     // Validate OTP first
     try {
-        smsservice.validateOTP(response.getOtpcode(), response.getUsername());
+        smsservice.validateOTP(response.getOtpcode(), response.getNumri_telefonit());
     } catch (IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     // Fetch approval safely
-    Optional<Aprovals> approvalOpt = aprovalsRepo.findByUsername(response.getUsername());
+    Optional<Aprovals> approvalOpt = aprovalsRepo.findByUsername(response.getNumri_telefonit());
     if (approvalOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body("Approval not found for username: " + response.getUsername());
+                             .body("Approval not found for username: " + response.getNumri_telefonit());
     }
 
     Aprovals approval = approvalOpt.get();

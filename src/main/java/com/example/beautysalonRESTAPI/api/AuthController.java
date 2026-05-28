@@ -174,45 +174,61 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 
 @PostMapping("/login/client/verify")
 public ResponseEntity<?> verify(@RequestBody ClientLogin response, HttpServletResponse res) {
- 
 
- Aprovals approval = aprovalsRepo.findByOtp(response.getOtp()).orElse(null);
+    Aprovals approval = aprovalsRepo.findByOtp(response.getOtp())
+            .orElseThrow(() -> new IllegalArgumentException("OTP not found"));
 
-      if (approval == null) {
-            throw new IllegalArgumentException("OTP not found");
-        }
-         System.out.println(approval.getOtp() + " " + response.getOtp());
-        if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
-            aprovalsRepo.delete(approval); // remove expired row
-            throw new IllegalArgumentException("OTP expired");
-        }
+    // check expiration first
+    if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
+        aprovalsRepo.delete(approval);
+        throw new IllegalArgumentException("OTP expired");
+    }
 
-         if (!(approval.getOtp().equals(response.getOtp()))) {
-            throw new IllegalArgumentException("Invalid OTP");
-        }
+    // validate OTP
+    if (!approval.getOtp().equals(response.getOtp())) {
+        throw new IllegalArgumentException("Invalid OTP");
+    }
 
-       Client client = clientRepo.findByUsername(approval.getUsername()).orElse(null);
-   aprovalsRepo.delete(approval); 
-       if(client == null){
-           throw new IllegalArgumentException("Client not found");
-       }
-       
-       
-       String jwtToken = jwtUtil.generateRefreshToken(client.getId(), client.getUsername(), "ROLE_CLIENT");
+    Client client = clientRepo.findByUsername(approval.getUsername())
+            .orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
-       ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
-    .httpOnly(true)
-    .secure(false) // true ONLY in HTTPS production
-    .path("/")
-    .maxAge(7 * 24 * 60 * 60)
-    .sameSite("Lax") // OK for same-site localhost dev
-    .build();
+    // generate tokens
+    String accessToken = jwtUtil.generateToken(
+            client.getId(),
+            client.getUsername(),
+            "ROLE_CLIENT"
+    );
 
-res.addHeader("Set-Cookie", cookie.toString());
+    String refreshToken = jwtUtil.generateRefreshToken(
+            client.getId(),
+            client.getUsername(),
+            "ROLE_CLIENT"
+    );
 
-return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
+    // IMPORTANT: remove old refresh cookie (same path only works if consistent everywhere)
+    ResponseCookie clearOld = ResponseCookie.from("refreshToken", "")
+            .path("/")
+            .maxAge(0)
+            .build();
+
+    res.addHeader("Set-Cookie", clearOld.toString());
+
+    // set new refresh cookie
+    ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+            .httpOnly(true)
+            .secure(false) // set true in production (HTTPS)
+            .path("/")
+            .maxAge(30 * 24 * 60 * 60)
+            .sameSite("Lax")
+            .build();
+
+    res.addHeader("Set-Cookie", cookie.toString());
+
+    // delete OTP ONLY AFTER everything succeeded
+    aprovalsRepo.delete(approval);
+
+    return ResponseEntity.ok(new ClientAuthResponse(accessToken));
 }
-
 
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
@@ -315,10 +331,10 @@ public ResponseEntity<?> refresh(
         @CookieValue(value = "refreshToken", required = false) String cookieToken,
         @RequestBody(required = false) Map<String, String> body
 ) {
-
-    String refreshToken = cookieToken != null
+   String refreshToken = cookieToken != null
             ? cookieToken
             : (body != null ? body.get("refreshToken") : null);
+
 
     if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -8,14 +8,12 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7;
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 30;
 
  // private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; //test
 
@@ -29,7 +27,7 @@ public class JwtUtil {
             .claim("id", id)
             .claim("role", role)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+              .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24))
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 }
@@ -40,12 +38,12 @@ public String generateRefreshToken(Long id, String username, String role) {
             .setSubject(username)
             .claim("id", id)
             .claim("role", role)
+            .claim("type", "REFRESH")
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 }
-
 public String generateCompanyToken(Long id, String username, String role) {
     return Jwts.builder()
             .setSubject(username)
@@ -53,20 +51,21 @@ public String generateCompanyToken(Long id, String username, String role) {
             .claim("role", role) 
             .claim("type", "COMPANY_ACCESS")
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 15 min
+              .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24)) // 15 min
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 }
 
 public boolean validateRefreshToken(String token) {
     try {
-        getClaims(token);  
-        return true;
+        Claims claims = getClaims(token);
+
+        return "REFRESH".equals(claims.get("type"));
+
     } catch (Exception e) {
         return false;
     }
 }
-
 public boolean validateCompanyToken(String token) {
     try {
         String type = getClaims(token).get("type", String.class);
