@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.dto.OtpClient;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
@@ -84,7 +85,16 @@ public ResponseEntity<?> getClientById(@RequestHeader("Authorization") String au
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) throws JsonProcessingException {
  
     
-if (clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent()) {
+boolean emailExists =
+        request.getEmail() != null &&
+        clientRepo.findByEmail(request.getEmail()).isPresent();
+
+boolean phoneExists =
+        request.getNumri_telefonit() != null &&
+        clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent();
+
+if (emailExists || phoneExists) {
+
     return ResponseEntity.badRequest().body("User already exists");
 }       System.out.println(request.getNumri_telefonit());
 try{
@@ -94,7 +104,8 @@ try{
         client.setNumriTelefonit(request.getNumri_telefonit());
         client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
                        : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
-        client.setEmail(request.getEmail());
+        String email = (request.getEmail().isEmpty()) ? null : request.getEmail();
+        client.setEmail(email);
     
 
     String otp = smsservice.generateOTP();
@@ -102,9 +113,9 @@ try{
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
-  smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
   
-    
+    System.out.println(otp);
 }
 catch(Exception e){
          return ResponseEntity.badRequest().body("Unverified number!");   
@@ -114,30 +125,22 @@ catch(Exception e){
     }
 
     @PostMapping("/verify")
-public ResponseEntity<String> verify(@RequestBody OtpClient response) throws JsonProcessingException {
+public ResponseEntity<?> verify(@RequestBody OtpClient response) throws JsonProcessingException {
 
     // Validate OTP first
     try {
-        smsservice.validateOTP(response.getOtpcode(), response.getNumri_telefonit());
-    } catch (IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+        approvalService.validateOTP(response.getOtpcode(), response.getNumri_telefonit());
+    } catch (ResponseStatusException ex) {
+           return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Map.of("message", ex.getReason()));
     }
-
-    // Fetch approval safely
-    Optional<Aprovals> approvalOpt = aprovalsRepo.findByUsername(response.getNumri_telefonit());
-    if (approvalOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body("Approval not found for username: " + response.getNumri_telefonit());
+    catch (Exception ex) {
+        return ResponseEntity
+                .status(500)
+                .body(
+                    Map.of("message", ex.getMessage()));
     }
-
-    Aprovals approval = approvalOpt.get();
-
-    // Deserialize client data
-    ObjectMapper objectMapper = new ObjectMapper();
-    Client client = objectMapper.readValue(approval.getClient_data(), Client.class);
-    clientRepo.save(client);
-
-    aprovalsRepo.delete(approval);
 
     return ResponseEntity.ok("Client Verified and Registered!");
 }

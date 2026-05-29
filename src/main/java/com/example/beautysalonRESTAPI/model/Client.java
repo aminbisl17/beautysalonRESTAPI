@@ -34,12 +34,6 @@ public class Client {
     @Column(name = "pershkrimi")
     private String pershkrimi;
 
-    @Column(name = "username")
-    private String username;
-    
-    @Column(name = "userpassword")
-    private String userpassword;
-
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Historiku> clientHistory;
 
@@ -48,18 +42,6 @@ public class Client {
     }
     public void setClientHistory(List<Historiku> clientHistory) {
       this.clientHistory = clientHistory;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getUserpassword() {
-        return userpassword;
-    }
-    public void setUserpassword(String userpassword) {
-        this.userpassword = userpassword;
     }
 
       public String getEmail() {

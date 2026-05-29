@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.dto.OtpClient;
 import com.example.beautysalonRESTAPI.dto.QrSessionDTO;
@@ -24,11 +25,13 @@ import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.LoginOTPRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.AuthRequest;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
+import com.example.beautysalonRESTAPI.service.LoginOTPService;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,6 +63,9 @@ private SimpMessagingTemplate messagingTemplate
     private SmsService smsservice;
 
     @Autowired ApprovalService approvalService;
+
+    @Autowired
+    LoginOTPService loginOtpService;
         
 
 @Autowired
@@ -122,37 +128,6 @@ response.addHeader("Set-Cookie", cookie.toString());
     }
 }
 
-/* 
-@PostMapping("/login/client")
-public ResponseEntity<?> loginClient(@RequestBody AuthRequest request,  HttpServletResponse response) { 
-    try { clientAuthManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        Client client = clientRepo.findByUsername(request.getUsername())
-                                  .orElseThrow(() -> new RuntimeException("Client not found"));
-
-       String jwtToken = jwtUtil.generateRefreshToken(client.getId(), client.getUsername(), "ROLE_CLIENT");
-
-       ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
-    .httpOnly(true)
-    .secure(false) // true ONLY in HTTPS production
-    .path("/")
-    .maxAge(7 * 24 * 60 * 60)
-    .sameSite("Lax") // OK for same-site localhost dev
-    .build();
-
-response.addHeader("Set-Cookie", cookie.toString());
-
-
-        return ResponseEntity.ok(new ClientAuthResponse(jwtUtil.generateToken(client.getId(),client.getUsername(), "ROLE_CLIENT")));
-  } catch (AuthenticationException e) {
-    
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body("Invalid username or password");
-    }
-}
-*/
 
 @PostMapping("/login/client")
 public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) { 
@@ -165,8 +140,8 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 
     String otp = smsservice.generateOTP();
 
-     approvalService.createOtp(otp, client.getUsername(), null);
-
+    // approvalService.createOtp(otp, client.getNumriTelefonit(), null);
+    loginOtpService.createLoginOTP(otp, response.getNumri_telefonit());
       //smsservice.sendOtp(response.getNumri_telefonit(), otp);
       System.out.println("OTP: " + otp);
     return ResponseEntity.ok("sent to verify");
@@ -175,61 +150,51 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 @PostMapping("/login/client/verify")
 public ResponseEntity<?> verify(@RequestBody ClientLogin response, HttpServletResponse res) {
 
-    Aprovals approval = aprovalsRepo.findByOtp(response.getOtp())
-            .orElseThrow(() -> new IllegalArgumentException("OTP not found"));
+    try {
+     loginOtpService.validateLoginOTP(
+                response.getOtp(),
+                response.getNumri_telefonit()
+        );
 
-    // check expiration first
-    if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
-        aprovalsRepo.delete(approval);
-        throw new IllegalArgumentException("OTP expired");
+        Client client = clientRepo.findByNumriTelefonit(response.getNumri_telefonit())
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+
+        String accessToken = jwtUtil.generateToken(
+                client.getId(),
+                client.getNumriTelefonit(),
+                "ROLE_CLIENT"
+        );
+
+        String refreshToken = jwtUtil.generateRefreshToken(
+                client.getId(),
+                client.getNumriTelefonit(),
+                "ROLE_CLIENT"
+        );
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(30 * 24 * 60 * 60)
+                .sameSite("Lax")
+                .build();
+
+        res.addHeader("Set-Cookie", cookie.toString());
+
+        return ResponseEntity.ok(new ClientAuthResponse(accessToken));
+
+    } catch (ResponseStatusException ex) {
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Map.of("message", ex.getReason()));
+
+    } catch (Exception ex) {
+        return ResponseEntity
+                .status(500)
+                .body(
+                    Map.of("message", ex.getMessage()));
     }
-
-    // validate OTP
-    if (!approval.getOtp().equals(response.getOtp())) {
-        throw new IllegalArgumentException("Invalid OTP");
-    }
-
-    Client client = clientRepo.findByUsername(approval.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("Client not found"));
-
-    // generate tokens
-    String accessToken = jwtUtil.generateToken(
-            client.getId(),
-            client.getUsername(),
-            "ROLE_CLIENT"
-    );
-
-    String refreshToken = jwtUtil.generateRefreshToken(
-            client.getId(),
-            client.getUsername(),
-            "ROLE_CLIENT"
-    );
-
-    // IMPORTANT: remove old refresh cookie (same path only works if consistent everywhere)
-    ResponseCookie clearOld = ResponseCookie.from("refreshToken", "")
-            .path("/")
-            .maxAge(0)
-            .build();
-
-    res.addHeader("Set-Cookie", clearOld.toString());
-
-    // set new refresh cookie
-    ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(false) // set true in production (HTTPS)
-            .path("/")
-            .maxAge(30 * 24 * 60 * 60)
-            .sameSite("Lax")
-            .build();
-
-    res.addHeader("Set-Cookie", cookie.toString());
-
-    // delete OTP ONLY AFTER everything succeeded
-    aprovalsRepo.delete(approval);
-
-    return ResponseEntity.ok(new ClientAuthResponse(accessToken));
 }
-
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 

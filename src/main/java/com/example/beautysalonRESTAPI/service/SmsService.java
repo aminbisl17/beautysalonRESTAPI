@@ -53,25 +53,6 @@ public class SmsService {
     return message.getSid();
 }
 
-     public boolean validateOTP(String userInputOtp, String username) {
-      
-       // String username = response.getUsername().trim();
-        Aprovals approval = aproval.findByUsername((username.trim())).orElse(null);
-
-        if (approval == null) {
-            throw new IllegalArgumentException("OTP not found");
-        }
-        if (approval.getCreated().plusMinutes(5).isBefore(LocalDateTime.now())) {
-            aproval.delete(approval); // remove expired row
-            throw new IllegalArgumentException("OTP expired");
-        }
-
-        if (!(approval.getOtp().equals(userInputOtp))) {
-            throw new IllegalArgumentException("Invalid OTP");
-        }
-        return true;
-    }
-
     public String generateOTP() {
         return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));

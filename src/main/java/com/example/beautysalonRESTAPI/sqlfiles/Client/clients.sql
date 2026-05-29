@@ -9,6 +9,6 @@ VALUES
 ('Blerim', 'Dervishi', 'M', '0673456789', 'New client', 'blerim.d', 'pass789', 'blerim@example.com'),
 ('Sara', 'Mema', 'F', '0684567890', 'Frequent buyer', 'sara.m', 'pass321', 'sara@example.com'),
 ('Jon', 'Lika', 'M', '0695678901', 'Inactive client', 'jon.l', 'pass654', 'jon@example.com'); 
-delete from clients;*/
-update clients set numri_telefonit = '+38345380871' where ID = 2031;
+delete from clients; update clients set numri_telefonit = '+38345380271' where ID = 3038; */
+ update clients set email = null where ID = 3039;
 select * from clients; 

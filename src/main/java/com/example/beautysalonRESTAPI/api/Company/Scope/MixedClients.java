@@ -80,7 +80,6 @@ public String updateClient(@RequestBody ClientDTO request) {
 
     client.setEmri(request.getEmri());
     client.setMbiemri(request.getMbiemri());
-    client.setUsername(request.getUsername());
     client.setNumriTelefonit(request.getNumri_telefonit());
     client.setPershkrimi(request.getPershkrimi());
     client.setEmail(request.getEmail());

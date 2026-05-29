@@ -18,7 +18,7 @@ public class Aprovals{
     @Column(name = "ID")
     private Long ID;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(name = "username", nullable = false)
     private String username;
 
     @Column(name="otp", nullable = false)

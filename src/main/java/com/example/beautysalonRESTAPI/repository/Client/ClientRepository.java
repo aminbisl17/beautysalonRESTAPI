@@ -11,7 +11,7 @@ import com.example.beautysalonRESTAPI.model.Client;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
      Optional<Client> findByEmri(String emri);
-     Optional<Client> findByUsername(String username);
+
 
      Optional<Client> findByEmail(String email);
 

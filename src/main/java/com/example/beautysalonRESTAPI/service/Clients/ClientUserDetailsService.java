@@ -17,12 +17,11 @@ public class ClientUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var client = clientRepo.findByUsername(username)
+        var client = clientRepo.findByNumriTelefonit(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Client not found"));
 
         return User.builder()
-                .username(client.getUsername())
-                .password(client.getUserpassword())
+                .username(client.getNumriTelefonit())
                 .roles("CLIENT")
                 .build();
     }

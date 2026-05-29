@@ -13,12 +13,24 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 
 public interface AprovalsRepository extends JpaRepository<Aprovals, Long> {
     
-    Optional<Aprovals> findByUsername(String username);
+ 
+    Optional<Aprovals> findByUsernameAndOtp(String username, String otp);
+
+    Optional<Aprovals> findByOtp(String otp);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Aprovals a WHERE a.username = :username AND a.otp = :otp")
+    void deleteByUsernameAndOtp(@Param("username") String username, @Param("otp") String otp);
 
     @Modifying
-    @Transactional
     @Query("DELETE FROM Aprovals a WHERE a.username = :username")
     void deleteByUsername(@Param("username") String username);
 
-    Optional<Aprovals> findByOtp(String otp);
+    @Modifying
+    @Query(value = """
+        DELETE FROM Aprovals
+        WHERE created < DATEADD(MINUTE, -5, GETUTCDATE())
+    """, nativeQuery = true)
+    void deleteExpiredOtps();
 }

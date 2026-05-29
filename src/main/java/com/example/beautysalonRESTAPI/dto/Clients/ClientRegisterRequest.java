@@ -5,8 +5,6 @@ public class ClientRegisterRequest {
     private String mbiemri;
     private char gjinia;
     private String numri_telefonit, email;
-    private String username;
-    private String password;
 
     public char getGjinia() 
     {
@@ -33,8 +31,4 @@ public class ClientRegisterRequest {
     public void setEmri(String emri) { this.emri = emri; }
     public String getMbiemri() { return mbiemri; }
     public void setMbiemri(String mbiemri) { this.mbiemri = mbiemri; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 }
