@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.dto.OtpClient;
+import com.example.beautysalonRESTAPI.dto.UserDTO;
+import com.example.beautysalonRESTAPI.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
@@ -30,6 +32,8 @@ import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/api/clients")
@@ -96,7 +100,7 @@ boolean phoneExists =
 if (emailExists || phoneExists) {
 
     return ResponseEntity.badRequest().body("User already exists");
-}       System.out.println(request.getNumri_telefonit());
+}   
 try{
         var client = new Client();
         client.setEmri(request.getEmri());
@@ -145,4 +149,26 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response) throws JsonProc
     return ResponseEntity.ok("Client Verified and Registered!");
 }
 
+@PutMapping("/update")
+public ResponseEntity<String> putMethodName(@RequestBody ClientDTO response, @RequestHeader("Authorization") String authHeader) {
+
+    
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+     String token = authHeader.substring(7);
+
+     Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
+
+     if(client == null){
+        return ResponseEntity.status(404).body("Klienti nuk u gjet");
+     }
+
+     client.setEmri(response.getEmri());
+     client.setMbiemri(response.getMbiemri());
+     client.setEmail(response.getEmail());
+     client.setGjinia(response.getGjinia());
+     clientRepo.save(client);
+    return ResponseEntity.ok("Te dhenat u perditesuan!");
+}
 }
