@@ -149,6 +149,30 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response) throws JsonProc
     return ResponseEntity.ok("Client Verified and Registered!");
 }
 
+@PostMapping("/verify/email")
+public ResponseEntity<?> verifyEmail(@RequestBody OtpClient response, @RequestHeader("Authorization") String authHeader){
+    
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));
+        }
+
+  try {
+        approvalService.validateOTP(response.getOtpcode(), response.getNumri_telefonit());
+    } catch (ResponseStatusException ex) {
+           return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Map.of("message", ex.getReason()));
+    }
+    catch (Exception ex) {
+        return ResponseEntity
+                .status(500)
+                .body(
+                    Map.of("message", ex.getMessage()));
+    }
+
+    return ResponseEntity.ok("email verified");
+}
+
 @PutMapping("/update")
 public ResponseEntity<String> putMethodName(@RequestBody ClientDTO response, @RequestHeader("Authorization") String authHeader) {
 
