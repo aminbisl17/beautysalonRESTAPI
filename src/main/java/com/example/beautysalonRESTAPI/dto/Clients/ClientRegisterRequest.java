@@ -3,14 +3,14 @@ package com.example.beautysalonRESTAPI.dto.Clients;
 public class ClientRegisterRequest {
     private String emri;
     private String mbiemri;
-    private char gjinia;
+    private String gjinia;
     private String numri_telefonit, email;
 
-    public char getGjinia() 
+    public String getGjinia() 
     {
         return gjinia;
     }
-    public void setGjinia(char gjinia) {
+    public void setGjinia(String gjinia) {
         this.gjinia = gjinia;
     }
     public String getNumri_telefonit() {

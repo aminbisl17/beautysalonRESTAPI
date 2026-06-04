@@ -88,10 +88,14 @@ public ResponseEntity<?> getClientById(@RequestHeader("Authorization") String au
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody ClientRegisterRequest request) throws JsonProcessingException {
  
+         
     
+String Email = request.getEmail();
+
 boolean emailExists =
-        request.getEmail() != null &&
-        clientRepo.findByEmail(request.getEmail()).isPresent();
+    Email != null &&
+    !Email.isEmpty() &&
+    clientRepo.findByEmail(Email).isPresent();
 
 boolean phoneExists =
         request.getNumri_telefonit() != null &&
@@ -106,11 +110,17 @@ try{
         client.setEmri(request.getEmri());
         client.setMbiemri(request.getMbiemri());
         client.setNumriTelefonit(request.getNumri_telefonit());
-        client.setGjinia((Character.toLowerCase(request.getGjinia()) == 'm') ? "Mashkull"
-                       : (Character.toLowerCase(request.getGjinia())) == 'f' ? "Femer" : "Asnjejes");
-        String email = (request.getEmail().isEmpty()) ? null : request.getEmail();
+        String gjinia = request.getGjinia();
+
+client.setGjinia(
+    "m".equalsIgnoreCase(gjinia) ? "Mashkull" :
+    "f".equalsIgnoreCase(gjinia) ? "Femer" :
+    "Asnjejes"
+);
+        String email = (request.getEmail().isEmpty() || request.getEmail() == null) ? null : request.getEmail();
+System.out.println(email);
         client.setEmail(email);
-    
+        
 
     String otp = smsservice.generateOTP();
 
@@ -122,6 +132,7 @@ try{
     System.out.println(otp);
 }
 catch(Exception e){
+    e.printStackTrace();
          return ResponseEntity.badRequest().body("Unverified number!");   
 }
    return ResponseEntity.ok("Client applied");
@@ -190,8 +201,19 @@ public ResponseEntity<String> putMethodName(@RequestBody ClientDTO response, @Re
 
      client.setEmri(response.getEmri());
      client.setMbiemri(response.getMbiemri());
-     client.setEmail(response.getEmail());
-     client.setGjinia(response.getGjinia());
+    
+          String gjinia = response.getGjinia();
+
+client.setGjinia(
+    "m".equalsIgnoreCase(gjinia) ? "Mashkull" :
+    "f".equalsIgnoreCase(gjinia) ? "Femer" :
+    "Asnjejes"
+);
+
+        String email = (response.getEmail().isEmpty() || response.getEmail() == null) ? null : response.getEmail();
+     
+        client.setEmail(email);
+        
      clientRepo.save(client);
     return ResponseEntity.ok("Te dhenat u perditesuan!");
 }
