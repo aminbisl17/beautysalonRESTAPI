@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +23,14 @@ import com.example.beautysalonRESTAPI.dto.OtpClient;
 import com.example.beautysalonRESTAPI.dto.UserDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
+import com.example.beautysalonRESTAPI.dto.Clients.EmailVerificationDTO;
 import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
+import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,9 +47,10 @@ public class ClientController {
 
     @Autowired
     private SmsService smsservice;
+   
 
     @Autowired
-private AprovalsRepository aprovalsRepo;
+    private EmailService emailService;
 
 @Autowired ApprovalService approvalService;
         
@@ -160,27 +164,32 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response) throws JsonProc
     return ResponseEntity.ok("Client Verified and Registered!");
 }
 
-@PostMapping("/verify/email")
+@PostMapping("/send/email-verification-request")
+public ResponseEntity<?> postMethodName(@RequestBody EmailVerificationDTO request) {
+    try{
+    String otp = smsservice.generateOTP();
+    emailService.send(request.getEmail(), "Kodi i verifikimit", otp);
+    } catch(Exception e){
+        e.printStackTrace();
+    }
+    return ResponseEntity.noContent().build();
+}
+
+@PatchMapping("/verify/email")
 public ResponseEntity<?> verifyEmail(@RequestBody OtpClient response, @RequestHeader("Authorization") String authHeader){
     
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));
         }
+    
+      String token = authHeader.substring(7);
 
-  try {
-        approvalService.validateOTP(response.getOtpcode(), response.getNumri_telefonit());
-    } catch (ResponseStatusException ex) {
-           return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(Map.of("message", ex.getReason()));
-    }
-    catch (Exception ex) {
-        return ResponseEntity
-                .status(500)
-                .body(
-                    Map.of("message", ex.getMessage()));
-    }
-
+      Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
+      if(client == null){
+        return ResponseEntity.notFound().build();
+      }
+      client.setEmailVerified(true);
+      clientRepo.save(client);
     return ResponseEntity.ok("email verified");
 }
 

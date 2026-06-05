@@ -11,4 +11,6 @@ VALUES
 ('Jon', 'Lika', 'M', '0695678901', 'Inactive client', 'jon.l', 'pass654', 'jon@example.com'); 
 delete from clients; update clients set numri_telefonit = '+38345380271' where ID = 3038; */
 -- update clients set email = null where ID = 3039;
+
+alter table clients add emailVerified BIT default 0 not null;
 select * from clients; 

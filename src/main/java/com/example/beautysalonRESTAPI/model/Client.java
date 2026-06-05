@@ -34,6 +34,9 @@ public class Client {
     @Column(name = "pershkrimi")
     private String pershkrimi;
 
+    @Column(name = "emailVerified")
+    private Boolean emailVerified;
+    
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Historiku> clientHistory;
 
@@ -44,6 +47,13 @@ public class Client {
       this.clientHistory = clientHistory;
     }
 
+      public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    
       public String getEmail() {
         return email;
     }
