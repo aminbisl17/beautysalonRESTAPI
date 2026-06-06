@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.beautysalonRESTAPI.dto.SimpleEmail;
 import com.example.beautysalonRESTAPI.service.EmailService;
 
+import jakarta.mail.MessagingException;
+
 @RestController
 @RequestMapping("company/email/")
 public class MixedEmail {
@@ -20,7 +22,12 @@ public class MixedEmail {
     @PostMapping("send")
     public ResponseEntity<String> sendEmail(@RequestBody SimpleEmail simpleEmail){
             
-        emailService.send(simpleEmail.getTo(), simpleEmail.getSubject(), simpleEmail.getMessage());
+        try {
+            emailService.send(simpleEmail.getTo(), simpleEmail.getSubject(), simpleEmail.getMessage());
+        } catch (MessagingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         
         return ResponseEntity.ok("Email succesfully sent!");
     }

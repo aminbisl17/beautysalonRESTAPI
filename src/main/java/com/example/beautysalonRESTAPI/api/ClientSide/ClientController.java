@@ -26,7 +26,9 @@ import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.dto.Clients.EmailVerificationDTO;
 import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
+import com.example.beautysalonRESTAPI.model.EmailVerificationOTP;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
+import com.example.beautysalonRESTAPI.repository.EmailVerificationRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
@@ -57,6 +59,9 @@ public class ClientController {
 
   @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private EmailVerificationRepository emailRepo;
 
 
     private final ClientService clientService;
@@ -167,30 +172,51 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response) throws JsonProc
 @PostMapping("/send/email-verification-request")
 public ResponseEntity<?> postMethodName(@RequestBody EmailVerificationDTO request) {
     try{
-    String otp = smsservice.generateOTP();
-    emailService.send(request.getEmail(), "Kodi i verifikimit", otp);
+        emailRepo.deleteExpiredOtps();
+    String otp = emailService.generateOTP();
+     emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
+     EmailVerificationOTP email = new EmailVerificationOTP();
+     email.setEmail(request.getEmail());
+     email.setOtp(otp);
+     email.setCreatedAt(LocalDateTime.now());
+     emailRepo.save(email);
     } catch(Exception e){
         e.printStackTrace();
     }
     return ResponseEntity.noContent().build();
 }
-
 @PatchMapping("/verify/email")
-public ResponseEntity<?> verifyEmail(@RequestBody OtpClient response, @RequestHeader("Authorization") String authHeader){
-    
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body(Map.of("message","Missing or invalid Authorization header"));
-        }
-    
-      String token = authHeader.substring(7);
+public ResponseEntity<?> verifyEmail(
+        @RequestBody EmailVerificationDTO response,
+        @RequestHeader("Authorization") String authHeader) {
 
-      Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
-      if(client == null){
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        return ResponseEntity.status(401)
+                .body(Map.of("message", "Missing or invalid Authorization header"));
+    }
+
+    String token = authHeader.substring(7);
+
+    Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
+
+    if (client == null) {
         return ResponseEntity.notFound().build();
-      }
-      client.setEmailVerified(true);
-      clientRepo.save(client);
-    return ResponseEntity.ok("email verified");
+    }
+
+    String result = emailService.verifyOtp(
+            response.getEmail(),
+            response.getOtp());
+
+    if (!result.equals("Email verified successfully.")) {
+        return ResponseEntity.badRequest()
+                .body(Map.of("message", result));
+    }
+
+    client.setEmailVerified(true);
+    clientRepo.save(client);
+
+    return ResponseEntity.ok(
+            Map.of("message", "Email verified successfully."));
 }
 
 @PutMapping("/update")

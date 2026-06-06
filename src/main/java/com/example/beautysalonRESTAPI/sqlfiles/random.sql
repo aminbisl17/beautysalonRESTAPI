@@ -32,3 +32,4 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
+GRANT SELECT, INSERT, DELETE ON emailVerificationOTP to beautysalon_user;
