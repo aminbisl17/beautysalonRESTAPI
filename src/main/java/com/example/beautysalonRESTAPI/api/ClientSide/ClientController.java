@@ -119,6 +119,7 @@ try{
         client.setEmri(request.getEmri());
         client.setMbiemri(request.getMbiemri());
         client.setNumriTelefonit(request.getNumri_telefonit());
+        client.setEmailVerified(false);
         String gjinia = request.getGjinia();
 
 client.setGjinia(
@@ -127,7 +128,6 @@ client.setGjinia(
     "Asnjejes"
 );
         String email = (request.getEmail().isEmpty() || request.getEmail() == null) ? null : request.getEmail();
-System.out.println(email);
         client.setEmail(email);
         
 
@@ -174,6 +174,7 @@ public ResponseEntity<?> postMethodName(@RequestBody EmailVerificationDTO reques
     try{
         emailRepo.deleteExpiredOtps();
     String otp = emailService.generateOTP();
+    System.out.println(request.getEmail());
      emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
      EmailVerificationOTP email = new EmailVerificationOTP();
      email.setEmail(request.getEmail());
@@ -196,7 +197,7 @@ public ResponseEntity<?> verifyEmail(
     }
 
     String token = authHeader.substring(7);
-
+    System.out.println(response.getEmail() + " " + response.getOtp());
     Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
 
     if (client == null) {
@@ -211,7 +212,7 @@ public ResponseEntity<?> verifyEmail(
         return ResponseEntity.badRequest()
                 .body(Map.of("message", result));
     }
-
+    client.setEmail(response.getEmail());
     client.setEmailVerified(true);
     clientRepo.save(client);
 
