@@ -247,9 +247,10 @@ client.setGjinia(
 );
 
         String email = (response.getEmail().isEmpty() || response.getEmail() == null) ? null : response.getEmail();
-     
+     System.out.println(email);
+        if(email != null){
         client.setEmail(email);
-        
+        }
      clientRepo.save(client);
     return ResponseEntity.ok("Te dhenat u perditesuan!");
 }
