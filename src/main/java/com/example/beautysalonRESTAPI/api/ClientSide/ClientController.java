@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -221,37 +222,57 @@ public ResponseEntity<?> verifyEmail(
 }
 
 @PutMapping("/update")
-public ResponseEntity<String> putMethodName(@RequestBody ClientDTO response, @RequestHeader("Authorization") String authHeader) {
+public ResponseEntity<String> updateClient(
+        @RequestBody ClientDTO response,
+        @RequestHeader("Authorization") String authHeader) {
 
-    
-      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
-        }
-     String token = authHeader.substring(7);
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+    }
 
-     Client client = clientRepo.findById(jwtUtil.extractId(token)).orElse(null);
+    String token = authHeader.substring(7);
 
-     if(client == null){
+    Long id;
+    try {
+        id = jwtUtil.extractId(token);
+    } catch (Exception e) {
+        return ResponseEntity.status(401).body("Invalid token");
+    }
+
+    Client client = clientRepo.findById(id).orElse(null);
+
+    if (client == null) {
         return ResponseEntity.status(404).body("Klienti nuk u gjet");
-     }
+    }
 
-     client.setEmri(response.getEmri());
-     client.setMbiemri(response.getMbiemri());
-    
-          String gjinia = response.getGjinia();
+    client.setEmri(response.getEmri());
+    client.setMbiemri(response.getMbiemri());
 
-client.setGjinia(
-    "m".equalsIgnoreCase(gjinia) ? "Mashkull" :
-    "f".equalsIgnoreCase(gjinia) ? "Femer" :
-    "Asnjejes"
-);
+    String gjinia = response.getGjinia();
+    client.setGjinia(
+            "m".equalsIgnoreCase(gjinia) ? "m" :
+            "f".equalsIgnoreCase(gjinia) ? "f" :
+            "a"
+    );
 
-        String email = (response.getEmail().isEmpty() || response.getEmail() == null) ? null : response.getEmail();
-     System.out.println(email);
-        if(email != null){
-        client.setEmail(email);
+    String email = response.getEmail();
+    if (email != null && email.isBlank()) {
+        email = null;
+    }
+
+    if (email != null) {
+        Optional<Client> existing = clientRepo.findByEmail(email);
+        if (existing.isPresent() && !existing.get().getId().equals(client.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Email already exists");
         }
-     clientRepo.save(client);
+        client.setEmail(email);
+    } else{
+          client.setEmail(null);
+          client.setEmailVerified(false);
+    }
+
+    clientRepo.save(client);
     return ResponseEntity.ok("Te dhenat u perditesuan!");
 }
 }
