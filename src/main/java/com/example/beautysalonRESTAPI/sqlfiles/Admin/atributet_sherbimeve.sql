@@ -1,4 +1,4 @@
 use beautysalon;
 
---DELETE FROM atributet_sherbimeve where id_atributit = 76;
+update atributet_sherbimeve set zbritja = 20 where id_atributit = 2087;
 select * from atributet_sherbimeve;
