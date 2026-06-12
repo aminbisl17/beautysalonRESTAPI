@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.api.Company.Mixed;
 
+import com.example.beautysalonRESTAPI.repository.Sherbimet.SherbimetRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,8 +24,13 @@ import com.example.beautysalonRESTAPI.service.SherbimetService;
 @RequestMapping("api/mixed/sherbimet/")
 public class MixedSherbimet {
     
+    private final SherbimetRepository sherbimetRepository;
     @Autowired
     private SherbimetService sherbimetService;
+
+    MixedSherbimet(SherbimetRepository sherbimetRepository) {
+        this.sherbimetRepository = sherbimetRepository;
+    }
 
     @GetMapping("all")
     public List<SherbimetAdminDTO> getAllServices() {
@@ -32,8 +38,11 @@ public class MixedSherbimet {
     }
 
     @GetMapping("atributet/{id}")
-public ResponseEntity<AtributetImageResponse> getAtributet(@PathVariable Long id) throws IOException {
+public ResponseEntity<?> getAtributet(@PathVariable Long id) throws IOException {
 
+    if(!sherbimetRepository.findById(id).isPresent()){
+        return ResponseEntity.notFound().build();
+    }
     List<Atributet_sherbimeve> atributet =
             sherbimetService.getAtributet(id);
 
