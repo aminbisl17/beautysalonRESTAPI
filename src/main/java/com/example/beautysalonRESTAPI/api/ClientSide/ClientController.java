@@ -21,14 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.dto.OtpClient;
-import com.example.beautysalonRESTAPI.dto.UserDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
 import com.example.beautysalonRESTAPI.dto.Clients.EmailVerificationDTO;
-import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.model.EmailVerificationOTP;
-import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.EmailVerificationRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
@@ -37,7 +34,6 @@ import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -65,13 +61,11 @@ public class ClientController {
     private EmailVerificationRepository emailRepo;
 
 
-    private final ClientService clientService;
+    @Autowired
+    private ClientService clientService;
 
 
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
-
+  
     // GET client by ID
 @GetMapping("/data")
 public ResponseEntity<?> getClientById(@RequestHeader("Authorization") String authHeader) {
