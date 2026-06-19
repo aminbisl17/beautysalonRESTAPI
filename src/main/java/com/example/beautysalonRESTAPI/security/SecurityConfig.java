@@ -76,6 +76,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/notification/**").permitAll()
 
     .requestMatchers("/web/sherbimet/all").permitAll()
+    .requestMatchers("/web/employees/all").permitAll()
+    
     .requestMatchers("/api/mixed/sherbimet/all").permitAll()
     .requestMatchers("/api/mixed/sherbimet/atributet/**").permitAll()
     .requestMatchers("/api/clients/register").permitAll()

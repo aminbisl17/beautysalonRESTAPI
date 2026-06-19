@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,7 @@ public interface EmployeesRepository extends JpaRepository<Employees, Long> {
 
     @Query("SELECT e FROM Employees e WHERE e.ID = :id")
     Optional<Employees> findEmployeeById(@Param("id") Long id);
+
+    @Query("SELECT e FROM Employees e WHERE e.is_active = true")
+List<Employees> findAllActiveEmployees();
 }
