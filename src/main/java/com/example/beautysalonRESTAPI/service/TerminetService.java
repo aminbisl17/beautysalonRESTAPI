@@ -21,8 +21,6 @@ public class TerminetService {
 
     public boolean createAppointment(TerminetCreateDTO dto) throws SQLException {
 
-    
-
         SQLServerDataTable tvp = new SQLServerDataTable();
         tvp.addColumnMetadata("ID_sherbimit", Types.INTEGER);
         tvp.addColumnMetadata("id_atributit", Types.INTEGER);
@@ -42,7 +40,7 @@ public class TerminetService {
         return jdbcTemplate.execute(
             connection -> {
                 CallableStatement cs = connection.prepareCall(
-                    "{call create_appointment(?, ?, ?, ?, ?, ?)}"
+                    "{call dbo.create_appointment(?, ?, ?, ?, ?, ?)}"
                 );
                 cs.setLong(1, dto.getClientId());
                 cs.setLong(2, dto.getEmployeeId());

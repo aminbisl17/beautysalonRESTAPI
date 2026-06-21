@@ -1,12 +1,10 @@
 package com.example.beautysalonRESTAPI.dto.terminet;
 
-import java.time.LocalTime;
-
 public class DetajetTermineveDTO {
 
     private Long sherbimetId;         // the service ID
     private Long atributetId;          // optional: the attribute ID (can be null)
-    private LocalTime kohezgjatja;     
+    private int kohezgjatja;     
     private Double pagesa;
     
 
@@ -31,10 +29,10 @@ public class DetajetTermineveDTO {
     public void setAtributetId(Long atributetId) {
         this.atributetId = atributetId;
     }
-    public LocalTime getKohezgjatja() {
+    public int getKohezgjatja() {
         return kohezgjatja;
     }
-    public void setKohezgjatja(LocalTime kohezgjatja) {
+    public void setKohezgjatja(int kohezgjatja) {
         this.kohezgjatja = kohezgjatja;
     }
 

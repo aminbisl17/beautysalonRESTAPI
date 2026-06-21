@@ -23,7 +23,7 @@ public class Detajet_termineve {
    private Long id_detajetTermineve;
 
    @Column(name="kohezgjatja")
-   private LocalTime kohezgjatja;
+   private int kohezgjatja;
 
    @Column(name="pagesa")
    private Double pagesa;
@@ -48,11 +48,11 @@ public class Detajet_termineve {
     this.id_detajetTermineve = id_detajetTermineve;
    }
 
-   public LocalTime getKohezgjatja() {
+   public int getKohezgjatja() {
     return kohezgjatja;
    }
 
-   public void setKohezgjatja(LocalTime kohezgjatja) {
+   public void setKohezgjatja(int kohezgjatja) {
     this.kohezgjatja = kohezgjatja;
    }
 

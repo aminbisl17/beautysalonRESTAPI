@@ -32,4 +32,7 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
-GRANT SELECT, INSERT, DELETE ON emailVerificationOTP to beautysalon_user;
+-- GRANT SELECT, INSERT, DELETE ON emailVerificationOTP to beautysalon_user;
+
+GRANT REFERENCES ON TYPE::dbo.detajet_termineve_array TO beautysalon_user;
+GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;

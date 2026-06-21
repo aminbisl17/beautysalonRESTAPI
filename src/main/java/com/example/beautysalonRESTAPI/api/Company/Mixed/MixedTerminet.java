@@ -34,7 +34,7 @@ public class MixedTerminet {
 
           boolean success = terminetService.createAppointment(dto);
             if (success) {
-                 smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
+               //  smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
                 return ResponseEntity.ok("Termini u krijua!");
             } else {
                 return ResponseEntity.status(500).body("Failed to create appointment");
