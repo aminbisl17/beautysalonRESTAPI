@@ -148,11 +148,11 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 }
 
 @PostMapping("/login/client/verify")
-public ResponseEntity<?> verify(@RequestBody ClientLogin response, HttpServletResponse res) {
+public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResponse res) {
 
     try {
      loginOtpService.validateLoginOTP(
-                response.getOtp(),
+                response.getOtpcode(),
                 response.getNumri_telefonit()
         );
 
