@@ -115,13 +115,7 @@ try{
         client.setMbiemri(request.getMbiemri());
         client.setNumriTelefonit(request.getNumri_telefonit());
         client.setEmailVerified(false);
-        String gjinia = request.getGjinia();
-
-client.setGjinia(
-    "m".equalsIgnoreCase(gjinia) ? "Mashkull" :
-    "f".equalsIgnoreCase(gjinia) ? "Femer" :
-    "Asnjejes"
-);
+    
         String email = (request.getEmail().isEmpty() || request.getEmail() == null) ? null : request.getEmail();
         client.setEmail(email);
         
@@ -241,13 +235,6 @@ public ResponseEntity<String> updateClient(
 
     client.setEmri(response.getEmri());
     client.setMbiemri(response.getMbiemri());
-
-    String gjinia = response.getGjinia();
-    client.setGjinia(
-            "m".equalsIgnoreCase(gjinia) ? "m" :
-            "f".equalsIgnoreCase(gjinia) ? "f" :
-            "a"
-    );
 
     String email = response.getEmail();
     if (email != null && email.isBlank()) {

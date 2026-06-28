@@ -83,7 +83,6 @@ public String updateClient(@RequestBody ClientDTO request) {
     client.setNumriTelefonit(request.getNumri_telefonit());
     client.setPershkrimi(request.getPershkrimi());
     client.setEmail(request.getEmail());
-    client.setGjinia(request.getGjinia().toLowerCase() == "m" ? "Mashkull" : "Femer");
     clientRepo.save(client);
 } catch(Exception e){
  e.printStackTrace();

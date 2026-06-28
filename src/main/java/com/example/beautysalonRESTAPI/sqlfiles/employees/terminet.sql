@@ -1,1 +1,1 @@
-select * from terminet;
+select * from detajet_termineve;

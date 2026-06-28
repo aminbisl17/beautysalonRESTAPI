@@ -19,9 +19,6 @@ public class Client {
     @Column(name = "mbiemri")
     private String mbiemri;
 
-    @Column(name = "gjinia")
-    private String gjinia;
-
     @Column(name = "numri_telefonit", unique = true, nullable = false)
     private String numriTelefonit;
 
@@ -66,8 +63,6 @@ public class Client {
     public void setEmri(String emri) { this.emri = emri; }
     public String getMbiemri() { return mbiemri; }
     public void setMbiemri(String mbiemri) { this.mbiemri = mbiemri; }
-    public String getGjinia() { return gjinia; }
-    public void setGjinia(String gjinia) { this.gjinia = gjinia; }
     public String getNumriTelefonit() { return numriTelefonit; }
     public void setNumriTelefonit(String numriTelefonit) { this.numriTelefonit = numriTelefonit; }
     public LocalDateTime getDataRegjistrimit() { return dataRegjistrimit; }

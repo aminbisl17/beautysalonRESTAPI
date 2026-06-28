@@ -3,16 +3,9 @@ package com.example.beautysalonRESTAPI.dto.Clients;
 public class ClientRegisterRequest {
     private String emri;
     private String mbiemri;
-    private String gjinia;
     private String numri_telefonit, email;
 
-    public String getGjinia() 
-    {
-        return gjinia;
-    }
-    public void setGjinia(String gjinia) {
-        this.gjinia = gjinia;
-    }
+ 
     public String getNumri_telefonit() {
         return numri_telefonit;
     }
