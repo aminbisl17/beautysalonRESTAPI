@@ -82,6 +82,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/mixed/sherbimet/atributet/**").permitAll()
     .requestMatchers("/api/clients/register").permitAll()
     .requestMatchers("/api/clients/verify").permitAll()
+    .requestMatchers("/api/clients/fast-login&register").permitAll()
+    .requestMatchers("/api/clients/verify/fast-login&register").permitAll()
     .requestMatchers("/company/email/send").permitAll()
 
     .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")

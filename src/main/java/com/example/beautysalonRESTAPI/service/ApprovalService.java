@@ -75,6 +75,7 @@ public class ApprovalService {
         );
         }
 
+        if(approval.getClient_data() != null){
         try {
             Client client = new ObjectMapper()
                     .readValue(approval.getClient_data(), Client.class);
@@ -84,7 +85,7 @@ public class ApprovalService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse client data", e);
         }
-
+    }
         aproval.deleteExpiredOtps();
         aproval.deleteByUsernameAndOtp(username, userInputOtp);
 

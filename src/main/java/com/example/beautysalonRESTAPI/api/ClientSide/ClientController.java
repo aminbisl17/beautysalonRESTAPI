@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,11 +30,15 @@ import com.example.beautysalonRESTAPI.model.EmailVerificationOTP;
 import com.example.beautysalonRESTAPI.repository.EmailVerificationRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
+import com.example.beautysalonRESTAPI.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
 import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -256,4 +261,102 @@ public ResponseEntity<String> updateClient(
     clientRepo.save(client);
     return ResponseEntity.ok("Te dhenat u perditesuan!");
 }
+
+@PostMapping("/fast-login&register")
+public ResponseEntity<?> fastLoginRegister(@RequestBody ClientRegisterRequest request){
+     
+    String Email = request.getEmail();
+
+boolean emailExists =
+    Email != null &&
+    !Email.isEmpty() &&
+    clientRepo.findByEmail(Email).isPresent();
+
+boolean phoneExists =
+        request.getNumri_telefonit() != null &&
+        clientRepo.findByNumriTelefonit(request.getNumri_telefonit()).isPresent();
+
+        String otp = smsservice.generateOTP();
+if (phoneExists) {
+approvalService.createOtp(otp, request.getNumri_telefonit(), null);
+  return ResponseEntity.noContent().build();
+}   
+
+try{
+        var client = new Client();
+        client.setEmri(request.getEmri());
+        client.setMbiemri(request.getMbiemri());
+        client.setNumriTelefonit(request.getNumri_telefonit());
+        client.setEmailVerified(false);
+    
+        if(!emailExists){
+        String email = (request.getEmail().isEmpty() || request.getEmail() == null) ? null : request.getEmail();
+        client.setEmail(email);
+        }
+
+
+  approvalService.createOtp(otp, client.getNumriTelefonit(), client);
+
+  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  
+    System.out.println(otp);
+
+    return ResponseEntity.noContent().build();
+}
+catch(Exception e){
+    e.printStackTrace();
+         return ResponseEntity.badRequest().body("Unverified number!");   
+}
+
+}
+
+   @PostMapping("/verify/fast-login&register")
+public ResponseEntity<?> verifyFastLoginRegister(@RequestBody OtpClient response, HttpServletResponse res) throws JsonProcessingException {
+
+    // Validate OTP first
+    try {
+        if(approvalService.validateOTP(response.getOtpcode(), response.getNumri_telefonit())){
+
+               Client client = clientRepo.findByNumriTelefonit(response.getNumri_telefonit())
+                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+
+        String accessToken = jwtUtil.generateToken(
+                client.getId(),
+                client.getNumriTelefonit(),
+                "ROLE_CLIENT"
+        );
+
+        String refreshToken = jwtUtil.generateRefreshToken(
+                client.getId(),
+                client.getNumriTelefonit(),
+                "ROLE_CLIENT"
+        );
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(30 * 24 * 60 * 60)
+                .sameSite("Lax")
+                .build();
+
+        res.addHeader("Set-Cookie", cookie.toString());
+
+        return ResponseEntity.ok(new ClientAuthResponse(accessToken));
+        }
+    } catch (ResponseStatusException ex) {
+           return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Map.of("message", ex.getReason()));
+    }
+    catch (Exception ex) {
+        return ResponseEntity
+                .status(500)
+                .body(
+                    Map.of("message", ex.getMessage()));
+    }
+
+    return ResponseEntity.ok("Client Verified and Registered!");
+}
+
 }
