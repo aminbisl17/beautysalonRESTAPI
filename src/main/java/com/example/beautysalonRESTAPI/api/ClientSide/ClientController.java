@@ -278,6 +278,8 @@ boolean phoneExists =
 
         String otp = smsservice.generateOTP();
 if (phoneExists) {
+    
+    System.out.println(otp);
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
   return ResponseEntity.noContent().build();
 }   

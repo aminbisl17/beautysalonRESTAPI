@@ -55,7 +55,7 @@ public class ApprovalService {
 @Transactional(noRollbackFor = ResponseStatusException.class)
     public boolean validateOTP(String userInputOtp, String username) {
 
-         aproval.deleteExpiredOtps();
+      //   aproval.deleteExpiredOtps();
          
         Aprovals approval = aproval.findByUsernameAndOtp(username, userInputOtp)
                 .orElseThrow(() -> new ResponseStatusException(
