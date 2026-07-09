@@ -283,7 +283,6 @@ if (phoneExists) {
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
   return ResponseEntity.noContent().build();
 }   
-
 try{
         var client = new Client();
         client.setEmri(request.getEmri());
