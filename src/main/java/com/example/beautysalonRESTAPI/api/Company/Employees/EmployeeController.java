@@ -9,10 +9,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.employees.EmployeesDTO;
 import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
+import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
+import com.example.beautysalonRESTAPI.service.EmployeeAvailabilityDateService;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/employee")
@@ -23,6 +30,9 @@ public class EmployeeController {
 
       @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private EmployeeAvailabilityDateService employeeDates;
 
       @GetMapping("/data")
     public ResponseEntity<?> getAdminData(
@@ -47,5 +57,26 @@ public class EmployeeController {
  
         return ResponseEntity.ok(new EmployeesDTO(user));
     }
+
+    @PostMapping("/setAvailableDates")
+    public ResponseEntity<?> setAvailableDates(@RequestBody AvailableEmployeeDates a){
+   
+        try{
+
+            boolean success = employeeDates.setAvailableEmployeeDates(a);
+
+            if(success){
+                return ResponseEntity.ok("Success!!");
+            } else{
+              return ResponseEntity.status(500).body("Failed");
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+            return ResponseEntity.status(500).body("Fail");
+    }
+    
 
 }
