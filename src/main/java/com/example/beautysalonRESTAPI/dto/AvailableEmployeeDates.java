@@ -4,10 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class AvailableEmployeeDates {
 
     private Long id_availability;
-    private int id_employee;
+
+    @JsonIgnore
+    private Long id_employee;
+
     private LocalDate start_date;
     private LocalDate end_date;
 
@@ -19,11 +24,11 @@ public class AvailableEmployeeDates {
        this.id_availability = id_availability;
     }
 
-    public int getId_employee() {
+    public Long getId_employee() {
        return id_employee;
     }
 
-    public void setId_employee(int id_employee) {
+    public void setId_employee(Long id_employee) {
        this.id_employee = id_employee;
     }
 

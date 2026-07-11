@@ -49,7 +49,7 @@ public class EmployeeAvailabilityDateService {
             "{call dbo.setAvailableDates(?, ?, ?, ?)}"
         );
 
-        cs.setInt(1, d.getId_employee());
+        cs.setLong(1, d.getId_employee());
         cs.setDate(2, Date.valueOf(d.getStart_date()));
         cs.setDate(3, Date.valueOf(d.getEnd_date()));
         cs.setObject(4, tvp);

@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.api.Company.Employees;
 
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,9 +60,21 @@ public class EmployeeController {
     }
 
     @PostMapping("/setAvailableDates")
-    public ResponseEntity<?> setAvailableDates(@RequestBody AvailableEmployeeDates a){
+    public ResponseEntity<?> setAvailableDates(@RequestHeader("Authorization") String authHeader, @RequestBody AvailableEmployeeDates a){
    
         try{
+
+               if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
+        }
+
+            a.setId_employee(jwtUtil.extractId(token));
 
             boolean success = employeeDates.setAvailableEmployeeDates(a);
 
@@ -73,9 +86,8 @@ public class EmployeeController {
 
         } catch(Exception e){
             e.printStackTrace();
+            return ResponseEntity.status(500).body(e.getMessage());
         }
-
-            return ResponseEntity.status(500).body("Fail");
     }
     
 
