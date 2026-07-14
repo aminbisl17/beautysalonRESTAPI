@@ -2,8 +2,11 @@ package com.example.beautysalonRESTAPI.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.example.beautysalonRESTAPI.model.availabilityDetails;
+import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AvailableEmployeeDates {
@@ -15,6 +18,22 @@ public class AvailableEmployeeDates {
 
     private LocalDate start_date;
     private LocalDate end_date;
+private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
+    public AvailableEmployeeDates(){
+
+    }
+
+    public AvailableEmployeeDates(employeeAvailability e){
+         this.id_availability = e.getIdAvailability();
+         this.start_date = e.getStart_date();
+         this.end_date = e.getEnd_date();
+         this.availabilityDetails = e.getAvailabilityDetails() == null 
+        ? List.of() 
+        : e.getAvailabilityDetails()
+            .stream()
+            .map(AvailabilityDetails::new)
+            .toList();
+    }
 
     public Long getId_availability() {
       return id_availability;
@@ -48,10 +67,6 @@ public class AvailableEmployeeDates {
        this.end_date = end_date;
     }
 
-
-    private List<AvailabilityDetails> availabilityDetails;
-
-
     public List<AvailabilityDetails> getAvailabilityDetails() {
         return availabilityDetails;
     }
@@ -69,7 +84,15 @@ public class AvailableEmployeeDates {
         private LocalTime pause_start;
         private LocalTime pause_end;
 
-
+        public AvailabilityDetails() {}
+public AvailabilityDetails(availabilityDetails a) {
+    this.day_of_week = a.getDay_of_week();
+    this.start_time = a.getStart_time();
+    this.end_time = a.getEnd_time();
+    this.pause_start = a.getPause_start();
+    this.pause_end = a.getPause_end
+    ();
+}
         public int getDay_of_week() {
             return day_of_week;
         }

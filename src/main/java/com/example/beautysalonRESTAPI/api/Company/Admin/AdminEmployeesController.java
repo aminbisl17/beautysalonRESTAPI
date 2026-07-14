@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.employees.EmployeeCredentialsDTO;
 import com.example.beautysalonRESTAPI.model.Employees;
-import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 
 @RestController
 @RequestMapping("/api/admin")

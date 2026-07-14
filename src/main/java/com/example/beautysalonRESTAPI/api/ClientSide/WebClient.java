@@ -3,7 +3,7 @@ package com.example.beautysalonRESTAPI.api.ClientSide;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.ClientSide.EmployeesDTO;
-import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

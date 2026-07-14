@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.DashboardDTO;
-import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Sherbimet.SherbimetRepository;
 
 @RestController

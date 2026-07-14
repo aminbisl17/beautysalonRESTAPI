@@ -2,7 +2,7 @@ package com.example.beautysalonRESTAPI.service.Employees;
 
 import org.springframework.stereotype.Service;
 
-import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 
 @Service
 public class EmployeeService {

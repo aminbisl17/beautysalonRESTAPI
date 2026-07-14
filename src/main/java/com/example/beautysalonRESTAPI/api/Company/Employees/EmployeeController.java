@@ -1,5 +1,7 @@
 package com.example.beautysalonRESTAPI.api.Company.Employees;
 
+import java.util.List;
+
 import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.employees.EmployeesDTO;
 import com.example.beautysalonRESTAPI.model.Employees;
-import com.example.beautysalonRESTAPI.repository.EmployeesRepository;
+import com.example.beautysalonRESTAPI.model.employeeAvailability;
+import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.service.EmployeeAvailabilityDateService;
@@ -34,6 +38,9 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeAvailabilityDateService employeeDates;
+
+    @Autowired 
+    private employeeAvailabilityRepository employeeAvailabilityRepository;
 
       @GetMapping("/data")
     public ResponseEntity<?> getAdminData(
@@ -90,5 +97,36 @@ public class EmployeeController {
         }
     }
     
+    @GetMapping("/getAvailableDates")
+    public ResponseEntity<?> getAvailableDates(@RequestHeader("Authorization") String authHeader){
+
+          try{
+
+               if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+        
+        
+        String token = authHeader.substring(7);
+
+  List<employeeAvailability> availability =
+        employeeAvailabilityRepository.findByEmployees_ID(jwtUtil.extractId(token));
+
+if (!availability.isEmpty()) {
+
+    List<AvailableEmployeeDates> response = availability.stream()
+            .map(AvailableEmployeeDates::new)
+            .toList();
+
+    return ResponseEntity.ok(response);
+
+} else {
+    return ResponseEntity.badRequest().body("not found!");
+}
+    }
+    catch(Exception e){
+return ResponseEntity.status(500).body(e.getMessage());
+    }
+    }
 
 }

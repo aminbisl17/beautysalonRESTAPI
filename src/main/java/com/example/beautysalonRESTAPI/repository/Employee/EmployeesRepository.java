@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.repository;
+package com.example.beautysalonRESTAPI.repository.Employee;
 
 import java.util.List;
 import java.util.Optional;
