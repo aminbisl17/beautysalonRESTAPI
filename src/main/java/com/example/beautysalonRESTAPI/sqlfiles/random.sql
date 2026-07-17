@@ -32,7 +32,16 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
- GRANT SELECT, INSERT, DELETE ON availabilityDetails to beautysalon_user;
+-- GRANT SELECT, INSERT, DELETE ON availabilityDetails to beautysalon_user;
 
 -- GRANT REFERENCES ON TYPE::dbo.detajet TO beautysalon_user;
 --GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;
+
+create table skills
+(
+  id bigint IDENTITY(1,1) PRIMARY KEY,
+  id_employee int not null,
+  id_service int not null,
+   constraint fk_emp_id foreign key (id_employee) references employees(ID) on delete cascade,
+   constraint fk_id_service foreign key(id_service) references sherbimet(ID) on delete cascade
+);
