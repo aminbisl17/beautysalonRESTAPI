@@ -19,15 +19,16 @@ public class skills {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID") 
-    @JsonIgnore
-    private Employees employees;
+  @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "ID_employee")
+@JsonIgnore
+private Employees employees;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID") 
-    @JsonIgnore
-    private Sherbimet sherbimet;
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "ID_service")
+@JsonIgnore
+private Sherbimet sherbimet;
 
     public Long getId() {
         return id;

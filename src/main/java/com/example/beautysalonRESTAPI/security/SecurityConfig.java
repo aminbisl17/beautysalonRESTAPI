@@ -118,6 +118,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/mixed/clients/delete/*")
         .hasAnyRole("EMPLOYEE", "CLIENT")
 
+        .requestMatchers("/com/mixed/employee/skills/**").hasAnyRole("EMPLOYEE", "ADMIN")
+
     .requestMatchers("/api/mixed/terminet/create")
         .hasAnyRole("EMPLOYEE", "CLIENT")
 
