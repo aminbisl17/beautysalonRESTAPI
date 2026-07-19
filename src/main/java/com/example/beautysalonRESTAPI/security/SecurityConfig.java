@@ -110,9 +110,9 @@ public AuthenticationManager employeeAuthManager() {
 
     .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
 
-    .requestMatchers("/api/employee/*").hasRole("EMPLOYEE")
-    .requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
-    .requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
+    .requestMatchers("/api/employee/**").hasRole("EMPLOYEE")
+    //.requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
+    //.requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
 
 
     .requestMatchers("/api/mixed/clients/delete/*")

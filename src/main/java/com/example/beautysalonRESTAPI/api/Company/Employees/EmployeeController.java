@@ -6,7 +6,10 @@ import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +23,7 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
-import com.example.beautysalonRESTAPI.service.EmployeeAvailabilityDateService;
+import com.example.beautysalonRESTAPI.service.Employees.EmployeeAvailabilityDateService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -128,5 +131,69 @@ if (!availability.isEmpty()) {
 return ResponseEntity.status(500).body(e.getMessage());
     }
     }
+@PatchMapping("/updateAvailableDates/{availabilityId}")
+public ResponseEntity<?> updateAvailableDates(
+        @RequestHeader("Authorization") String authHeader, 
+        @PathVariable Long availabilityId,
+        @RequestBody AvailableEmployeeDates updatedData) {
 
+    try {
+      if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
+        }
+
+        Long employeeIdFromToken = jwtUtil.extractId(token);
+
+        // Call service layer to handle partial/full updates safely
+        boolean success = employeeDates.updateAvailableEmployeeDates(availabilityId, employeeIdFromToken, updatedData);
+
+        if (success) {
+            return ResponseEntity.ok("Successfully updated availability!");
+        } else {
+            return ResponseEntity.status(404).body("Availability record not found or unauthorized");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+}
+
+@DeleteMapping("/deleteAvailableDates")
+public ResponseEntity<?> deleteAvailableDates(
+        @RequestHeader("Authorization") String authHeader, 
+        @RequestBody List<Long> availabilityIds) {
+
+    try {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
+        }
+
+        Long employeeIdFromToken = jwtUtil.extractId(token);
+
+        // Pass the list of IDs to the service layer
+        int deletedCount = employeeDates.deleteMultipleAvailableEmployeeDates(availabilityIds, employeeIdFromToken);
+
+        if (deletedCount > 0) {
+            return ResponseEntity.ok("Successfully deleted " + deletedCount + " availability record(s).");
+        } else {
+            return ResponseEntity.status(404).body("No matching records found or unauthorized to delete them.");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+}
 }

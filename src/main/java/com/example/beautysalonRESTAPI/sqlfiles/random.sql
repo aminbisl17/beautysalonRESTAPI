@@ -32,7 +32,7 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
- GRANT SELECT, UPDATE, INSERT, DELETE ON skills to beautysalon_user;
+ GRANT UPDATE ON employeeAvailability to beautysalon_user;
 
 -- GRANT REFERENCES ON TYPE::dbo.detajet TO beautysalon_user;
 --GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;
