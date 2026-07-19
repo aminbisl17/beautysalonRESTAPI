@@ -36,10 +36,13 @@ import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-
+@Tag(name = "Autentikimi", description = "Autentikimi i përdoruesve të platformës")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -90,6 +93,7 @@ private final AuthenticationManager employeeAuthManager;
     private JwtUtil jwtUtil;
 
 
+    @Operation(summary = "Kyçja Admin", description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token")
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
     try {   adminAuthManager.authenticate(

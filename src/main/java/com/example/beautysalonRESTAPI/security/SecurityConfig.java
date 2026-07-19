@@ -69,6 +69,11 @@ public AuthenticationManager employeeAuthManager() {
             .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
     .requestMatchers("/ws/**").permitAll()
+    .requestMatchers(
+    "/swagger-ui/**", 
+    "/v3/api-docs/**", 
+    "/swagger-ui.html"
+).permitAll()
 
     .requestMatchers("/test/generate-token").permitAll()
     .requestMatchers("/test/test-token").permitAll()
