@@ -4,7 +4,10 @@ import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates.AvailabilityDetails;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetTermineveDTO;
+import com.example.beautysalonRESTAPI.model.availabilityDetails;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
@@ -97,7 +101,7 @@ public int deleteMultipleAvailableEmployeeDates(List<Long> availabilityIds, Long
 }
 @Transactional
 public boolean updateAvailableEmployeeDates(Long availabilityId, Long employeeIdFromToken, AvailableEmployeeDates updatedData) {
-    // 1. Fetch the target record along with its nested relationship check
+
     Optional<employeeAvailability> existingRecordOpt = repo.findById(availabilityId);
     
     if (existingRecordOpt.isEmpty()) {
@@ -106,44 +110,35 @@ public boolean updateAvailableEmployeeDates(Long availabilityId, Long employeeId
 
     employeeAvailability existingRecord = existingRecordOpt.get();
 
-    // 2. Security validation check
     if (existingRecord.getEmployees() == null || existingRecord.getEmployees().getID() != employeeIdFromToken) {
         return false; // Unauthorized update attempt
     }
 
-    // 3. Update top-level values conditionally (PATCH behavior)
-    if (updatedData.getStart_date() != null) {
-        existingRecord.setStart_date(updatedData.getStart_date());
-    }
-    if (updatedData.getEnd_date() != null) {
-        existingRecord.setEnd_date(updatedData.getEnd_date());
-    }
+  if (updatedData.getAvailabilityDetails() != null) {
 
-    // 4. Update the child grid details collection if provided
-    if (updatedData.getAvailabilityDetails() != null) {
-        // Clear old list to handle changes, inserts, or removals perfectly
-        existingRecord.getAvailabilityDetails().clear();
+    Map<Integer, availabilityDetails> existing =
+        existingRecord.getAvailabilityDetails()
+            .stream()
+            .collect(Collectors.toMap(
+                availabilityDetails::getDay_of_week,
+                Function.identity()
+            ));
 
-        // Convert DTO details to your actual database entity model elements
-        for (AvailabilityDetails detailDto : updatedData.getAvailabilityDetails()) {
-            // Assuming you have an entity structure matching AvailabilityDetails
-            // Create a new entity instance here, attach it to existingRecord, and add to collection
-            
-            /* Example matching your structure:
-            EmployeeAvailabilityDetail newDetail = new EmployeeAvailabilityDetail();
-            newDetail.setDayOfWeek(detailDto.getDay_of_week());
-            newDetail.setStartTime(detailDto.getStart_time());
-            newDetail.setEndTime(detailDto.getEnd_time());
-            newDetail.setPauseStart(detailDto.getPause_start());
-            newDetail.setPauseEnd(detailDto.getPause_end());
-            newDetail.setEmployeeAvailability(existingRecord);
-            
-            existingRecord.getAvailabilityDetails().add(newDetail);
-            */
+    for (AvailableEmployeeDates.AvailabilityDetails dto : updatedData.getAvailabilityDetails()) {
+
+        availabilityDetails entity = existing.get(dto.getDay_of_week());
+
+        if (entity == null) {
+            continue;
         }
-    }
 
-    // 5. Commit state updates back to the repository layers
+        entity.setStart_time(dto.getStart_time());
+        entity.setEnd_time(dto.getEnd_time());
+        entity.setPause_start(dto.getPause_start());
+        entity.setPause_end(dto.getPause_end());
+    }
+}
+
     repo.save(existingRecord);
     return true;
 }

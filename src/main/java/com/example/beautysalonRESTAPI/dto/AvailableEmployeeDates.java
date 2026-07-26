@@ -78,6 +78,7 @@ private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
 
     public static class AvailabilityDetails {
 
+        private Long id_availability_details;
         private int day_of_week;
         private LocalTime start_time;
         private LocalTime end_time;
@@ -86,6 +87,7 @@ private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
 
         public AvailabilityDetails() {}
 public AvailabilityDetails(availabilityDetails a) {
+    this.id_availability_details = a.getId_availability_details();
     this.day_of_week = a.getDay_of_week();
     this.start_time = a.getStart_time();
     this.end_time = a.getEnd_time();
@@ -93,6 +95,14 @@ public AvailabilityDetails(availabilityDetails a) {
     this.pause_end = a.getPause_end
     ();
 }
+
+     public Long getId_availability_details() {
+            return id_availability_details;
+        }
+        public void setId_availability_details(Long id_availability_details) {
+            this.id_availability_details = id_availability_details;
+        }
+
         public int getDay_of_week() {
             return day_of_week;
         }
