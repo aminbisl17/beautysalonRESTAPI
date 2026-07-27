@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -165,10 +166,10 @@ public ResponseEntity<?> updateAvailableDates(
     }
 }
 
-@DeleteMapping("/deleteAvailableDates")
+@DeleteMapping("/deleteAvailableDates/{id}")
 public ResponseEntity<?> deleteAvailableDates(
-        @RequestHeader("Authorization") String authHeader, 
-        @RequestBody List<Long> availabilityIds) {
+        @RequestHeader("Authorization") String authHeader,
+        @PathVariable Long id) {
 
     try {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -182,13 +183,13 @@ public ResponseEntity<?> deleteAvailableDates(
 
         Long employeeIdFromToken = jwtUtil.extractId(token);
 
-        // Pass the list of IDs to the service layer
-        int deletedCount = employeeDates.deleteMultipleAvailableEmployeeDates(availabilityIds, employeeIdFromToken);
+        boolean deleted = employeeDates.deleteAvailableEmployeeDate(id, employeeIdFromToken);
 
-        if (deletedCount > 0) {
-            return ResponseEntity.ok("Successfully deleted " + deletedCount + " availability record(s).");
+        if (deleted) {
+            return ResponseEntity.ok("Availability record deleted successfully.");
         } else {
-            return ResponseEntity.status(404).body("No matching records found or unauthorized to delete them.");
+            return ResponseEntity.status(404)
+                    .body("No matching record found or you are not authorized to delete it.");
         }
 
     } catch (Exception e) {

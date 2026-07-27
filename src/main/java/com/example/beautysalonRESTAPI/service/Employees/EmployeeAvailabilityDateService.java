@@ -99,6 +99,26 @@ public int deleteMultipleAvailableEmployeeDates(List<Long> availabilityIds, Long
 
     return 0; 
 }
+
+@Transactional
+public boolean deleteAvailableEmployeeDate(Long availabilityId, Long employeeIdFromToken) {
+
+    Optional<employeeAvailability> record = repo.findByIdAvailability(availabilityId);
+
+    if (record.isEmpty()) {
+        return false;
+    }
+
+    employeeAvailability availability = record.get();
+
+    if (availability.getEmployees().getID() != employeeIdFromToken.longValue()) {
+        return false;
+    }
+
+    repo.delete(availability);
+    return true;
+}
+
 @Transactional
 public boolean updateAvailableEmployeeDates(Long availabilityId, Long employeeIdFromToken, AvailableEmployeeDates updatedData) {
 
@@ -132,6 +152,11 @@ public boolean updateAvailableEmployeeDates(Long availabilityId, Long employeeId
             continue;
         }
 
+        if (dto.getStart_time() != null && dto.getEnd_time() != null) {
+    if (!dto.getEnd_time().isAfter(dto.getStart_time())) {
+        throw new IllegalArgumentException("End time must be after start time");
+    }
+}
         entity.setStart_time(dto.getStart_time());
         entity.setEnd_time(dto.getEnd_time());
         entity.setPause_start(dto.getPause_start());
