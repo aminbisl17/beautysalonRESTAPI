@@ -1,19 +1,52 @@
 package com.example.beautysalonRESTAPI.dto.employees;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.example.beautysalonRESTAPI.model.Sherbimet;
+import com.example.beautysalonRESTAPI.model.skills;
+
 public class skillsDTO {
-    
+
+    private Long id;
     private Long id_employee;
-    private Long id_service;
+    private List<Sherbimet> services;
+
+    public skillsDTO() {}
+
+    public skillsDTO(List<skills> skillsList) {
+
+        if (!skillsList.isEmpty()) {
+            this.id = skillsList.get(0).getId();
+            this.id_employee = skillsList.get(0).getEmployees().getID();
+
+            this.services = skillsList.stream()
+                    .map(skills::getSherbimet)
+                    .collect(Collectors.toList());
+        }
+    }
+
+        public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getId_employee() {
         return id_employee;
     }
+
     public void setId_employee(Long id_employee) {
         this.id_employee = id_employee;
     }
-    public Long getId_service() {
-        return id_service;
+
+    public List<Sherbimet> getServices() {
+        return services;
     }
-    public void setId_service(Long id_service) {
-        this.id_service = id_service;
+
+    public void setServices(List<Sherbimet> services) {
+        this.services = services;
     }
 }

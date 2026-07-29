@@ -11,7 +11,10 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
 import com.example.beautysalonRESTAPI.repository.Sherbimet.SherbimetRepository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +37,7 @@ public class MixedSkills {
     @Autowired 
     private SherbimetRepository serRepo;
 
+    /* 
   @PostMapping("/add")
   public ResponseEntity<?> addSkill(@RequestBody skillsDTO sk) {
 
@@ -69,22 +73,30 @@ public ResponseEntity<?> getSkills() {
 
     }
 }
+    */
+
 
 @GetMapping("/{id}")
 public ResponseEntity<?> getSkill(@PathVariable Long id) {
 
     try {
 
-        skills skill = skRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Skill nuk u gjet"));
+        List<skills> skills = skRepo.findByEmployees_ID(id);
 
-        return ResponseEntity.ok(skill);
+        if (skills.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        skillsDTO dto = new skillsDTO(skills);
+
+        return ResponseEntity.ok(dto);
 
     } catch(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
 
+/* 
 @PatchMapping("/{id}")
 public ResponseEntity<?> updateSkill(
         @PathVariable Long id,
@@ -124,6 +136,7 @@ public ResponseEntity<?> updateSkill(
     }
 }
 
+*/
 
 @DeleteMapping("/{id}")
 public ResponseEntity<?> deleteSkill(@PathVariable Long id) {
