@@ -3,6 +3,7 @@ package com.example.beautysalonRESTAPI.api.Company.Mixed;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.dto.employees.addSkillDTO;
 import com.example.beautysalonRESTAPI.dto.employees.skillsDTO;
 import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.model.Sherbimet;
@@ -13,6 +14,7 @@ import com.example.beautysalonRESTAPI.repository.Sherbimet.SherbimetRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,7 @@ public class MixedSkills {
 
     
   @PostMapping("/add")
-public ResponseEntity<?> addSkill(@RequestBody skillsDTO sk) {
+public ResponseEntity<?> addSkill(@RequestBody addSkillDTO sk) {
 
     try {
 
@@ -85,19 +87,20 @@ public ResponseEntity<?> getSkills() {
 }
     
 
-
 @GetMapping("/{id}")
 public ResponseEntity<?> getSkill(@PathVariable Long id) {
 
     try {
 
-        List<skills> skills = skRepo.findByEmployees_ID(id);
+        List<skills> skillsList = skRepo.findByEmployees_ID(id);
 
-        if (skills.isEmpty()) {
+        if (skillsList.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        skillsDTO dto = new skillsDTO(skills);
+        List<skillsDTO> dto = skillsList.stream()
+                .map(skillsDTO::new)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(dto);
 
