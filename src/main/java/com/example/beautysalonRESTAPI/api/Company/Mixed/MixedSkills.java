@@ -11,6 +11,7 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
 import com.example.beautysalonRESTAPI.repository.Sherbimet.SherbimetRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +38,39 @@ public class MixedSkills {
     @Autowired 
     private SherbimetRepository serRepo;
 
-    /* 
+    
   @PostMapping("/add")
-  public ResponseEntity<?> addSkill(@RequestBody skillsDTO sk) {
+public ResponseEntity<?> addSkill(@RequestBody skillsDTO sk) {
 
-    try{
+    try {
 
-        var skill = new skills();
-        
-          Employees emp = empRepo
+        Employees emp = empRepo
                 .findEmployeeById(sk.getId_employee())
-                .orElseThrow(() -> new RuntimeException("Punonjesi nuk u gjet")
-            );
+                .orElseThrow(() -> new RuntimeException("Punonjesi nuk u gjet"));
 
-          Sherbimet ser = serRepo.findById(sk.getId_service()).orElseThrow(()-> new RuntimeException("Sherbimi nuk u gjet"));
+        List<skills> skillsList = new ArrayList<>();
 
-          skill.setEmployees(emp);
-          skill.setSherbimet(ser);
-          skRepo.save(skill);
+        for(Long serviceId : sk.getId_services()) {
 
-          return ResponseEntity.noContent().build();
-    } catch(Exception e){
-          return ResponseEntity.badRequest().body(e.getMessage());
+            Sherbimet ser = serRepo.findById(serviceId)
+                    .orElseThrow(() -> new RuntimeException("Sherbimi nuk u gjet"));
+
+            skills skill = new skills();
+
+            skill.setEmployees(emp);
+            skill.setSherbimet(ser);
+
+            skillsList.add(skill);
+        }
+
+        skRepo.saveAll(skillsList);
+
+        return ResponseEntity.noContent().build();
+
+    } catch(Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
-  }
+}
   
   @GetMapping("/all")
 public ResponseEntity<?> getSkills() {
@@ -73,7 +83,7 @@ public ResponseEntity<?> getSkills() {
 
     }
 }
-    */
+    
 
 
 @GetMapping("/{id}")
@@ -84,7 +94,7 @@ public ResponseEntity<?> getSkill(@PathVariable Long id) {
         List<skills> skills = skRepo.findByEmployees_ID(id);
 
         if (skills.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
 
         skillsDTO dto = new skillsDTO(skills);
@@ -96,7 +106,7 @@ public ResponseEntity<?> getSkill(@PathVariable Long id) {
     }
 }
 
-/* 
+ /* 
 @PatchMapping("/{id}")
 public ResponseEntity<?> updateSkill(
         @PathVariable Long id,

@@ -10,6 +10,7 @@ public class skillsDTO {
 
     private Long id;
     private Long id_employee;
+  private List<Long> id_services;
     private List<Sherbimet> services;
 
     public skillsDTO() {}
@@ -40,6 +41,15 @@ public class skillsDTO {
 
     public void setId_employee(Long id_employee) {
         this.id_employee = id_employee;
+    }
+
+    
+    public List<Long> getId_services() {
+        return id_services;
+    }
+
+    public void setId_services(List<Long> id_services) {
+        this.id_services = id_services;
     }
 
     public List<Sherbimet> getServices() {

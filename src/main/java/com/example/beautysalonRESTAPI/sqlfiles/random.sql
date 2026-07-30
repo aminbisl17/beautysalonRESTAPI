@@ -32,7 +32,10 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
- GRANT UPDATE ON availabilityDetails to beautysalon_user;
+ --GRANT UPDATE ON availabilityDetails to beautysalon_user;
 
 -- GRANT REFERENCES ON TYPE::dbo.detajet TO beautysalon_user;
 --GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;
+
+ALTER TABLE skills
+ADD CONSTRAINT unique_employee_service UNIQUE (id_employee, id_service);
