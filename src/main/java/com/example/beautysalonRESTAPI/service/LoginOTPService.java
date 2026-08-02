@@ -42,7 +42,6 @@ public class LoginOTPService {
 
 @Transactional(noRollbackFor = ResponseStatusException.class)
 public Boolean validateLoginOTP(String otp, String numri_telefonit) {
-
     LoginOTP loginOtp = loginOtpRepo
             .findByOTPandNumriTelefonit(otp, numri_telefonit)
             .orElseThrow(() ->

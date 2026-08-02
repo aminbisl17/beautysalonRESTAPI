@@ -125,7 +125,7 @@ public AuthenticationManager employeeAuthManager() {
 
         .requestMatchers("/com/mixed/employee/skills/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
-    .requestMatchers("/api/mixed/terminet/create")
+    .requestMatchers("/api/mixed/terminet/**")
         .hasAnyRole("EMPLOYEE", "CLIENT")
 
     .requestMatchers("/api/clients/**").hasRole("CLIENT")
