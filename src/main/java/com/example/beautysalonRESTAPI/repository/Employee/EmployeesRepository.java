@@ -19,4 +19,17 @@ public interface EmployeesRepository extends JpaRepository<Employees, Long> {
 
     @Query("SELECT e FROM Employees e WHERE e.is_active = true")
 List<Employees> findAllActiveEmployees();
+
+
+    @Query(value = """
+            SELECT DISTINCT e.*
+            FROM employees e
+            INNER JOIN skills s
+                ON e.ID = s.ID_employee
+            INNER JOIN employeeAvailability ea
+                ON e.ID = ea.id_employee
+            WHERE e.is_active = 1
+            """, nativeQuery = true)
+    List<Employees> findEmployeesWithSkillsAndAvailability();
+
 }

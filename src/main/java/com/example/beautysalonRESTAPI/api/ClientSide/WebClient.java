@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.ClientSide.EmployeesDTO;
 import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,26 +29,27 @@ public class WebClient {
     @Autowired
     private EmployeesRepository employeesRepository;
 
+       @Autowired
+    private skillsRepository skillsRepo;
+    
+    @Autowired
+    private employeeAvailabilityRepository availabilityRepository;
+
 @GetMapping("employees/all")
-public ResponseEntity<?> getMethodName() {
+public ResponseEntity<?> getEmployees() {
 
     List<EmployeesDTO> employees =
-        employeesRepository.findAllActiveEmployees()
-                .stream()
-                .map(emp -> new EmployeesDTO(emp))
-                .toList();
+            employeesRepository.findEmployeesWithSkillsAndAvailability()
+                    .stream()
+                    .map(EmployeesDTO::new)
+                    .toList();
 
-    if(employees == null){
+
+    if(employees.isEmpty()) {
         return ResponseEntity.noContent().build();
     }
-    return ResponseEntity.ok().body(employees);
-}
 
-@PostMapping("fastAuthenticate")
-public String postMethodName(@RequestBody String entity) {
-    //TODO: process POST request
-    
-    return entity;
+    return ResponseEntity.ok(employees);
 }
 
 }
