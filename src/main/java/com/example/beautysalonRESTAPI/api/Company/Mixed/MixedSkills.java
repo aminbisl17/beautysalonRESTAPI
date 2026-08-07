@@ -157,11 +157,11 @@ public ResponseEntity<?> deleteSkill(@PathVariable Long id) {
     try {
 
         skills skill = skRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Skill nuk u gjet"));
+                .orElseThrow(() -> new RuntimeException("Aftësia nuk u gjet!"));
 
         skRepo.delete(skill);
 
-        return ResponseEntity.ok("Skill u fshi");
+        return ResponseEntity.ok("Aftësia u fshi!");
 
     } catch(Exception e) {
 
