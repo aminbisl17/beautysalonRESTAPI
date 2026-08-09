@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
+import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
@@ -61,24 +62,26 @@ public class MixedTerminet {
     }
         return ResponseEntity.status(500).body("Termini nuk u krijua!");
     }
+
+
 @GetMapping("employee-details/{id}")
 public ResponseEntity<?> getMethodName(@PathVariable Long id) {
 
-    if(!employeeRepo.existsById(id)){
-        return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
+if (!employeeRepo.existsById(id)) {
+return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
     }
 
     List<skills> skillsList = skillsRepo.findByEmployees_ID(id);
-
     List<employeeAvailability> availability = availabilityRepository.findByEmployees_ID(id);
 
-    DetajetStafitDTO data = new DetajetStafitDTO();
-
-    data.setServices(
-        skillsList.stream()
+    // Map skills -> Sherbimet entity -> SherbimetAdminDTO with Base64 image
+    List<SherbimetAdminDTO> servicesList = skillsList.stream()
             .map(skill -> skill.getSherbimet())
-            .toList()
-    );
+            .map(SherbimetAdminDTO::new)
+            .toList();
+
+    DetajetStafitDTO data = new DetajetStafitDTO();
+    data.setServices(servicesList);
 
     data.setDates(
         availability.stream()
@@ -87,6 +90,6 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
     );
 
     return ResponseEntity.ok(data);
-}
     
+}
 }
