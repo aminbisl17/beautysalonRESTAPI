@@ -37,5 +37,9 @@ CREATE PROCEDURE clientHistory
 -- GRANT REFERENCES ON TYPE::dbo.detajet TO beautysalon_user;
 --GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;
 
-ALTER TABLE skills
-ADD CONSTRAINT unique_employee_service UNIQUE (id_employee, id_service);
+--ALTER TABLE skills
+--ADD CONSTRAINT unique_employee_service UNIQUE (id_employee, id_service);
+
+--ALTER TABLE employeeAvailability add sherbimet_id int;
+--alter table employeeAvailability add constraint fk_id_sherbimeve_ava foreign key (sherbimet_id) references sherbimet (ID);
+update employeeAvailability set sherbimet_id = 1019 where id_employee = 1015;

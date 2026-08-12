@@ -1,6 +1,7 @@
 package com.example.beautysalonRESTAPI.api.Company.Mixed;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -67,29 +68,29 @@ public class MixedTerminet {
 @GetMapping("employee-details/{id}")
 public ResponseEntity<?> getMethodName(@PathVariable Long id) {
 
-if (!employeeRepo.existsById(id)) {
-return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
+    if (!employeeRepo.existsById(id)) {
+        return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
     }
 
-    List<skills> skillsList = skillsRepo.findByEmployees_ID(id);
-    List<employeeAvailability> availability = availabilityRepository.findByEmployees_ID(id);
+    List<employeeAvailability> availability =
+            availabilityRepository.findByEmployees_ID(id);
 
-    // Map skills -> Sherbimet entity -> SherbimetAdminDTO with Base64 image
-    List<SherbimetAdminDTO> servicesList = skillsList.stream()
-            .map(skill -> skill.getSherbimet())
+    List<SherbimetAdminDTO> servicesList = availability.stream()
+            .map(employeeAvailability::getSherbimet)
+            .filter(Objects::nonNull)
             .map(SherbimetAdminDTO::new)
             .toList();
 
     DetajetStafitDTO data = new DetajetStafitDTO();
+
     data.setServices(servicesList);
 
     data.setDates(
         availability.stream()
-            .map(AvailableEmployeeDates::new)
-            .toList()
+                .map(AvailableEmployeeDates::new)
+                .toList()
     );
 
     return ResponseEntity.ok(data);
-    
 }
 }
