@@ -17,6 +17,7 @@ import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.example.beautysalonRESTAPI.model.skills;
 import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.availableSkillsRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
 import com.example.beautysalonRESTAPI.service.SmsService;
@@ -44,6 +45,9 @@ public class MixedTerminet {
     
     @Autowired
     private employeeAvailabilityRepository availabilityRepository;
+
+    @Autowired
+    private availableSkillsRepository avaSkillsRepo;
 
     @PostMapping("create")
     public ResponseEntity<?> CreateAppointment(@RequestBody TerminetCreateDTO dto){
@@ -75,9 +79,9 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
-    List<SherbimetAdminDTO> servicesList = availability.stream()
-            .map(employeeAvailability::getSherbimet)
-            .filter(Objects::nonNull)
+    List<SherbimetAdminDTO> servicesList = avaSkillsRepo
+            .findServicesByEmployeeId(id)
+            .stream()
             .map(SherbimetAdminDTO::new)
             .toList();
 

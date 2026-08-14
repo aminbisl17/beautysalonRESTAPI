@@ -37,20 +37,6 @@ private Long idAvailability;
     @Column(name="end_date")
     private LocalDate end_date;
 
-     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sherbimet_id")
-    @JsonIgnore
-    private Sherbimet sherbimet;
-
-
-      public Sherbimet getSherbimet() {
-        return sherbimet;
-    }
-
-     public void setSherbimet(Sherbimet sherbimet) {
-         this.sherbimet = sherbimet;
-     }
-
       @OneToMany(mappedBy = "empAvailability", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
       private List<availabilityDetails> availabilityDetails;
 

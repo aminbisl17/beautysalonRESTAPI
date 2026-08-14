@@ -32,7 +32,7 @@ CREATE PROCEDURE clientHistory
 
  --SELECT * FROM historiku_detajet;
 
- --GRANT UPDATE ON availabilityDetails to beautysalon_user;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON availableSkill to beautysalon_user;
 
 -- GRANT REFERENCES ON TYPE::dbo.detajet TO beautysalon_user;
 --GRANT EXECUTE ON SCHEMA::dbo TO beautysalon_user;
@@ -42,4 +42,6 @@ CREATE PROCEDURE clientHistory
 
 --ALTER TABLE employeeAvailability add sherbimet_id int;
 --alter table employeeAvailability add constraint fk_id_sherbimeve_ava foreign key (sherbimet_id) references sherbimet (ID);
-update employeeAvailability set sherbimet_id = 1019 where id_employee = 1015;
+--update employeeAvailability set sherbimet_id = 1019 where id_employee = 1015;
+--delete from 
+--select * from availabilityDetails;
