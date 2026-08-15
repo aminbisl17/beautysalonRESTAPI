@@ -54,18 +54,28 @@ public class EmployeeAvailabilityDateService {
         );
     }
 
+       SQLServerDataTable tvpSkills = new SQLServerDataTable();
+
+    tvpSkills.addColumnMetadata("id_skills", Types.BIGINT);
+
+    for (Long skillId : d.getAvailableSkills()) {
+        tvpSkills.addRow(skillId);
+    }
+
+
     try {
        
         jdbcTemplate.execute(
     connection -> {
         CallableStatement cs = connection.prepareCall(
-            "{call dbo.setAvailableDates(?, ?, ?, ?)}"
+            "{call dbo.setAvailableDates(?, ?, ?, ?, ?)}"
         );
 
         cs.setLong(1, d.getId_employee());
         cs.setDate(2, Date.valueOf(d.getStart_date()));
         cs.setDate(3, Date.valueOf(d.getEnd_date()));
         cs.setObject(4, tvp);
+        cs.setObject(5, tvpSkills);
 
         return cs;
     },

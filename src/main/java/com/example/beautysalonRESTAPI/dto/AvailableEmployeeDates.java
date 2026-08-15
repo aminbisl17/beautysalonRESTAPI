@@ -19,6 +19,8 @@ public class AvailableEmployeeDates {
     private LocalDate start_date;
     private LocalDate end_date;
 private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
+private List<Long> availableSkills = new ArrayList<>();
+
     public AvailableEmployeeDates(){
 
     }
@@ -47,6 +49,15 @@ private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
        return id_employee;
     }
 
+       public List<Long> getAvailableSkills() {
+    return availableSkills;
+}
+
+public void setAvailableSkills(List<Long> availableSkills) {
+    this.availableSkills = availableSkills;
+}
+
+
     public void setId_employee(Long id_employee) {
        this.id_employee = id_employee;
     }
@@ -74,6 +85,7 @@ private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
     public void setAvailabilityDetails(List<AvailabilityDetails> availabilityDetails) {
         this.availabilityDetails = availabilityDetails;
     }
+
 
 
     public static class AvailabilityDetails {
