@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.model.availabilityDetails;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,22 +21,44 @@ public class AvailableEmployeeDates {
     private LocalDate end_date;
 private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
 private List<Long> availableSkills = new ArrayList<>();
+private List<SherbimetAdminDTO> sherbimetDisplay = new ArrayList<>();
 
     public AvailableEmployeeDates(){
 
     }
 
-    public AvailableEmployeeDates(employeeAvailability e){
-         this.id_availability = e.getIdAvailability();
-         this.start_date = e.getStart_date();
-         this.end_date = e.getEnd_date();
-         this.availabilityDetails = e.getAvailabilityDetails() == null 
+public AvailableEmployeeDates(employeeAvailability e) {
+    this.id_availability = e.getIdAvailability();
+    this.start_date = e.getStart_date();
+    this.end_date = e.getEnd_date();
+
+    // 1. Map availability details
+    this.availabilityDetails = e.getAvailabilityDetails() == null 
         ? List.of() 
         : e.getAvailabilityDetails()
             .stream()
             .map(AvailabilityDetails::new)
             .toList();
-    }
+
+    // 2. Map skills ID to availableSkills
+    this.availableSkills = e.getAvailableSkills() == null 
+        ? List.of() 
+        : e.getAvailableSkills()
+            .stream()
+            .filter(avaSkill -> avaSkill.getSkills() != null)
+            .map(avaSkill -> avaSkill.getSkills().getId()) // Gets ID from skills model
+            .toList();
+
+    // 3. Map full Sherbimet service objects to sherbimetDisplay
+    this.sherbimetDisplay = e.getAvailableSkills() == null 
+        ? List.of() 
+        : e.getAvailableSkills()
+            .stream()
+            .filter(avaSkill -> avaSkill.getSkills() != null && avaSkill.getSkills().getSherbimet() != null)
+            .map(avaSkill -> new SherbimetAdminDTO(avaSkill.getSkills().getSherbimet())) // Traverses to Sherbimet
+            .toList();
+}
+
 
     public Long getId_availability() {
       return id_availability;
@@ -55,6 +78,15 @@ private List<Long> availableSkills = new ArrayList<>();
 
 public void setAvailableSkills(List<Long> availableSkills) {
     this.availableSkills = availableSkills;
+}
+
+
+    public List<SherbimetAdminDTO> getSherbimetDisplay() {
+    return sherbimetDisplay;
+}
+
+public void setSherbimetDisplay(List<SherbimetAdminDTO> sherbimetDisplay) {
+    this.sherbimetDisplay = sherbimetDisplay;
 }
 
 

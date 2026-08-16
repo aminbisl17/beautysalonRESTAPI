@@ -2,6 +2,7 @@ package com.example.beautysalonRESTAPI.model;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +41,14 @@ private Long idAvailability;
       @OneToMany(mappedBy = "empAvailability", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
       private List<availabilityDetails> availabilityDetails;
 
+
+      @OneToMany(mappedBy = "empAva", fetch = FetchType.LAZY)
+    private List<availableSkills> availableSkills = new ArrayList<>();
+
+    public List<availableSkills> getAvailableSkills() {
+        return availableSkills;
+
+    }
     public List<availabilityDetails> getAvailabilityDetails() {
         return availabilityDetails;
     }

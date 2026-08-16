@@ -79,16 +79,7 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
-    List<SherbimetAdminDTO> servicesList = avaSkillsRepo
-            .findServicesByEmployeeId(id)
-            .stream()
-            .map(SherbimetAdminDTO::new)
-            .toList();
-
     DetajetStafitDTO data = new DetajetStafitDTO();
-
-    data.setServices(servicesList);
-
     data.setDates(
         availability.stream()
                 .map(AvailableEmployeeDates::new)
