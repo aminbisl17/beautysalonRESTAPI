@@ -3,9 +3,11 @@ package com.example.beautysalonRESTAPI.service.Employees;
 import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,8 +20,12 @@ import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates.AvailabilityDetails;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetTermineveDTO;
 import com.example.beautysalonRESTAPI.model.availabilityDetails;
+import com.example.beautysalonRESTAPI.model.availableSkills;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
+import com.example.beautysalonRESTAPI.model.skills;
+import com.example.beautysalonRESTAPI.repository.Employee.availableSkillsRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
+import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
@@ -33,6 +39,12 @@ public class EmployeeAvailabilityDateService {
 
         @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private skillsRepository skillsRepository;
+
+    @Autowired
+    private availableSkillsRepository availableSkillsRepo;
 
     public boolean setAvailableEmployeeDates(AvailableEmployeeDates d) throws SQLServerException {
 
@@ -128,53 +140,163 @@ public boolean deleteAvailableEmployeeDate(Long availabilityId, Long employeeIdF
     repo.delete(availability);
     return true;
 }
-
 @Transactional
-public boolean updateAvailableEmployeeDates(Long availabilityId, Long employeeIdFromToken, AvailableEmployeeDates updatedData) {
+public boolean updateAvailableEmployeeDates(
+        Long availabilityId,
+        Long employeeIdFromToken,
+        AvailableEmployeeDates updatedData) {
 
     Optional<employeeAvailability> existingRecordOpt = repo.findById(availabilityId);
-    
+
     if (existingRecordOpt.isEmpty()) {
         return false;
     }
 
     employeeAvailability existingRecord = existingRecordOpt.get();
 
-    if (existingRecord.getEmployees() == null || existingRecord.getEmployees().getID() != employeeIdFromToken) {
-        return false; // Unauthorized update attempt
+    if (existingRecord.getEmployees() == null ||
+    existingRecord.getEmployees().getID() != employeeIdFromToken.longValue()) {
+    return false;
+}
+    // =========================
+    // UPDATE AVAILABILITY DETAILS
+    // =========================
+
+    if (updatedData.getAvailabilityDetails() != null) {
+
+        Map<Integer, availabilityDetails> existing =
+                existingRecord.getAvailabilityDetails()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                availabilityDetails::getDay_of_week,
+                                Function.identity()
+                        ));
+
+        for (AvailableEmployeeDates.AvailabilityDetails dto :
+                updatedData.getAvailabilityDetails()) {
+
+            availabilityDetails entity =
+                    existing.get(dto.getDay_of_week());
+
+            if (entity == null) {
+                continue;
+            }
+
+            if (dto.getStart_time() != null &&
+                dto.getEnd_time() != null) {
+
+                if (!dto.getEnd_time().isAfter(dto.getStart_time())) {
+                    throw new IllegalArgumentException(
+                            "End time must be after start time"
+                    );
+                }
+            }
+
+            entity.setStart_time(dto.getStart_time());
+            entity.setEnd_time(dto.getEnd_time());
+            entity.setPause_start(dto.getPause_start());
+            entity.setPause_end(dto.getPause_end());
+        }
     }
 
-  if (updatedData.getAvailabilityDetails() != null) {
+    // =========================
+    // UPDATE AVAILABLE SKILLS
+    // =========================
+// =========================
+// ADD AVAILABLE SKILLS
+// =========================
 
-    Map<Integer, availabilityDetails> existing =
-        existingRecord.getAvailabilityDetails()
-            .stream()
-            .collect(Collectors.toMap(
-                availabilityDetails::getDay_of_week,
-                Function.identity()
-            ));
 
-    for (AvailableEmployeeDates.AvailabilityDetails dto : updatedData.getAvailabilityDetails()) {
+if (updatedData.getAvailableSkills() != null) {
 
-        availabilityDetails entity = existing.get(dto.getDay_of_week());
+    List<Long> newSkillIds = updatedData.getAvailableSkills();
 
-        if (entity == null) {
+    List<availableSkills> currentSkills =
+            existingRecord.getAvailableSkills();
+
+    // Remove duplicates from request
+    Set<Long> requestedSkillIds =
+            new HashSet<>(newSkillIds);
+
+    // ---------------------------------
+    // 1. DELETE SKILLS NO LONGER SELECTED
+    // ---------------------------------
+
+    for (availableSkills currentSkill : currentSkills) {
+
+        if (currentSkill.getSkills() == null) {
+            availableSkillsRepo.delete(currentSkill);
             continue;
         }
 
-        if (dto.getStart_time() != null && dto.getEnd_time() != null) {
-    if (!dto.getEnd_time().isAfter(dto.getStart_time())) {
-        throw new IllegalArgumentException("End time must be after start time");
+        Long currentSkillId =
+                currentSkill.getSkills().getId();
+
+        if (!requestedSkillIds.contains(currentSkillId)) {
+
+            availableSkillsRepo.delete(currentSkill);
+        }
     }
-}
-        entity.setStart_time(dto.getStart_time());
-        entity.setEnd_time(dto.getEnd_time());
-        entity.setPause_start(dto.getPause_start());
-        entity.setPause_end(dto.getPause_end());
+
+    // ---------------------------------
+    // 2. GET CURRENT SKILL IDS
+    //    AFTER REMOVALS
+    // ---------------------------------
+
+    Set<Long> existingSkillIds = currentSkills.stream()
+            .filter(availableSkill -> availableSkill.getSkills() != null)
+            .map(availableSkill -> availableSkill.getSkills().getId())
+            .filter(requestedSkillIds::contains)
+            .collect(Collectors.toSet());
+
+    // ---------------------------------
+    // 3. ADD NEW SKILLS
+    // ---------------------------------
+
+    for (Long skillId : requestedSkillIds) {
+
+        // Already exists -> keep it
+        if (existingSkillIds.contains(skillId)) {
+            continue;
+        }
+
+        // Check if skill exists
+        Optional<skills> skillOpt =
+                skillsRepository.findById(skillId);
+
+        if (skillOpt.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Skill with ID " + skillId + " does not exist"
+            );
+        }
+
+        skills skill = skillOpt.get();
+
+        // Check that skill belongs to this employee
+        if (skill.getEmployees() == null ||
+            skill.getEmployees().getID()
+                != employeeIdFromToken.longValue()) {
+
+            throw new IllegalArgumentException(
+                    "Skill with ID " + skillId +
+                    " does not belong to this employee"
+            );
+        }
+
+        // Create new availableSkill
+        availableSkills newAvailableSkill =
+                new availableSkills();
+
+        newAvailableSkill.setEmpAva(existingRecord);
+        newAvailableSkill.setSkills(skill);
+
+        // Save into availableSkill table
+        availableSkillsRepo.save(newAvailableSkill);
     }
 }
 
     repo.save(existingRecord);
+
     return true;
 }
 }
