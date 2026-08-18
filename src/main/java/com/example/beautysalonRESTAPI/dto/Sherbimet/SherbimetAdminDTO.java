@@ -19,6 +19,15 @@ public class SherbimetAdminDTO {
     private LocalDateTime update_at;
     private int zbritja, kohezgjatja;
     private String imagePath;
+    private Long avaSkillId;
+    
+        public Long getAvaSkillId() {
+        return avaSkillId;
+    }
+
+    public void setAvaSkillId(Long avaSkillId) {
+        this.avaSkillId = avaSkillId;
+    }
 
         public SherbimetAdminDTO(Sherbimet s) {
         this.ID = s.getID();

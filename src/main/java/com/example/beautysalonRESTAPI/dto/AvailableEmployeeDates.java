@@ -50,13 +50,25 @@ public AvailableEmployeeDates(employeeAvailability e) {
             .toList();
 
     // 3. Map full Sherbimet service objects to sherbimetDisplay
-    this.sherbimetDisplay = e.getAvailableSkills() == null 
-        ? List.of() 
-        : e.getAvailableSkills()
-            .stream()
-            .filter(avaSkill -> avaSkill.getSkills() != null && avaSkill.getSkills().getSherbimet() != null)
-            .map(avaSkill -> new SherbimetAdminDTO(avaSkill.getSkills().getSherbimet())) // Traverses to Sherbimet
-            .toList();
+    this.sherbimetDisplay = e.getAvailableSkills() == null
+    ? List.of()
+    : e.getAvailableSkills()
+        .stream()
+        .filter(avaSkill ->
+            avaSkill.getSkills() != null &&
+            avaSkill.getSkills().getSherbimet() != null
+        )
+        .map(avaSkill -> {
+            SherbimetAdminDTO dto =
+                new SherbimetAdminDTO(
+                    avaSkill.getSkills().getSherbimet()
+                );
+
+            dto.setAvaSkillId(avaSkill.getSkills().getId());
+
+            return dto;
+        })
+        .toList();
 }
 
 
