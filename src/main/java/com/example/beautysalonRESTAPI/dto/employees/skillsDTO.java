@@ -18,29 +18,40 @@ public class skillsDTO {
 
     public skillsDTO(skills skill) {
         this.id = skill.getId();
-        this.id_employee = skill.getEmployees().getID();
-        this.id_service = skill.getSherbimet().getID();
-
-              String imageName = skill.getSherbimet().getImagepath();
-
-       //  String base64Image = null;
-
-    if (imageName != null && !imageName.isBlank()) {
-
-        Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
-
-        if (Files.exists(path)) {
-            try {
-       
-                 skill.getSherbimet().setImagepath((Base64.getEncoder().encodeToString((Files.readAllBytes(path)))));
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
         
-        this.service = skill.getSherbimet();
-    }
-}
+        if (skill.getEmployees() != null) {
+            this.id_employee = skill.getEmployees().getID();
+        }
+
+        Sherbimet sherbimet = skill.getSherbimet();
+        
+        if (sherbimet != null) {
+            this.id_service = sherbimet.getID();
+            this.service = sherbimet;
+
+            String imageName = sherbimet.getImagepath();
+
+            if (imageName != null && !imageName.isBlank()) {
+                Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
+
+                if (Files.exists(path)) {
+                    try {
+                        byte[] imageBytes = Files.readAllBytes(path);
+                        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                        this.service.setImagepath(base64Image);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        this.service.setImagepath(null);
+                    }
+                } else {
+                    // File does not exist on disk
+                    this.service.setImagepath(null);
+                }
+            } else {
+                // Image name in DB is null or blank
+                this.service.setImagepath(null);
+            }
+        }
     }
 
     public Long getId() {
