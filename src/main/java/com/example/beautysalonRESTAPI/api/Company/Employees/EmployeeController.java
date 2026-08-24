@@ -6,6 +6,7 @@ import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
+import com.example.beautysalonRESTAPI.dto.employees.EmployeeCredentialsDTO;
 import com.example.beautysalonRESTAPI.dto.employees.EmployeesDTO;
 import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
@@ -27,6 +29,7 @@ import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.service.Employees.EmployeeAvailabilityDateService;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -46,8 +49,12 @@ public class EmployeeController {
     @Autowired 
     private employeeAvailabilityRepository employeeAvailabilityRepository;
 
+    
+    @Autowired
+ private BCryptPasswordEncoder passwordEncoder;
+
       @GetMapping("/data")
-    public ResponseEntity<?> getAdminData(
+    public ResponseEntity<?> getData(
             @RequestHeader("Authorization") String authHeader) {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -69,6 +76,52 @@ public class EmployeeController {
  
         return ResponseEntity.ok(new EmployeesDTO(user));
     }
+
+    @PutMapping("data")
+    public ResponseEntity<?> updateData(@RequestHeader("Authorization") String authHeader, @RequestBody EmployeeCredentialsDTO request){
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7); // Remove "Bearer "
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Invalid or expired token");
+        }
+
+        try {
+
+  Employees employee = employeeRepo.findEmployeeById(jwtUtil.extractId(token)).orElse(null);
+
+    if (employee == null) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Employee not found");
+    }
+
+    employee.setEmri(request.getEmri());
+    employee.setMbiemri(request.getMbiemri());
+    employee.setEmail(request.getEmail());
+    employee.setNumri_telefonit(request.getNumri_telefonit());
+    employee.setUsername(request.getUsername());
+
+    if (request.getUserpassword() != null && !request.getUserpassword().isBlank()) {
+        employee.setUserpassword(
+                passwordEncoder.encode(request.getUserpassword())
+        );
+    
+    }
+    employeeRepo.save(employee);
+
+    return ResponseEntity.ok("Data updated!");
+    }
+         catch(Exception e){
+            return ResponseEntity.status(500).body(e.getMessage());
+    }
+}
+    
+    
 
     @PostMapping("/setAvailableDates")
     public ResponseEntity<?> setAvailableDates(@RequestHeader("Authorization") String authHeader, @RequestBody AvailableEmployeeDates a){
