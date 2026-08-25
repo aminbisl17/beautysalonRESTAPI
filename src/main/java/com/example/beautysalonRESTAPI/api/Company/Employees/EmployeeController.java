@@ -77,7 +77,7 @@ public class EmployeeController {
         return ResponseEntity.ok(new EmployeesDTO(user));
     }
 
-    @PutMapping("data")
+    @PatchMapping("data")
     public ResponseEntity<?> updateData(@RequestHeader("Authorization") String authHeader, @RequestBody EmployeeCredentialsDTO request){
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
