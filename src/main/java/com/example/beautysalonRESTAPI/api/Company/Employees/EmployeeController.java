@@ -121,8 +121,6 @@ public class EmployeeController {
     }
 }
     
-    
-
     @PostMapping("/setAvailableDates")
     public ResponseEntity<?> setAvailableDates(@RequestHeader("Authorization") String authHeader, @RequestBody AvailableEmployeeDates a){
    
