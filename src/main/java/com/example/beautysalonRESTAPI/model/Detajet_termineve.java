@@ -1,7 +1,5 @@
 package com.example.beautysalonRESTAPI.model;
 
-import java.time.LocalTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

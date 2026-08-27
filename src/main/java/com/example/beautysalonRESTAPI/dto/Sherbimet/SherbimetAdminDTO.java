@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 import com.example.beautysalonRESTAPI.model.Sherbimet;
 
@@ -20,7 +21,16 @@ public class SherbimetAdminDTO {
     private int zbritja, kohezgjatja;
     private String imagePath;
     private Long avaSkillId;
+    private List<AtributetSherbimeveDTO> atributet;
     
+        public List<AtributetSherbimeveDTO> getAtributet() {
+        return atributet;
+    }
+
+    public void setAtributet(List<AtributetSherbimeveDTO> atributet) {
+        this.atributet = atributet;
+    }
+
         public Long getAvaSkillId() {
         return avaSkillId;
     }
@@ -28,6 +38,8 @@ public class SherbimetAdminDTO {
     public void setAvaSkillId(Long avaSkillId) {
         this.avaSkillId = avaSkillId;
     }
+
+    public SherbimetAdminDTO(){}
 
         public SherbimetAdminDTO(Sherbimet s) {
         this.ID = s.getID();

@@ -3,9 +3,13 @@ import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.List;
 
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetTermineveDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
+import com.example.beautysalonRESTAPI.dto.terminet.TerminetGetDTO;
+import com.example.beautysalonRESTAPI.model.Terminet;
+import com.example.beautysalonRESTAPI.repository.Terminet.TerminetRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class TerminetService {
 
+
+    @Autowired
+    private TerminetRepository terRepo; 
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -57,4 +64,12 @@ public class TerminetService {
         );
          
     }
+public List<TerminetGetDTO> getSpecificEmployeeAppointments(Long id) {
+
+    List<Terminet> terminet = terRepo.findByEmployeeId(id);
+
+    return terminet.stream()
+            .map(TerminetGetDTO::new)
+            .toList();
+}
 }

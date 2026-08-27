@@ -14,6 +14,7 @@ import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
+import com.example.beautysalonRESTAPI.dto.terminet.TerminetGetDTO;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.example.beautysalonRESTAPI.model.skills;
 import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
@@ -88,4 +89,13 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
 
     return ResponseEntity.ok(data);
 }
+
+    @GetMapping("employee/{id}")
+    public ResponseEntity<List<TerminetGetDTO>> getSpecificEmployeeAppointments(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                terminetService.getSpecificEmployeeAppointments(id)
+        );
+    }
 }
