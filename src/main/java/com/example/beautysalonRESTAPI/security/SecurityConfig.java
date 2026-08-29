@@ -92,11 +92,15 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/company/email/send").permitAll()
 
     .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
+    
 
    // .requestMatchers("/auth/refresh-token").permitAll()
    // .requestMatchers("/auth/delete-refresh-token").permitAll()
-    .requestMatchers("/auth/**").permitAll()
-    .requestMatchers("/auth/validate-qr_code").hasAnyRole("ADMIN", "EMPLOYEE")
+    .requestMatchers("/auth/validate-qr_code")
+    .hasAnyRole("ADMIN", "EMPLOYEE")
+
+.requestMatchers("/auth/**")
+    .permitAll()
 
     .requestMatchers("/api/admin/data").hasRole("ADMIN")
     .requestMatchers("/api/admin/register").hasRole("ADMIN")
@@ -109,9 +113,9 @@ public AuthenticationManager employeeAuthManager() {
 
     // Services (sherbimet)
     .requestMatchers("/api/admin/sherbimet/register").hasRole("ADMIN")
-    .requestMatchers("/api/admin/sherbimet/update").hasRole("ADMIN")
     .requestMatchers("/api/admin/sherbimet/delete/**").hasRole("ADMIN")
-
+    .requestMatchers("/api/admin/sherbimet/update/**")
+    .hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
 
     .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
 
