@@ -112,8 +112,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/admin/employees/update/**").hasRole("ADMIN")
 
     // Services (sherbimet)
-    .requestMatchers("/api/admin/sherbimet/register").hasRole("ADMIN")
-    .requestMatchers("/api/admin/sherbimet/delete/**").hasRole("ADMIN")
+    .requestMatchers("/api/admin/sherbimet/register").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
+    .requestMatchers("/api/admin/sherbimet/delete/**").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
     .requestMatchers("/api/admin/sherbimet/update/**")
     .hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
 
