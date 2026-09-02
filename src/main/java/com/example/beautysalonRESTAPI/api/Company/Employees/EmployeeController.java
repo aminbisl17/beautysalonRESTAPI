@@ -167,7 +167,6 @@ public class EmployeeController {
   List<employeeAvailability> availability =
         employeeAvailabilityRepository.findByEmployees_ID(jwtUtil.extractId(token));
 
-if (!availability.isEmpty()) {
 
     List<AvailableEmployeeDates> response = availability.stream()
             .map(AvailableEmployeeDates::new)
@@ -175,9 +174,7 @@ if (!availability.isEmpty()) {
 
     return ResponseEntity.ok(response);
 
-} else {
-    return ResponseEntity.badRequest().body("not found!");
-}
+
     }
     catch(Exception e){
 return ResponseEntity.status(500).body(e.getMessage());
