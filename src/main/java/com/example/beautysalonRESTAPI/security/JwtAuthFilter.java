@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,21 +46,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
 
-                String username = jwtUtil.extractUsername(token);
-                String role = jwtUtil.extractRole(token);
-                String type = jwtUtil.extractType(token);
+String username = jwtUtil.extractUsername(token);
+String role = jwtUtil.extractRole(token);
+String type = jwtUtil.extractType(token);
 
-                if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
 
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            List.of(() -> "SCOPE_COMPANY"));
+if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
 
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    filterChain.doFilter(request, response);
-                    return;
-                }
+    System.out.println("6. ENTERED COMPANY BRANCH");
+
+    UsernamePasswordAuthenticationToken auth =
+            new UsernamePasswordAuthenticationToken(
+                    username,
+                    null,
+                    List.of(new SimpleGrantedAuthority("SCOPE_COMPANY"))
+            );
+
+    SecurityContextHolder.getContext().setAuthentication(auth);
+
+
+    filterChain.doFilter(request, response);
+
+
+    return;
+}
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails;
@@ -90,10 +99,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid JWT token");
-            return;
-        }
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.getWriter().write("Invalid JWT token");
+    return;
+}
         filterChain.doFilter(request, response);
     }
 }

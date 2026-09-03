@@ -265,10 +265,22 @@ public ResponseEntity<?> validateQrCode(
 
     Object response;
 
-    if ("ROLE_EMPLOYEE".equals(role) ||  "ROLE_ADMIN".equals(role)) {
-        String cotoken = jwtUtil.generateCompanyToken(id, token, role);
-               response = Map.of("token",cotoken, "role", role, "username", jwtUtil.extractUsername(token));
-    }
+    if ("ROLE_EMPLOYEE".equals(role) || "ROLE_ADMIN".equals(role)) {
+
+    String username = jwtUtil.extractUsername(token);
+
+    String cotoken = jwtUtil.generateCompanyToken(
+            id,
+            username,
+            role
+    );
+
+    response = Map.of(
+            "token", cotoken,
+            "role", role,
+            "username", username
+    );
+}
     else {
         return ResponseEntity.status(403)
                 .body(Map.of("error", "Unauthorized role"));

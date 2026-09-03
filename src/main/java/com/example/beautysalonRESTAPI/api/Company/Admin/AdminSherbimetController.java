@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,12 +57,15 @@ public ResponseEntity<Map<String, Object>> registerService(
         Authentication authentication
 ) throws IOException {
 
-  
     ObjectMapper mapper = new ObjectMapper();
 mapper.registerModule(new JavaTimeModule());
 mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); 
+
+
 SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.class);
 
+
+System.out.println(mapper.writeValueAsString(request));
 
     Sherbimet sherbimi = new Sherbimet();
     sherbimi.setEmri_sherbimit(request.getEmri_sherbimit());

@@ -11,6 +11,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -112,7 +114,7 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/api/admin/employees/update/**").hasRole("ADMIN")
 
     // Services (sherbimet)
-    .requestMatchers("/api/admin/sherbimet/register").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
+   .requestMatchers("/api/admin/sherbimet/register").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
     .requestMatchers("/api/admin/sherbimet/delete/**").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
     .requestMatchers("/api/admin/sherbimet/update/**")
     .hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
@@ -137,7 +139,7 @@ public AuthenticationManager employeeAuthManager() {
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+            
         return http.build();
     }
 }
