@@ -64,9 +64,6 @@ mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
 SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.class);
 
-
-System.out.println(mapper.writeValueAsString(request));
-
     Sherbimet sherbimi = new Sherbimet();
     sherbimi.setEmri_sherbimit(request.getEmri_sherbimit());
     sherbimi.setPershkrimi(request.getPershkrimi());

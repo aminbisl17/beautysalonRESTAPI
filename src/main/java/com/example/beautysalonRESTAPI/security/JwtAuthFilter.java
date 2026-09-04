@@ -53,7 +53,6 @@ String type = jwtUtil.extractType(token);
 
 if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
 
-    System.out.println("6. ENTERED COMPANY BRANCH");
 
     UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken(
@@ -99,6 +98,7 @@ if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.getWriter().write("Invalid JWT token");
     return;
