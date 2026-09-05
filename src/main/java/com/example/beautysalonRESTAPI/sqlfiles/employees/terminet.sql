@@ -1,1 +1,5 @@
-select * from terminet;
+ALTER TABLE terminet
+ADD data_krijimit DATETIME2 NOT NULL
+    DEFAULT SYSDATETIME();
+
+SELECT * FROM terminet;

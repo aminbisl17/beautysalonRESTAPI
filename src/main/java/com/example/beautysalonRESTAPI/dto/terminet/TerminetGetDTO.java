@@ -18,7 +18,7 @@ public class TerminetGetDTO {
     private Long id_terminit;
     private ClientDTO client;
     private String pershkrimi;
-    private LocalDateTime data_caktimit;
+    private LocalDateTime data_caktimit, data_krijimit;
     private Long employee_id;
     private List<Detajet_Termineve> detajet_terminit;
 
@@ -38,6 +38,8 @@ public class TerminetGetDTO {
 
     this.employee_id = t.getEmployee().getID();
 
+    this.data_krijimit = t.getData_krijimit();
+
 Map<Long, List<Detajet_termineve>> grouped =
         t.getDetajet_termineve()
          .stream()
@@ -53,6 +55,16 @@ Map<Long, List<Detajet_termineve>> grouped =
             .map(details -> new Detajet_Termineve(details))
             .toList();
 }
+
+
+    public LocalDateTime getData_krijimit() {
+        return data_krijimit;
+    }
+
+    public void setData_krijimit(LocalDateTime data_krijimit) {
+        this.data_krijimit = data_krijimit;
+    }
+
 
     public Long getId_terminit() {
         return id_terminit;

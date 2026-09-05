@@ -37,10 +37,23 @@ public class Terminet {
    @Column(name="data_caktimit")
    private LocalDateTime data_caktimit;
 
+      @Column(name="data_krijimit", nullable = false)
+   private LocalDateTime data_krijimit;
+
+
    @OneToMany(mappedBy = "terminet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    private List<Detajet_termineve> detajet_termineve;
 
 
+
+      public LocalDateTime getData_krijimit() {
+         return data_krijimit;
+      }
+
+      public void setData_krijimit(LocalDateTime data_krijimit) {
+         this.data_krijimit = data_krijimit;
+      }
+      
       public List<Detajet_termineve> getDetajet_termineve() {
       return detajet_termineve;
    }
