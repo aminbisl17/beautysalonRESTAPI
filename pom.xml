@@ -18,10 +18,9 @@
     <name>beautysalonRESTAPI</name>
     <description>Spring Boot REST API for Beauty Salon</description>
 
-    <properties>
-        <!-- bump Java version -->
-        <java.version>24</java.version>
-    </properties>
+ <properties>
+    <java.version>25</java.version>
+</properties>
 
     <dependencies>
 
