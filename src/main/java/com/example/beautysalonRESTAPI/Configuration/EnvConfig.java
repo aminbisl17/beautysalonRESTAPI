@@ -1,3 +1,5 @@
+
+/* 
 package com.example.beautysalonRESTAPI.Configuration;
 
 import org.springframework.context.annotation.Bean;
@@ -12,4 +14,4 @@ public class EnvConfig {
     public Dotenv dotenv() {
         return Dotenv.load();
     }
-}
+}*/
