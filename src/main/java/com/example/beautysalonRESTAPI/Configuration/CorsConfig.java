@@ -18,7 +18,8 @@ public class CorsConfig {
                                 "http://localhost:3000",
                                 "http://localhost:3001",
                                 "http://192.168.*:3000",
-                                "http://192.168.*:3001"
+                                "http://192.168.*:3001",
+                                "https://beautysalonclientreact.onrender.com"
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
