@@ -129,7 +129,7 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .path("/")
      //     .domain("localhost")
         .maxAge(7 * 24 * 60 * 60)
-        .sameSite("none")     
+        .sameSite("None")     
         .build();
 response.addHeader("Set-Cookie", cookie.toString());
 
