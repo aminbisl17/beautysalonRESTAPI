@@ -129,7 +129,7 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .path("/")
      //     .domain("localhost")
         .maxAge(7 * 24 * 60 * 60)
-        .sameSite("Lax")     
+        .sameSite("none")     
         .build();
 response.addHeader("Set-Cookie", cookie.toString());
 
@@ -312,20 +312,21 @@ public ResponseEntity<?> validateQrCode(
 
 
 @PostMapping("/delete-refresh-token")
-public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response){
+public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response) {
+
     ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
-            .secure(false)   
-            .path("/")       
-            .maxAge(0)       
-            .sameSite("Lax")
+            .secure(true)
+            .path("/")
+            .maxAge(0)
+            .sameSite("None")
             .build();
 
     response.setHeader("Set-Cookie", cookie.toString());
 
-       return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent().build();
 }
-
+    
 @PostMapping("/refresh-token")
 public ResponseEntity<?> refresh(
         @CookieValue(value = "refreshToken", required = false) String cookieToken,
