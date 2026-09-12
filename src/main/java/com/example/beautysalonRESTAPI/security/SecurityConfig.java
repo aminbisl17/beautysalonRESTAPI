@@ -133,8 +133,8 @@ public AuthenticationManager employeeAuthManager() {
 
     .requestMatchers("/api/mixed/terminet/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT", "SCOPE_COMPANY")
 
-    .requestMatchers("/api/clients/**").hasRole("CLIENT")
-                .anyRequest().authenticated()
+    .requestMatchers("/api/clients/**").authenticated()
+                                   //.hasRole("CLIENT").anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
