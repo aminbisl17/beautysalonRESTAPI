@@ -96,8 +96,8 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
     
 
-   // .requestMatchers("/auth/refresh-token").permitAll()
-   // .requestMatchers("/auth/delete-refresh-token").permitAll()
+    .requestMatchers("/auth/refresh-token").permitAll()
+    .requestMatchers("/auth/delete-refresh-token").permitAll()
     .requestMatchers("/auth/validate-qr_code")
     .hasAnyRole("ADMIN", "EMPLOYEE")
 
