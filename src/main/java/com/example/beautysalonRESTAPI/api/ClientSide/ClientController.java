@@ -130,7 +130,7 @@ try{
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
-  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  smsservice.sendOtp(client.getNumriTelefonit(),otp);
   
     System.out.println(otp);
 }
@@ -280,6 +280,7 @@ boolean phoneExists =
 if (phoneExists) {
     
     System.out.println(otp);
+    smsservice.sendOtp(request.getNumri_telefonit(), otp);
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
   return ResponseEntity.noContent().build();
 }   
