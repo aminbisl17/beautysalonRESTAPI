@@ -21,6 +21,7 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.availableSkillsRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
+import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.TerminetService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,6 +51,9 @@ public class MixedTerminet {
     @Autowired
     private availableSkillsRepository avaSkillsRepo;
 
+    @Autowired 
+    private EmailService ems;
+
     @PostMapping("create")
     public ResponseEntity<?> CreateAppointment(@RequestBody TerminetCreateDTO dto){
 
@@ -58,6 +62,7 @@ public class MixedTerminet {
           boolean success = terminetService.createAppointment(dto);
             if (success) {
          //      smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
+    //     ems.sendOtp(client, null, null);
                 return ResponseEntity.ok("Termini u krijua!");
             } else {
                 return ResponseEntity.status(500).body("Failed to create appointment");

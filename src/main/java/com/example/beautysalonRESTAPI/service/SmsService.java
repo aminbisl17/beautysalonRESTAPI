@@ -1,5 +1,5 @@
 
-/*package com.example.beautysalonRESTAPI.service;
+package com.example.beautysalonRESTAPI.service;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -58,9 +58,9 @@ public class SmsService {
         return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
     }
-}*/
+}
 
-
+/* 
 package com.example.beautysalonRESTAPI.service;
 
 import java.util.Map;
@@ -121,9 +121,7 @@ public class SmsService {
     }
 
 
-    /**
-     * Send OTP through a WATI template.
-     */
+
 
     
     public String generateOTP() {
@@ -141,4 +139,4 @@ public class SmsService {
             )
     );
 }
-}
+} */

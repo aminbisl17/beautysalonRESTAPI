@@ -37,6 +37,7 @@ import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.Clients.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.PutMapping;
@@ -130,9 +131,12 @@ try{
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
-  smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
+  
+  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
   
     System.out.println(otp);
+
 }
 catch(Exception e){
     e.printStackTrace();
@@ -263,7 +267,7 @@ public ResponseEntity<String> updateClient(
 }
 
 @PostMapping("/fast-login&register")
-public ResponseEntity<?> fastLoginRegister(@RequestBody ClientRegisterRequest request){
+public ResponseEntity<?> fastLoginRegister(@RequestBody ClientRegisterRequest request) throws MessagingException{
      
     String Email = request.getEmail();
 
@@ -280,7 +284,10 @@ boolean phoneExists =
 if (phoneExists) {
     
     System.out.println(otp);
-    smsservice.sendOtp(request.getNumri_telefonit(), otp);
+  //  smsservice.sendOtp(request.getNumri_telefonit(), otp);
+
+  emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
+  
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
   return ResponseEntity.noContent().build();
 }   
@@ -299,8 +306,10 @@ try{
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
-  smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
   
+  emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
+
     System.out.println(otp);
 
     return ResponseEntity.noContent().build();
