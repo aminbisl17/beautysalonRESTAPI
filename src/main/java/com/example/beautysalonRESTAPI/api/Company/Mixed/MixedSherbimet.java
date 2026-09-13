@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,7 @@ public ResponseEntity<?> getAtributet(@PathVariable Long id) throws IOException 
     List<Atributet_sherbimeve> atributet =
             sherbimetService.getAtributet(id);
 
+    /*
     String imageName = sherbimetService.getServiceIMGPath(id);
 
     String base64Image = null;
@@ -59,9 +62,22 @@ public ResponseEntity<?> getAtributet(@PathVariable Long id) throws IOException 
             base64Image = Base64.getEncoder().encodeToString(imageBytes);
         }
     }
+    */
+
+    String imageName = sherbimetService.getServiceIMGPath(id);
+
+String imageUrl = null;
+
+if (imageName != null && !imageName.isBlank()) {
+    imageUrl = "https://blobstorageamin.blob.core.windows.net/beautysalon-images/SherbimetImgPath/"
+            + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
+              .replace("+", "%20");
+}
 
     AtributetImageResponse response = new AtributetImageResponse();
-    response.setImagePath(base64Image);
+    //response.setImagePath(base64Image);
+
+    response.setImagePath(imageUrl);
     response.setAtributet(atributet);
 
     return ResponseEntity.ok(response);

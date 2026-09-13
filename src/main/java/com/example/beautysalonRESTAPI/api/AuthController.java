@@ -111,7 +111,8 @@ AdminUser adminUser = optionalUser.get();
 
         String jwtToken = jwtUtil.generateRefreshToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN");
 
- 
+
+         /*
 ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .httpOnly(true)
         .secure(false)         
@@ -120,7 +121,16 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .maxAge(7 * 24 * 60 * 60)
         .sameSite("Lax")     
         .build();
+*/
 
+         ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
+        .httpOnly(true)
+        .secure(true)         
+        .path("/")
+     //     .domain("localhost")
+        .maxAge(7 * 24 * 60 * 60)
+        .sameSite("None")     
+        .build();
 response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(Map.of("refreshToken",jwtToken, "token", jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
@@ -175,14 +185,23 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResp
                 "ROLE_CLIENT"
         );
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+       /* ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
                 .maxAge(30 * 24 * 60 * 60)
                 .sameSite("Lax")
                 .build();
+ */
 
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(30 * 24 * 60 * 60)
+        .sameSite("None")
+        .build();
+        
         res.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new ClientAuthResponse(accessToken));
@@ -293,20 +312,21 @@ public ResponseEntity<?> validateQrCode(
 
 
 @PostMapping("/delete-refresh-token")
-public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response){
+public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response) {
+
     ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
-            .secure(false)   
-            .path("/")       
-            .maxAge(0)       
-            .sameSite("Lax")
+            .secure(true)
+            .path("/")
+            .maxAge(0)
+            .sameSite("None")
             .build();
 
     response.setHeader("Set-Cookie", cookie.toString());
 
-       return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent().build();
 }
-
+    
 @PostMapping("/refresh-token")
 public ResponseEntity<?> refresh(
         @CookieValue(value = "refreshToken", required = false) String cookieToken,
