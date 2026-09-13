@@ -299,7 +299,7 @@ try{
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
-  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  smsservice.sendOtp(client.getNumriTelefonit(),otp);
   
     System.out.println(otp);
 
