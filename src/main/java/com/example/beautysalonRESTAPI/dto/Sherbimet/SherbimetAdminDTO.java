@@ -1,12 +1,15 @@
 package com.example.beautysalonRESTAPI.dto.Sherbimet;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+
 
 import com.example.beautysalonRESTAPI.model.Sherbimet;
 
@@ -52,7 +55,7 @@ public class SherbimetAdminDTO {
         this.zbritja = s.getZbritja();
         this.kohezgjatja = s.getKohezgjatja();
 
-         String imageName = s.getImagepath();
+     /*     String imageName = s.getImagepath();
 
        //  String base64Image = null;
 
@@ -71,7 +74,19 @@ public class SherbimetAdminDTO {
                 e.printStackTrace();
             }
         }
-    }
+    } */
+
+        
+    String imageName = s.getImagepath();
+
+//String imageUrl = null;
+
+if (imageName != null && !imageName.isBlank()) {
+    this.imagePath = "https://blobstorageamin.blob.core.windows.net/beautysalon-images/SherbimetImgPath/"
+            + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
+              .replace("+", "%20");
+}
+
 }
 
           public String getImagePath() {
