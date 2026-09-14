@@ -22,8 +22,8 @@ public class CorsConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
                 "http://localhost:3001",
-                "http://192.168.*:3000",
-                "http://192.168.*:3001",
+                 "http://192.168.100.116:3000",
+                "http://192.168.100.116:3001",
                 "https://beautysalonclientreact.onrender.com",
                 "https://beautysalonadminreact.onrender.com"
         ));
