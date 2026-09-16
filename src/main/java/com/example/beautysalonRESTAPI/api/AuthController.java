@@ -123,14 +123,13 @@ ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
         .build();
 */
 
-         ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
-        .httpOnly(true)
-        .secure(true)         
-        .path("/")
-     //     .domain("localhost")
-        .maxAge(7 * 24 * 60 * 60)
-        .sameSite("None")     
-        .build();
+     ResponseCookie cookie = ResponseCookie.from("adminRefreshToken", jwtToken)
+    .httpOnly(true)
+    .secure(true)
+    .path("/")
+    .maxAge(7 * 24 * 60 * 60)
+    .sameSite("None")
+    .build();
 response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(Map.of("refreshToken",jwtToken, "token", jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
@@ -194,14 +193,13 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResp
                 .build();
  */
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-        .httpOnly(true)
-        .secure(true)
-        .path("/")
-        .maxAge(30 * 24 * 60 * 60)
-        .sameSite("None")
-        .build();
-        
+     ResponseCookie cookie = ResponseCookie.from("clientRefreshToken", refreshToken)
+    .httpOnly(true)
+    .secure(true)
+    .path("/")
+    .maxAge(30 * 24 * 60 * 60)
+    .sameSite("None")
+    .build();
         res.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new ClientAuthResponse(accessToken));
@@ -314,28 +312,48 @@ public ResponseEntity<?> validateQrCode(
 @PostMapping("/delete-refresh-token")
 public ResponseEntity<?> deleteRefreshToken(HttpServletResponse response) {
 
-    ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(0)
-            .sameSite("None")
-            .build();
+    String[] cookieNames = {
+        "adminRefreshToken",
+        "clientRefreshToken",
+        "employeeRefreshToken",
+        "refreshToken" // remove this after your old cookie is fully migrated
+    };
 
-    response.setHeader("Set-Cookie", cookie.toString());
+    for (String cookieName : cookieNames) {
+
+        ResponseCookie cookie = ResponseCookie.from(cookieName, "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
 
     return ResponseEntity.noContent().build();
 }
     
 @PostMapping("/refresh-token")
 public ResponseEntity<?> refresh(
-        @CookieValue(value = "refreshToken", required = false) String cookieToken,
+        @CookieValue(value = "adminRefreshToken", required = false) String adminToken,
+        @CookieValue(value = "clientRefreshToken", required = false) String clientToken,
+        @CookieValue(value = "employeeRefreshToken", required = false) String employeeToken,
         @RequestBody(required = false) Map<String, String> body
 ) {
-   String refreshToken = cookieToken != null
-            ? cookieToken
-            : (body != null ? body.get("refreshToken") : null);
 
+    String refreshToken = null;
+
+    if (adminToken != null) {
+        refreshToken = adminToken;
+    } else if (clientToken != null) {
+        refreshToken = clientToken;
+    } else if (employeeToken != null) {
+        refreshToken = employeeToken;
+    } else if (body != null) {
+        refreshToken = body.get("refreshToken");
+    }
 
     if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -346,8 +364,14 @@ public ResponseEntity<?> refresh(
     String role = jwtUtil.extractRole(refreshToken);
     Long id = jwtUtil.extractId(refreshToken);
 
-    String newAccessToken = jwtUtil.generateToken(id, username, role);
+    String newAccessToken = jwtUtil.generateToken(
+            id,
+            username,
+            role
+    );
 
-    return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    return ResponseEntity.ok(
+            Map.of("accessToken", newAccessToken)
+    );
 }
 }
