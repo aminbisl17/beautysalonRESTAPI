@@ -77,6 +77,9 @@ public AuthenticationManager employeeAuthManager() {
     "/swagger-ui.html"
 ).permitAll()
 
+
+    .requestMatchers("/auth/refresh-token").permitAll()
+    .requestMatchers("/auth/delete-refresh-token").permitAll()
     .requestMatchers("/test/generate-token").permitAll()
     .requestMatchers("/test/test-token").permitAll()
     .requestMatchers("/server/**").permitAll()
@@ -94,10 +97,6 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/company/email/send").permitAll()
 
     .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
-    
-
-    .requestMatchers("/auth/refresh-token").permitAll()
-    .requestMatchers("/auth/delete-refresh-token").permitAll()
     .requestMatchers("/auth/validate-qr_code")
     .hasAnyRole("ADMIN", "EMPLOYEE")
 

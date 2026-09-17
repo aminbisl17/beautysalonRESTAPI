@@ -364,6 +364,8 @@ public ResponseEntity<?> refresh(
     String role = jwtUtil.extractRole(refreshToken);
     Long id = jwtUtil.extractId(refreshToken);
 
+    System.out.println(role);
+
     String newAccessToken = jwtUtil.generateToken(
             id,
             username,
