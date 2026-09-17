@@ -146,7 +146,7 @@ public ResponseEntity<?> updateService(
         sh.setImagepath(null);
     }
 }
-
+/* 
   if (image != null && !image.isEmpty()) {
 
     String uploadDir = "src/main/resources/SherbimetImgPath/";
@@ -166,6 +166,13 @@ public ResponseEntity<?> updateService(
     Files.createDirectories(filePath.getParent());
     Files.write(filePath, image.getBytes());
 
+    sh.setImagepath(fileName);
+}
+
+*/
+
+if (image != null && !image.isEmpty()) {
+    String fileName = blobStorageService.uploadImage(image);
     sh.setImagepath(fileName);
 }
 
