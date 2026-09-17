@@ -139,6 +139,12 @@
     <version>2.8.0</version> <!-- Use the latest version compatible with your Spring Boot version -->
 </dependency>
 
+<dependency>
+    <groupId>com.azure</groupId>
+    <artifactId>azure-storage-blob</artifactId>
+    <version>12.30.0</version>
+</dependency>
+
     </dependencies>
 
     <build>

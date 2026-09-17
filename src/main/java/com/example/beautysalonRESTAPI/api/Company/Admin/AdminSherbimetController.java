@@ -36,6 +36,7 @@ import com.example.beautysalonRESTAPI.service.SmsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.example.beautysalonRESTAPI.service.BlobStorageService;
 
 @RestController
 @RequestMapping("api/admin/sherbimet")
@@ -46,6 +47,8 @@ public class AdminSherbimetController {
 
   
    // AdminUser user;
+@Autowired
+private BlobStorageService blobStorageService;
 
     @Autowired
     private SherbimetRepository sherbimetRepo;
@@ -87,7 +90,7 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
     }
 
     // Handle image
-    if (image != null && !image.isEmpty()) {
+/*     if (image != null && !image.isEmpty()) {
         String uploadDir = "src/main/resources/SherbimetImgPath/";
         String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
@@ -96,7 +99,12 @@ SherbimetRegisterDTO request = mapper.readValue(dataJson, SherbimetRegisterDTO.c
 
         sherbimi.setImagepath(fileName);
     }
+*/
 
+if (image != null && !image.isEmpty()) {
+    String fileName = blobStorageService.uploadImage(image);
+    sherbimi.setImagepath(fileName);
+}
     //smsService.sendSms("+38345380871", "Sherbimi " + sherbimi.getEmri_sherbimit() + " eshte regjistruar me sukses!");
     sherbimetRepo.save(sherbimi);
 
