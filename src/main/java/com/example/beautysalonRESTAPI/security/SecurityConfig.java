@@ -78,8 +78,9 @@ public AuthenticationManager employeeAuthManager() {
 ).permitAll()
 
 
-    .requestMatchers("/auth/refresh-token").permitAll()
-    .requestMatchers("/auth/delete-refresh-token").permitAll()
+ //   .requestMatchers("/auth/refresh-token").permitAll()
+   // .requestMatchers("/auth/delete-refresh-token").permitAll()
+   .requestMatchers("/auth/**").permitAll()
     .requestMatchers("/test/generate-token").permitAll()
     .requestMatchers("/test/test-token").permitAll()
     .requestMatchers("/server/**").permitAll()
@@ -99,9 +100,6 @@ public AuthenticationManager employeeAuthManager() {
     .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
     .requestMatchers("/auth/validate-qr_code")
     .hasAnyRole("ADMIN", "EMPLOYEE")
-
-.requestMatchers("/auth/**")
-    .permitAll()
 
     .requestMatchers("/api/admin/data").hasRole("ADMIN")
     .requestMatchers("/api/admin/register").hasRole("ADMIN")

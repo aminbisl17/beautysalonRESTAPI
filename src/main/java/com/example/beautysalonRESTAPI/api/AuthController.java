@@ -376,4 +376,56 @@ public ResponseEntity<?> refresh(
             Map.of("accessToken", newAccessToken)
     );
 }
+
+@PostMapping("/refresh-token-admin")
+public ResponseEntity<?> refreshTokenAdmin( @CookieValue(value = "adminRefreshToken", required = false) String adminToken,
+          @RequestBody(required = false) Map<String, String> body){
+
+     if (adminToken == null || !jwtUtil.validateRefreshToken(adminToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+       String username = jwtUtil.extractUsername(adminToken);
+    String role = jwtUtil.extractRole(adminToken);
+    Long id = jwtUtil.extractId(adminToken);
+
+
+    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+}
+
+@PostMapping("/refresh-token-employee")
+public ResponseEntity<?> refreshTokenEmployee(@RequestBody(required = false) Map<String, String> body){
+
+    String empToken = (body != null) ? body.get("refreshToken") : null;
+
+     if (empToken == null || !jwtUtil.validateRefreshToken(empToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+       String username = jwtUtil.extractUsername(empToken);
+    String role = jwtUtil.extractRole(empToken);
+    Long id = jwtUtil.extractId(empToken);
+
+
+    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+}
+
+@PostMapping("/refresh-token-client")
+public ResponseEntity<?> refreshTokenClient( @CookieValue(value = "clientRefreshToken", required = false) String clientToken){
+
+     if (clientToken == null || !jwtUtil.validateRefreshToken(clientToken)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+       String username = jwtUtil.extractUsername(clientToken);
+    String role = jwtUtil.extractRole(clientToken);
+    Long id = jwtUtil.extractId(clientToken);
+
+
+    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+}
+
 }
