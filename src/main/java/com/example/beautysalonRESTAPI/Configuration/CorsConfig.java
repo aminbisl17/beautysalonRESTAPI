@@ -26,7 +26,7 @@ public class CorsConfig {
                 "http://192.168.100.116:3001",
                 "https://beautysalonclientreact.onrender.com",
                 "https://beautysalonadminreact.onrender.com",
-            "https://beautysalon.aminbislimaj.com",
+            "https://beautysalonclient.aminbislimaj.com",
                 "https://beautysalonadmin.aminbislimaj.com"
         ));
 
