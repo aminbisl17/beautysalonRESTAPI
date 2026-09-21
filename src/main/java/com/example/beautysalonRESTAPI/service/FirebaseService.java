@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.service;
+/*package com.example.beautysalonRESTAPI.service;
 
 import java.util.List;
 
@@ -50,3 +50,4 @@ public String sendExpoNotification(String token, String title, String body) {
    return response;
 }
 }
+*/
