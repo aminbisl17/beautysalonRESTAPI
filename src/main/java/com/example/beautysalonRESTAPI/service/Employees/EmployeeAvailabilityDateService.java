@@ -46,6 +46,8 @@ public class EmployeeAvailabilityDateService {
     @Autowired
     private availableSkillsRepository availableSkillsRepo;
 
+
+    @Transactional
     public boolean setAvailableEmployeeDates(AvailableEmployeeDates d) throws SQLServerException {
 
     SQLServerDataTable tvp = new SQLServerDataTable();
