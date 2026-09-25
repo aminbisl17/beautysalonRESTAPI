@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.api.Company.Technical;
+/*package com.example.beautysalonRESTAPI.api.Company.Technical;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,3 +33,4 @@ public String send(@RequestBody NotificationMessage msg) {
     );
 }
 }
+*/

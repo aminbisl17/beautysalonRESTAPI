@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.Configuration;
+/*package com.example.beautysalonRESTAPI.Configuration;
 
 import java.io.IOException;
 
@@ -24,3 +24,4 @@ public class FirebaseConfig {
                  return FirebaseMessaging.getInstance(app);
     }
 }
+*/
