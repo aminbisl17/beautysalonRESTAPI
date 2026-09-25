@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,9 @@ public class MixedTerminet {
     @Autowired 
     private EmailService ems;
 
+        @Autowired
+private SimpMessagingTemplate messagingTemplate;
+
     @PostMapping("create")
     public ResponseEntity<?> CreateAppointment(@RequestBody TerminetCreateDTO dto){
 
@@ -92,8 +96,15 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
                 .toList()
     );
 
+   messagingTemplate.convertAndSend(
+            "/topic/availability/" + id,
+            data
+    );
+
     return ResponseEntity.ok(data);
 }
+
+
 
     @GetMapping("employee/{id}")
     public ResponseEntity<List<TerminetGetDTO>> getSpecificEmployeeAppointments(
