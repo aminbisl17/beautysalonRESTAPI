@@ -65,7 +65,7 @@ private SimpMessagingTemplate messagingTemplate;
 
           boolean success = terminetService.createAppointment(dto);
             if (success) {
-
+/* 
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(dto.getEmployeeId());
 
@@ -75,7 +75,8 @@ private SimpMessagingTemplate messagingTemplate;
                     availability.stream()
                             .map(AvailableEmployeeDates::new)
                             .filter(date ->
-                                    !date.getStart_date().equals(dto.getDataCaktimit().toLocalDate())
+                                   !date.getStart_date()
+         .equals(dto.getDataCaktimit().toLocalDate())
                             )
                             .toList()
             );
@@ -84,7 +85,7 @@ private SimpMessagingTemplate messagingTemplate;
    messagingTemplate.convertAndSend(
             "/topic/availability/" +  dto.getEmployeeId(),
             data
-    );
+    ); */
          //      smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
     //     ems.sendOtp(client, null, null);
                 return ResponseEntity.ok("Termini u krijua!");
