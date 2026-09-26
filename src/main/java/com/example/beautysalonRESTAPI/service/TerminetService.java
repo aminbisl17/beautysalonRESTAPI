@@ -79,11 +79,13 @@ public List<TerminetGetDTO> getSpecificEmployeeAppointments(Long id) {
             .toList();
 }
 
+
 public DetajetStafitDTO FilteredData(Long id) {
 
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
+    // Only appointments belonging to this employee
     List<LocalDateTime> existingAppointments =
             terRepo.findDataCaktimitByEmployeeId(id);
 
@@ -96,9 +98,15 @@ public DetajetStafitDTO FilteredData(Long id) {
                         new AvailableEmployeeDates(employeeAvailability);
 
                 date.setUnavailableDates(
-                    date.getUnavailableDates()
-                        .stream()
-                        .filter(time -> !existingAppointments.contains(time))
+                    existingAppointments.stream()
+                        .filter(appointment ->
+                            !appointment.isBefore(
+                                date.getStart_date().atStartOfDay()
+                            )
+                            && !appointment.isAfter(
+                                date.getEnd_date().atTime(23, 59, 59)
+                            )
+                        )
                         .toList()
                 );
 
@@ -109,5 +117,4 @@ public DetajetStafitDTO FilteredData(Long id) {
 
     return data;
 }
-
 }
