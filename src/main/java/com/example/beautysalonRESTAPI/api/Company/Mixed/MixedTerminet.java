@@ -92,9 +92,14 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
     }
 
+    try{
     DetajetStafitDTO data = terminetService.FilteredData(id);
-
-    return ResponseEntity.ok(data);
+     return ResponseEntity.ok(data);
+    }
+    catch(Exception e){
+     e.printStackTrace();
+    }
+    return ResponseEntity.badRequest().body("Error");
 }
 
 
