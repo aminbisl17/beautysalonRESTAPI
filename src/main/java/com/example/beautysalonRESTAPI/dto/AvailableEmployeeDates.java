@@ -20,7 +20,6 @@ public class AvailableEmployeeDates {
 
     private LocalDate start_date;
     private LocalDate end_date;
-    private List<LocalDateTime> unavailableDates;
 private List<AvailabilityDetails> availabilityDetails = new ArrayList<>();
 private List<Long> availableSkills = new ArrayList<>();
 private List<SherbimetAdminDTO> sherbimetDisplay = new ArrayList<>();
@@ -73,18 +72,6 @@ public AvailableEmployeeDates(employeeAvailability e) {
         .toList();
 }
 
-
-public List<LocalDateTime> getUnavailableDates() {
-        return unavailableDates;
-    }
-
-    public void setUnavailableDates(List<LocalDateTime> unavailableDates) {
-        this.unavailableDates = unavailableDates;
-    }
-
-
-
-    
     public Long getId_availability() {
       return id_availability;
    }
