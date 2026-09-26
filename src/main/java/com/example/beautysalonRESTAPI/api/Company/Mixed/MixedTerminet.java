@@ -1,5 +1,6 @@
 package com.example.beautysalonRESTAPI.api.Company.Mixed;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,27 +66,11 @@ private SimpMessagingTemplate messagingTemplate;
 
           boolean success = terminetService.createAppointment(dto);
             if (success) {
-/* 
-    List<employeeAvailability> availability =
-            availabilityRepository.findByEmployees_ID(dto.getEmployeeId());
-
-               DetajetStafitDTO data = new DetajetStafitDTO();
-
-                 data.setDates(
-                    availability.stream()
-                            .map(AvailableEmployeeDates::new)
-                            .filter(date ->
-                                   !date.getStart_date()
-         .equals(dto.getDataCaktimit().toLocalDate())
-                            )
-                            .toList()
-            );
-
                 
    messagingTemplate.convertAndSend(
             "/topic/availability/" +  dto.getEmployeeId(),
-            data
-    ); */
+            terminetService.FilteredData(dto.getEmployeeId())
+    ); 
          //      smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
     //     ems.sendOtp(client, null, null);
                 return ResponseEntity.ok("Termini u krijua!");
@@ -107,20 +92,7 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
     }
 
-    List<employeeAvailability> availability =
-            availabilityRepository.findByEmployees_ID(id);
-
-    DetajetStafitDTO data = new DetajetStafitDTO();
-    data.setDates(
-        availability.stream()
-                .map(AvailableEmployeeDates::new)
-                .toList()
-    );
-
-   messagingTemplate.convertAndSend(
-            "/topic/availability/" + id,
-            data
-    );
+    DetajetStafitDTO data = terminetService.FilteredData(id);
 
     return ResponseEntity.ok(data);
 }

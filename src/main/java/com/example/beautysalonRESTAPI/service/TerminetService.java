@@ -3,18 +3,21 @@ import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.List;
-
+import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetTermineveDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetGetDTO;
 import com.example.beautysalonRESTAPI.model.Terminet;
 import com.example.beautysalonRESTAPI.repository.Terminet.TerminetRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
-
+import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import com.example.beautysalonRESTAPI.model.employeeAvailability;
+import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 
 @Service
 public class TerminetService {
@@ -25,6 +28,9 @@ public class TerminetService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+      @Autowired
+    private employeeAvailabilityRepository availabilityRepository;
 
     public boolean createAppointment(TerminetCreateDTO dto) throws SQLException {
 
@@ -72,4 +78,36 @@ public List<TerminetGetDTO> getSpecificEmployeeAppointments(Long id) {
             .map(TerminetGetDTO::new)
             .toList();
 }
+
+public DetajetStafitDTO FilteredData(Long id) {
+
+    List<employeeAvailability> availability =
+            availabilityRepository.findByEmployees_ID(id);
+
+    List<LocalDateTime> existingAppointments =
+            terRepo.findDataCaktimitByEmployeeId(id);
+
+    DetajetStafitDTO data = new DetajetStafitDTO();
+
+    data.setDates(
+        availability.stream()
+            .map(employeeAvailability -> {
+                AvailableEmployeeDates date =
+                        new AvailableEmployeeDates(employeeAvailability);
+
+                date.setUnavailableDates(
+                    date.getUnavailableDates()
+                        .stream()
+                        .filter(time -> !existingAppointments.contains(time))
+                        .toList()
+                );
+
+                return date;
+            })
+            .toList()
+    );
+
+    return data;
+}
+
 }

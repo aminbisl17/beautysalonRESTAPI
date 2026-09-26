@@ -1,5 +1,7 @@
 package com.example.beautysalonRESTAPI.repository.Terminet;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +23,14 @@ public interface TerminetRepository extends JpaRepository<Terminet, Long> {
         WHERE t.employee.ID = :employeeId
         """)
     List<Terminet> findByEmployeeId(@Param("employeeId") Long employeeId);
+
+  
+    @Query("""
+    SELECT t.data_caktimit
+    FROM Terminet t
+    WHERE t.employee.ID = :employeeId
+    """)
+List<LocalDateTime> findDataCaktimitByEmployeeId(
+    @Param("employeeId") Long employeeId
+);
 }
