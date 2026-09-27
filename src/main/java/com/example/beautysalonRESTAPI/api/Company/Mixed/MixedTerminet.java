@@ -44,15 +44,6 @@ public class MixedTerminet {
     @Autowired
     private EmployeesRepository employeeRepo;
 
-    @Autowired
-    private skillsRepository skillsRepo;
-    
-    @Autowired
-    private employeeAvailabilityRepository availabilityRepository;
-
-    @Autowired
-    private availableSkillsRepository avaSkillsRepo;
-
     @Autowired 
     private EmailService ems;
 
@@ -64,13 +55,10 @@ private SimpMessagingTemplate messagingTemplate;
 
      try {
 
-          boolean success = terminetService.createAppointment(dto);
-            if (success) {
+      //    boolean success = terminetService.createAppointment(dto);
+            if (terminetService.createAppointment(dto)) {
                 
-   messagingTemplate.convertAndSend(
-            "/topic/availability/" +  dto.getEmployeeId(),
-            terminetService.FilteredData(dto.getEmployeeId())
-    ); 
+   messagingTemplate.convertAndSend("/topic/availability/" +  dto.getEmployeeId(), terminetService.FilteredData(dto.getEmployeeId())); 
          //      smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
     //     ems.sendOtp(client, null, null);
                 return ResponseEntity.ok("Termini u krijua!");
@@ -97,9 +85,8 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
      return ResponseEntity.ok(data);
     }
     catch(Exception e){
-     e.printStackTrace();
+         return ResponseEntity.badRequest().body(e.getMessage());
     }
-    return ResponseEntity.badRequest().body("Error");
 }
 
 

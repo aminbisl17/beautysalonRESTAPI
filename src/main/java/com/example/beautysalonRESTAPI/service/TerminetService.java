@@ -90,7 +90,7 @@ public DetajetStafitDTO FilteredData(Long id) {
 
     DetajetStafitDTO data = new DetajetStafitDTO();
 
-  data.setDates( availability.stream() .map(AvailableEmployeeDates::new).toList());
+  data.setDates(availability.stream().map(AvailableEmployeeDates::new).toList());
   data.setUnavailableDates(existingAppointments);
 
 
