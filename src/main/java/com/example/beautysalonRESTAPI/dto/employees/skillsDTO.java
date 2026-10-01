@@ -1,6 +1,8 @@
 package com.example.beautysalonRESTAPI.dto.employees;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +33,7 @@ public class skillsDTO {
 
             String imageName = sherbimet.getImagepath();
 
+            /* 
             if (imageName != null && !imageName.isBlank()) {
                 Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
 
@@ -50,7 +53,14 @@ public class skillsDTO {
             } else {
                 // Image name in DB is null or blank
                 this.service.setImagepath(null);
-            }
+            } */
+
+                
+if (imageName != null && !imageName.isBlank()) {
+    this.service.setImagepath("https://blobstorageamin.blob.core.windows.net/beautysalon-images/SherbimetImgPath/"
+            + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
+              .replace("+", "%20"));
+}
         }
     }
 
