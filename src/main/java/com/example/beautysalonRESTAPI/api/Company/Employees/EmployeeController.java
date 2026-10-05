@@ -213,6 +213,7 @@ public ResponseEntity<?> updateAvailableDates(
         boolean success = employeeDates.updateAvailableEmployeeDates(availabilityId, employeeIdFromToken, updatedData);
 
         if (success) {
+             messagingTemplate.convertAndSend("/topic/appointments/employee/" +  employeeIdFromToken, terminetService.getSpecificEmployeeAppointments(employeeIdFromToken)); 
             return ResponseEntity.ok("Successfully updated availability!");
         } else {
             return ResponseEntity.status(404).body("Availability record not found or unauthorized");
