@@ -6,6 +6,7 @@ import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
+import com.example.beautysalonRESTAPI.service.TerminetService;
 import com.example.beautysalonRESTAPI.service.Employees.EmployeeAvailabilityDateService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +51,11 @@ public class EmployeeController {
     @Autowired 
     private employeeAvailabilityRepository employeeAvailabilityRepository;
 
+    @Autowired
+    private TerminetService terminetService;
+
+     @Autowired
+private SimpMessagingTemplate messagingTemplate;
     
     @Autowired
  private BCryptPasswordEncoder passwordEncoder;
@@ -136,11 +143,14 @@ public class EmployeeController {
             return ResponseEntity.status(401).body("Invalid or expired token");
         }
 
-            a.setId_employee(jwtUtil.extractId(token));
+            Long id = jwtUtil.extractId(token);
+
+            a.setId_employee(id);
 
             boolean success = employeeDates.setAvailableEmployeeDates(a);
 
             if(success){
+                     messagingTemplate.convertAndSend("/topic/appointments/employee/" +  id, terminetService.getSpecificEmployeeAppointments(id)); 
                 return ResponseEntity.ok("Success!!");
             } else{
               return ResponseEntity.status(500).body("Failed");
