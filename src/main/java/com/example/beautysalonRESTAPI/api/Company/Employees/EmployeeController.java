@@ -150,7 +150,7 @@ private SimpMessagingTemplate messagingTemplate;
             boolean success = employeeDates.setAvailableEmployeeDates(a);
 
             if(success){
-                     messagingTemplate.convertAndSend("/topic/appointments/employee/" +  id, terminetService.getSpecificEmployeeAppointments(id)); 
+                     messagingTemplate.convertAndSend("/topic/availability/employee/" +  id, terminetService.getSpecificEmployeeAppointments(id)); 
                 return ResponseEntity.ok("Success!!");
             } else{
               return ResponseEntity.status(500).body("Failed");
@@ -213,7 +213,7 @@ public ResponseEntity<?> updateAvailableDates(
         boolean success = employeeDates.updateAvailableEmployeeDates(availabilityId, employeeIdFromToken, updatedData);
 
         if (success) {
-             messagingTemplate.convertAndSend("/topic/appointments/employee/" +  employeeIdFromToken, terminetService.getSpecificEmployeeAppointments(employeeIdFromToken)); 
+             messagingTemplate.convertAndSend("/topic/availability/employee/" +  employeeIdFromToken, terminetService.getSpecificEmployeeAppointments(employeeIdFromToken)); 
             return ResponseEntity.ok("Successfully updated availability!");
         } else {
             return ResponseEntity.status(404).body("Availability record not found or unauthorized");
