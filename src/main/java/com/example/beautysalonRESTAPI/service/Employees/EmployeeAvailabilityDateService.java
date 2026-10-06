@@ -224,22 +224,21 @@ if (updatedData.getAvailableSkills() != null) {
     // 1. DELETE SKILLS NO LONGER SELECTED
     // ---------------------------------
 
-    for (availableSkills currentSkill : currentSkills) {
-
-        if (currentSkill.getSkills() == null) {
-            availableSkillsRepo.delete(currentSkill);
-            continue;
-        }
-
-        Long currentSkillId =
-                currentSkill.getSkills().getId();
-
-        if (!requestedSkillIds.contains(currentSkillId)) {
-
-            availableSkillsRepo.delete(currentSkill);
-        }
+   currentSkills.removeIf(currentSkill -> {
+    if (currentSkill.getSkills() == null) {
+        availableSkillsRepo.delete(currentSkill);
+        return true;
     }
 
+    Long currentSkillId = currentSkill.getSkills().getId();
+
+    if (!requestedSkillIds.contains(currentSkillId)) {
+        availableSkillsRepo.delete(currentSkill);
+        return true;
+    }
+
+    return false;
+});
     // ---------------------------------
     // 2. GET CURRENT SKILL IDS
     //    AFTER REMOVALS
@@ -286,14 +285,14 @@ if (updatedData.getAvailableSkills() != null) {
         }
 
         // Create new availableSkill
-        availableSkills newAvailableSkill =
-                new availableSkills();
+     availableSkills newAvailableSkill = new availableSkills();
 
-        newAvailableSkill.setEmpAva(existingRecord);
-        newAvailableSkill.setSkills(skill);
+newAvailableSkill.setEmpAva(existingRecord);
+newAvailableSkill.setSkills(skill);
 
-        // Save into availableSkill table
-        availableSkillsRepo.save(newAvailableSkill);
+availableSkillsRepo.save(newAvailableSkill);
+
+existingRecord.getAvailableSkills().add(newAvailableSkill);
     }
 }
 
