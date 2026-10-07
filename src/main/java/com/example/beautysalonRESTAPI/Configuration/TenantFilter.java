@@ -14,8 +14,6 @@ import java.util.Map;
 public class TenantFilter extends OncePerRequestFilter {
 
     private static final Map<String, String> TENANT_SCHEMAS = Map.of(
-    "tenant-a", "salon_a",
-    "tenant-b", "salon_b",
     "tenant-test", "tenant_test"
 );
 
