@@ -10,10 +10,15 @@ public class TenantIdentifierResolver
     private static final String DEFAULT_TENANT = "dbo";
 
     @Override
-    public String resolveCurrentTenantIdentifier() {
-        String tenant = TenantContext.getTenant();
-        return tenant != null ? tenant : DEFAULT_TENANT;
+public String resolveCurrentTenantIdentifier() {
+    String tenant = TenantContext.getTenant();
+
+    if (tenant == null || tenant.isBlank()) {
+        throw new IllegalStateException("No tenant is set for this request");
     }
+
+    return tenant;
+}
 
     @Override
     public boolean validateExistingCurrentSessions() {

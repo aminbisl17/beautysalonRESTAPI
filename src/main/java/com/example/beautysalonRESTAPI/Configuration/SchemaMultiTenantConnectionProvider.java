@@ -2,6 +2,8 @@ package com.example.beautysalonRESTAPI.Configuration;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
@@ -11,15 +13,17 @@ import org.springframework.stereotype.Component;
 public class SchemaMultiTenantConnectionProvider
         implements MultiTenantConnectionProvider<String> {
 
-    private final DataSource dataSource;
+    // Keys must match the identifiers returned by TenantIdentifierResolver.
+    private final Map<String, DataSource> tenantDataSources;
 
-    public SchemaMultiTenantConnectionProvider(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public SchemaMultiTenantConnectionProvider(
+            Map<String, DataSource> tenantDataSources) {
+        this.tenantDataSources = tenantDataSources;
     }
 
     @Override
     public Connection getAnyConnection() throws SQLException {
-        return dataSource.getConnection();
+        return tenantDataSources.values().iterator().next().getConnection();
     }
 
     @Override
@@ -29,25 +33,18 @@ public class SchemaMultiTenantConnectionProvider
 
     @Override
     public Connection getConnection(String tenantIdentifier) throws SQLException {
-        Connection connection = getAnyConnection();
-        try {
-            connection.setSchema(tenantIdentifier);
-            return connection;
-        } catch (SQLException e) {
-            connection.close();
-            throw e;
+        DataSource dataSource = tenantDataSources.get(tenantIdentifier);
+        if (dataSource == null) {
+            throw new SQLException("Unknown tenant: " + tenantIdentifier);
         }
+        return dataSource.getConnection();
     }
 
     @Override
     public void releaseConnection(
             String tenantIdentifier, Connection connection) throws SQLException {
-        try {
-            connection.setSchema("dbo"); // Reset before returning to the pool
-        } finally {
-            connection.close();
-        }
-    }
+        connection.close(); // Returns it to that tenant's pool.
+            }
 
     @Override
     public boolean supportsAggressiveRelease() {
