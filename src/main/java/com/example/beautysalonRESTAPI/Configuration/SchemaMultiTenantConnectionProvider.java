@@ -3,48 +3,41 @@ package com.example.beautysalonRESTAPI.Configuration;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
-
+import java.sql.Statement; 
 import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.springframework.stereotype.Component;
-
 @Component
 public class SchemaMultiTenantConnectionProvider
         implements MultiTenantConnectionProvider<String> {
 
-    // Keys must match the identifiers returned by TenantIdentifierResolver.
-    private final Map<String, DataSource> tenantDataSources;
+    private final DataSource dataSource;   // single injected DataSource
 
-    public SchemaMultiTenantConnectionProvider(
-            Map<String, DataSource> tenantDataSources) {
-        this.tenantDataSources = tenantDataSources;
+    public SchemaMultiTenantConnectionProvider(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    @Override
-    public Connection getAnyConnection() throws SQLException {
-        return tenantDataSources.values().iterator().next().getConnection();
-    }
-
-    @Override
-    public void releaseAnyConnection(Connection connection) throws SQLException {
-        connection.close();
-    }
-
-    @Override
-    public Connection getConnection(String tenantIdentifier) throws SQLException {
-        DataSource dataSource = tenantDataSources.get(tenantIdentifier);
-        if (dataSource == null) {
-            throw new SQLException("Unknown tenant: " + tenantIdentifier);
-        }
+    @Override public Connection getAnyConnection() throws SQLException {
         return dataSource.getConnection();
     }
+    @Override public void releaseAnyConnection(Connection c) throws SQLException { c.close(); }
 
     @Override
-    public void releaseConnection(
-            String tenantIdentifier, Connection connection) throws SQLException {
-        connection.close(); // Returns it to that tenant's pool.
-            }
+    public Connection getConnection(String tenant) throws SQLException {
+        Connection c = dataSource.getConnection();
+        try (Statement s = c.createStatement()) {
+            // tenant comes from your fixed whitelist, never raw user input
+            s.execute("EXECUTE AS USER = '" + tenant + "_user'");
+        } catch (SQLException e) { c.close(); throw e; }
+        return c;
+    }
+
+    @Override
+    public void releaseConnection(String tenant, Connection c) throws SQLException {
+        try (Statement s = c.createStatement()) { s.execute("REVERT"); }
+        finally { c.close(); }
+    }
 
     @Override
     public boolean supportsAggressiveRelease() {

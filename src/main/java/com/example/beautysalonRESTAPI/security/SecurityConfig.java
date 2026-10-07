@@ -2,6 +2,7 @@ package com.example.beautysalonRESTAPI.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -35,6 +36,13 @@ public class SecurityConfig {
     @Qualifier("employeeDetailsService")
     private UserDetailsService employeeDetailsService;
 
+    @Bean FilterRegistrationBean<TenantFilter> tenantReg(TenantFilter f) {
+    var r = new FilterRegistrationBean<>(f); r.setEnabled(false); return r;
+}
+@Bean FilterRegistrationBean<JwtAuthFilter> jwtReg(JwtAuthFilter f) {
+    var r = new FilterRegistrationBean<>(f); r.setEnabled(false); return 
+    r;
+}
   @Bean
 public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -137,7 +145,7 @@ public AuthenticationManager employeeAuthManager() {
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(tenantFilter, JwtAuthFilter.class);
+.addFilterBefore(tenantFilter, JwtAuthFilter.class);
             
         return http.build();
     }
