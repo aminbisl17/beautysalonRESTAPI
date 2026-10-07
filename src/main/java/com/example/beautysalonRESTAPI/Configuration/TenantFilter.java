@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
@@ -33,9 +34,19 @@ public class TenantFilter extends OncePerRequestFilter {
       //  throw new UnsupportedOperationException("Implement tenant lookup");
     //}
 
-    private String resolveAndValidateTenant(HttpServletRequest request) {
-    String tenant = request.getHeader("X-Tenant-ID");
-    return "tenant_test".equals(tenant) ? tenant : null;
-}
+    private static final Map<String, String> TENANT_SCHEMAS = Map.of(
+    "tenant-a", "salon_a",
+    "tenant-b", "salon_b",
+    "tenant-test", "tenant_test"
+);
 
+   private String resolveAndValidateTenant(HttpServletRequest request) {
+    String tenantId = request.getHeader("X-Tenant-ID");
+
+    if (tenantId == null || !TENANT_SCHEMAS.containsKey(tenantId)) {
+        return null;
+    }
+
+    return TENANT_SCHEMAS.get(tenantId); // canonical schema name
+}
 }
