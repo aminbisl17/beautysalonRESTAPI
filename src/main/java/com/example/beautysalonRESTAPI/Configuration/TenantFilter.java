@@ -13,32 +13,41 @@ import java.util.Map;
 @Component
 public class TenantFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
-
-        try {
-            String tenant = resolveAndValidateTenant(request);
-            TenantContext.setTenant(tenant);
-            chain.doFilter(request, response);
-        } finally {
-            TenantContext.clear();
-        }
-    }
-
-   // private String resolveAndValidateTenant(HttpServletRequest request) {
-        // Look up the tenant from a trusted source, such as the
-        // authenticated user's account or a validated hostname.
-      //  throw new UnsupportedOperationException("Implement tenant lookup");
-    //}
-
     private static final Map<String, String> TENANT_SCHEMAS = Map.of(
     "tenant-a", "salon_a",
     "tenant-b", "salon_b",
     "tenant-test", "tenant_test"
 );
+
+@Override
+protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain chain) throws ServletException, IOException {
+
+    String tenantId = request.getHeader("X-Tenant-ID");
+    String schema = TENANT_SCHEMAS.get(tenantId);
+
+    if (schema == null) {
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Missing or unknown X-Tenant-ID"
+        );
+        return; // Critical: don't continue the request
+    }
+
+    try {
+        TenantContext.setTenant(schema);
+        chain.doFilter(request, response);
+    } finally {
+        TenantContext.clear();
+    }
+}
+   // private String resolveAndValidateTenant(HttpServletRequest request) {
+        // Look up the tenant from a trusted source, such as the
+        // authenticated user's account or a validated hostname.
+      //  throw new UnsupportedOperationException("Implement tenant lookup");
+    //}
 
    private String resolveAndValidateTenant(HttpServletRequest request) {
     String tenantId = request.getHeader("X-Tenant-ID");
