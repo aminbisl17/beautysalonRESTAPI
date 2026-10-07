@@ -26,25 +26,36 @@ public class TenantFilter extends OncePerRequestFilter {
         return p.startsWith("/actuator") || p.startsWith("/ws")
             || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
+@Override
+protected void doFilterInternal(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain)
+        throws ServletException, IOException {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    String tenantId;
 
-        String tenantId = request.getHeader("X-Tenant-ID");
-        String schema = (tenantId == null) ? null : TENANT_SCHEMAS.get(tenantId);
-
-        if (schema == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing or unknown X-Tenant-ID");
-            return;
-        }
-        try {
-            TenantContext.setTenant(schema);
-            chain.doFilter(request, response);
-        } finally {
-            TenantContext.clear();
-        }
+    if (request.isSecure()) {
+        // Production: https://beautysalonclient.aminbislimaj.com
+        String host = request.getServerName();
+        tenantId = host.split("\\.")[0];
+    } else {
+        // Local development
+        tenantId = request.getHeader("X-Tenant-ID");
     }
+
+    String schema = (tenantId == null) ? null : TENANT_SCHEMAS.get(tenantId);
+
+    if (schema == null) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                "Missing or unknown tenant");
+        return;
+    }
+
+    try {
+        TenantContext.setTenant(schema);
+        chain.doFilter(request, response);
+    } finally {
+        TenantContext.clear();
+    }
+}
+ 
 }
