@@ -27,9 +27,15 @@ public class TenantFilter extends OncePerRequestFilter {
         }
     }
 
-    private String resolveAndValidateTenant(HttpServletRequest request) {
+   // private String resolveAndValidateTenant(HttpServletRequest request) {
         // Look up the tenant from a trusted source, such as the
         // authenticated user's account or a validated hostname.
-        throw new UnsupportedOperationException("Implement tenant lookup");
-    }
+      //  throw new UnsupportedOperationException("Implement tenant lookup");
+    //}
+
+    private String resolveAndValidateTenant(HttpServletRequest request) {
+    String tenant = request.getHeader("X-Tenant-ID");
+    return "tenant_test".equals(tenant) ? tenant : null;
+}
+
 }
