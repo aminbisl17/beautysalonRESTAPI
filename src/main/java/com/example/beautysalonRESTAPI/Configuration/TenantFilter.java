@@ -13,10 +13,10 @@ import java.util.Map;
 @Component
 public class TenantFilter extends OncePerRequestFilter {
 
-    private static final Map<String, String> TENANT_SCHEMAS = Map.of(
-    "tenant-test", "tenant_test"
+private static final Map<String, String> TENANT_SCHEMAS = Map.of(
+    "tenant-test", "tenant_test",
+    "tenant-dbo", "dbo"
 );
-
 @Override
 protected void doFilterInternal(
         HttpServletRequest request,
