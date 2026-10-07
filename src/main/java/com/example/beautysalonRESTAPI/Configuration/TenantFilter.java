@@ -15,8 +15,8 @@ public class TenantFilter extends OncePerRequestFilter {
 
     private static final Map<String, String> TENANT_SCHEMAS = Map.of(
         "tenant-test", "tenant_test",
-        "beautysalonclient", "tenant_test",
-"beautysalonadmin", "tenant_test",
+        "beautysalonclient", "dbo",
+"beautysalonadmin", "dbo",
         "tenant-dbo", "dbo"
     );
 
