@@ -104,7 +104,7 @@ public AuthenticationManager employeeAuthManager() {
     .hasAnyRole("ADMIN", "EMPLOYEE")
 
     .requestMatchers("/api/admin/data").hasRole("ADMIN")
-    .requestMatchers("/api/admin/register").hasRole("ADMIN")
+    .requestMatchers("/api/admin/register").permitAll()
     .requestMatchers("/api/admin/update").hasRole("ADMIN")
 
     .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
