@@ -50,6 +50,26 @@ public class TenantService {
             );
         } catch (Exception e) {
             return null;
+        
         }
     }
+
+    public TenantInfo findByDomain(String domain) {
+    String sql = """
+        SELECT Id, SchemaName, Name
+        FROM dbo.Tenants
+        WHERE Domain = ?
+    """;
+
+    return jdbcTemplate.queryForObject(
+        sql,
+        (rs, rowNum) -> new TenantInfo(
+            rs.getLong("Id"),
+            rs.getString("SchemaName"),
+            rs.getString("Name")
+        ),
+        domain
+    );
+}
+
 }

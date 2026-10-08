@@ -38,61 +38,50 @@ protected void doFilterInternal(
         HttpServletResponse response,
         FilterChain chain)
         throws ServletException, IOException {
+            
+String tenantKey = request.getHeader("X-Tenant-ID");
 
-    String tenantKey = request.getHeader("X-Tenant-ID");
+TenantInfo tenant;
 
-    // If X-Tenant-ID is missing, try Origin
-    if (tenantKey == null || tenantKey.isBlank()) {
+try {
+    if (tenantKey != null && !tenantKey.isBlank()) {
+
+        tenant = tenantService.findByKey(tenantKey);
+
+    } else {
 
         String origin = request.getHeader("Origin");
 
-        if (origin != null && !origin.isBlank()) {
-            try {
-                java.net.URI uri = java.net.URI.create(origin);
-                tenantKey = uri.getHost();
-            } catch (Exception e) {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Invalid Origin"
-                );
-                return;
-            }
+        if (origin == null || origin.isBlank()) {
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing tenant information"
+            );
+            return;
         }
+
+        String domain = java.net.URI.create(origin).getHost();
+
+        tenant = tenantService.findByDomain(domain);
     }
 
-    // Still no tenant information
-    if (tenantKey == null || tenantKey.isBlank()) {
-        response.sendError(
-                HttpServletResponse.SC_BAD_REQUEST,
-                "Missing tenant information"
-        );
-        return;
-    }
+} catch (Exception e) {
+    response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Unknown tenant"
+    );
+    return;
+}
 
-    TenantInfo tenant;
+try {
+    TenantContext.setTenant(tenant.schemaName());
+    TenantContext.setTenantId(tenant.id());
 
-    try {
-        tenant = tenantService.findByKey(tenantKey);
+    chain.doFilter(request, response);
 
-    } catch (Exception e) {
-        response.sendError(
-                HttpServletResponse.SC_BAD_REQUEST,
-                "Unknown tenant"
-        );
-        return;
-    }
-
-    try {
-
-        TenantContext.setTenant(tenant.schemaName());
-        TenantContext.setTenantId(tenant.id());
-
-        chain.doFilter(request, response);
-
-    } finally {
-
-        TenantContext.clear();
-    }
+} finally {
+    TenantContext.clear();
+}
 }
 
 }
