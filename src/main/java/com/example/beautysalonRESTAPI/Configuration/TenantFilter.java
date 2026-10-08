@@ -31,46 +31,68 @@ public class TenantFilter extends OncePerRequestFilter {
                 || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
+ 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain)
-            throws ServletException, IOException {
+protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain chain)
+        throws ServletException, IOException {
 
-        String tenantKey = request.getHeader("X-Tenant-ID");
+    String tenantKey = request.getHeader("X-Tenant-ID");
 
-        if (tenantKey == null || tenantKey.isBlank()) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing X-Tenant-ID"
-            );
-            return;
-        }
+    // If X-Tenant-ID is missing, try Origin
+    if (tenantKey == null || tenantKey.isBlank()) {
 
-        TenantInfo tenant;
+        String origin = request.getHeader("Origin");
 
-        try {
-            tenant = tenantService.findByKey(tenantKey);
-
-        } catch (Exception e) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Unknown tenant"
-            );
-            return;
-        }
-
-        try {
-
-            TenantContext.setTenant(tenant.schemaName());
-            TenantContext.setTenantId(tenant.id());
-
-            chain.doFilter(request, response);
-
-        } finally {
-
-            TenantContext.clear();
+        if (origin != null && !origin.isBlank()) {
+            try {
+                java.net.URI uri = java.net.URI.create(origin);
+                tenantKey = uri.getHost();
+            } catch (Exception e) {
+                response.sendError(
+                        HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid Origin"
+                );
+                return;
+            }
         }
     }
+
+    // Still no tenant information
+    if (tenantKey == null || tenantKey.isBlank()) {
+        response.sendError(
+                HttpServletResponse.SC_BAD_REQUEST,
+                "Missing tenant information"
+        );
+        return;
+    }
+
+    TenantInfo tenant;
+
+    try {
+        tenant = tenantService.findByKey(tenantKey);
+
+    } catch (Exception e) {
+        response.sendError(
+                HttpServletResponse.SC_BAD_REQUEST,
+                "Unknown tenant"
+        );
+        return;
+    }
+
+    try {
+
+        TenantContext.setTenant(tenant.schemaName());
+        TenantContext.setTenantId(tenant.id());
+
+        chain.doFilter(request, response);
+
+    } finally {
+
+        TenantContext.clear();
+    }
+}
+
 }
