@@ -38,7 +38,7 @@ protected void doFilterInternal(
         HttpServletResponse response,
         FilterChain chain)
         throws ServletException, IOException {
-            
+
 String tenantKey = request.getHeader("X-Tenant-ID");
 
 TenantInfo tenant;
@@ -52,6 +52,7 @@ try {
 
         String origin = request.getHeader("Origin");
 
+        
         if (origin == null || origin.isBlank()) {
             response.sendError(
                     HttpServletResponse.SC_BAD_REQUEST,

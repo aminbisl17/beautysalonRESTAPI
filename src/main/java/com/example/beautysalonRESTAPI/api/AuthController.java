@@ -99,25 +99,21 @@ private final TenantService tenantService;
     summary = "Kyçja Admin",
     description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token"
 )
+
+
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(
         @RequestBody AuthRequest request,
         HttpServletResponse response) {
 
-    TenantInfo tenant;
+    Long tenantId = TenantContext.getTenantId();
 
-    try {
-        // 1. Find tenant from central dbo.Tenants
-        tenant = tenantService.findByKey(request.getTenantKey());
-
-    } catch (Exception e) {
+    if (tenantId == null) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body("Invalid tenant");
+                .body("Tenant not resolved");
     }
 
-    // 2. Set tenant schema BEFORE authentication
-    TenantContext.setTenant(tenant.schemaName());
 
     try {
 
@@ -146,14 +142,14 @@ public ResponseEntity<?> loginAdmin(
                 adminUser.getId(),
                 adminUser.getUsername(),
                 "ROLE_ADMIN",
-                tenant.id()
+                tenantId
         );
 
         String accessToken = jwtUtil.generateToken(
                 adminUser.getId(),
                 adminUser.getUsername(),
                 "ROLE_ADMIN",
-                tenant.id()
+                tenantId
         );
 
         // 6. Refresh cookie
