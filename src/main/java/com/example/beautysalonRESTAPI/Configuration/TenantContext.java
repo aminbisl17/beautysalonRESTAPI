@@ -1,21 +1,34 @@
 package com.example.beautysalonRESTAPI.Configuration;
 
-public class TenantContext{
-private static final ThreadLocal<String> CURRENT_TENANT =
-        new ThreadLocal<>();
+public class TenantContext {
 
-private TenantContext() {
-}
+    private static final ThreadLocal<String> CURRENT_TENANT =
+            new ThreadLocal<>();
 
-public static void setTenant(String tenant) {
-    CURRENT_TENANT.set(tenant);
-}
+    private static final ThreadLocal<Long> CURRENT_TENANT_ID =
+            new ThreadLocal<>();
 
-public static String getTenant() {
-    return CURRENT_TENANT.get();
-}
+    private TenantContext() {
+    }
 
-public static void clear() {
-    CURRENT_TENANT.remove();
-}
+    public static void setTenant(String tenant) {
+        CURRENT_TENANT.set(tenant);
+    }
+
+    public static String getTenant() {
+        return CURRENT_TENANT.get();
+    }
+
+    public static void setTenantId(Long tenantId) {
+        CURRENT_TENANT_ID.set(tenantId);
+    }
+
+    public static Long getTenantId() {
+        return CURRENT_TENANT_ID.get();
+    }
+
+    public static void clear() {
+        CURRENT_TENANT.remove();
+        CURRENT_TENANT_ID.remove();
+    }
 }

@@ -2,7 +2,6 @@ package com.example.beautysalonRESTAPI.api;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -35,12 +34,13 @@ import com.example.beautysalonRESTAPI.service.LoginOTPService;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
+import com.example.beautysalonRESTAPI.service.TenantService;
+import com.example.beautysalonRESTAPI.dto.TenantInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-
+import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 
 @Tag(name = "Autentikimi", description = "Autentikimi i përdoruesve të platformës")
 @RestController
@@ -79,65 +79,114 @@ private AprovalsRepository aprovalsRepo;
    private final AuthenticationManager adminAuthManager;
 private final AuthenticationManager clientAuthManager;
 private final AuthenticationManager employeeAuthManager;
+private final TenantService tenantService;
 
    public AuthController(
     @Qualifier("adminAuthManager") AuthenticationManager adminAuthManager,
     @Qualifier("clientAuthManager") AuthenticationManager clientAuthManager,
-    @Qualifier("employeeAuthManager") AuthenticationManager employeeAuthManager
+    @Qualifier("employeeAuthManager") AuthenticationManager employeeAuthManager,
+      TenantService tenantService
 ) {
     this.adminAuthManager = adminAuthManager;
     this.clientAuthManager = clientAuthManager;
     this.employeeAuthManager = employeeAuthManager;
+    this.tenantService = tenantService;
 }
     @Autowired
     private JwtUtil jwtUtil;
 
-
-    @Operation(summary = "Kyçja Admin", description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token")
+@Operation(
+    summary = "Kyçja Admin",
+    description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token"
+)
 @PostMapping("/login/admin")
-public ResponseEntity<?> loginAdmin(@RequestBody AuthRequest request, HttpServletResponse response) {
-    try {   adminAuthManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+public ResponseEntity<?> loginAdmin(
+        @RequestBody AuthRequest request,
+        HttpServletResponse response) {
+
+    TenantInfo tenant;
+
+    try {
+        // 1. Find tenant from central dbo.Tenants
+        tenant = tenantService.findByKey(request.getTenantKey());
+
+    } catch (Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Invalid tenant");
+    }
+
+    // 2. Set tenant schema BEFORE authentication
+    TenantContext.setTenant(tenant.schemaName());
+
+    try {
+
+        // 3. Authenticate against this tenant
+        adminAuthManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+            )
         );
-        
-        
-        Optional<AdminUser> optionalUser = adminRepo.findByUsername(request.getUsername());
 
-         if (optionalUser.isEmpty()) {
-              return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-               .body("Invalid username or password");}
+        // 4. Find admin inside the selected tenant
+        Optional<AdminUser> optionalUser =
+                adminRepo.findByUsername(request.getUsername());
 
-AdminUser adminUser = optionalUser.get();
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password");
+        }
 
-        String jwtToken = jwtUtil.generateRefreshToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN");
+        AdminUser adminUser = optionalUser.get();
 
+        // 5. Generate tokens containing tenant ID
+        String refreshToken = jwtUtil.generateRefreshToken(
+                adminUser.getId(),
+                adminUser.getUsername(),
+                "ROLE_ADMIN",
+                tenant.id()
+        );
 
-         /*
-ResponseCookie cookie = ResponseCookie.from("refreshToken", jwtToken)
+        String accessToken = jwtUtil.generateToken(
+                adminUser.getId(),
+                adminUser.getUsername(),
+                "ROLE_ADMIN",
+                tenant.id()
+        );
+
+        // 6. Refresh cookie
+        ResponseCookie cookie = ResponseCookie.from(
+                "adminRefreshToken",
+                refreshToken
+        )
         .httpOnly(true)
-        .secure(false)         
+        .secure(true)
         .path("/")
-     //     .domain("localhost")
         .maxAge(7 * 24 * 60 * 60)
-        .sameSite("Lax")     
+        .sameSite("None")
         .build();
-*/
 
-     ResponseCookie cookie = ResponseCookie.from("adminRefreshToken", jwtToken)
-    .httpOnly(true)
-    .secure(true)
-    .path("/")
-    .maxAge(7 * 24 * 60 * 60)
-    .sameSite("None")
-    .build();
-response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.ok(Map.of("refreshToken",jwtToken, "token", jwtUtil.generateToken(adminUser.getId(), adminUser.getUsername(), "ROLE_ADMIN")));
+        return ResponseEntity.ok(
+            Map.of(
+                "refreshToken", refreshToken,
+                "token", accessToken
+            )
+        );
 
-   } catch (AuthenticationException e) {
-       
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body("Invalid username or password");
+    } catch (AuthenticationException e) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
+
+    } finally {
+
+        // VERY IMPORTANT
+        TenantContext.clear();
     }
 }
 
@@ -172,16 +221,20 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResp
         Client client = clientRepo.findByNumriTelefonit(response.getNumri_telefonit())
                 .orElseThrow(() -> new IllegalArgumentException("Client not found"));
 
+Long tenantId = TenantContext.getTenantId();
+
         String accessToken = jwtUtil.generateToken(
                 client.getId(),
                 client.getNumriTelefonit(),
-                "ROLE_CLIENT"
+                "ROLE_CLIENT",
+                  tenantId
         );
 
         String refreshToken = jwtUtil.generateRefreshToken(
                 client.getId(),
                 client.getNumriTelefonit(),
-                "ROLE_CLIENT"
+                "ROLE_CLIENT",
+                  tenantId
         );
 
        /* ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
@@ -216,11 +269,13 @@ public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResp
                     Map.of("message", ex.getMessage()));
     }
 }
+
 @PostMapping("/login/employee")
 public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
     try {
-         employeeAuthManager.authenticate(
+
+        employeeAuthManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
@@ -231,22 +286,46 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
                 employeeRepo.findByUsername(request.getUsername());
 
         if (optionalEmployee.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password");
         }
 
         Employees employee = optionalEmployee.get();
-        return ResponseEntity.ok(Map.of(
-            
-            "refreshToken", jwtUtil.generateRefreshToken(employee.getID(), employee.getUsername(), "ROLE_EMPLOYEE")
-              ,"token", jwtUtil.generateToken(
-                        employee.getID(),
-                        employee.getUsername(),
-                        "ROLE_EMPLOYEE"
-                )));
+
+        Long tenantId = TenantContext.getTenantId();
+
+        if (tenantId == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Tenant not found");
+        }
+
+        String refreshToken = jwtUtil.generateRefreshToken(
+                employee.getID(),
+                employee.getUsername(),
+                "ROLE_EMPLOYEE",
+                tenantId
+        );
+
+        String accessToken = jwtUtil.generateToken(
+                employee.getID(),
+                employee.getUsername(),
+                "ROLE_EMPLOYEE",
+                tenantId
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "refreshToken", refreshToken,
+                        "token", accessToken
+                )
+        );
 
     } catch (AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid username or password"));
     }
 }
@@ -355,21 +434,24 @@ public ResponseEntity<?> refresh(
         refreshToken = body.get("refreshToken");
     }
 
-    if (refreshToken == null || !jwtUtil.validateRefreshToken(refreshToken)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    if (refreshToken == null ||
+            !jwtUtil.validateRefreshToken(refreshToken)) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid refresh token"));
     }
 
     String username = jwtUtil.extractUsername(refreshToken);
     String role = jwtUtil.extractRole(refreshToken);
     Long id = jwtUtil.extractId(refreshToken);
-
-    System.out.println(role);
+    Long tenantId = jwtUtil.extractTenantId(refreshToken);
 
     String newAccessToken = jwtUtil.generateToken(
             id,
             username,
-            role
+            role,
+            tenantId
     );
 
     return ResponseEntity.ok(
@@ -378,54 +460,103 @@ public ResponseEntity<?> refresh(
 }
 
 @PostMapping("/refresh-token-admin")
-public ResponseEntity<?> refreshTokenAdmin( @CookieValue(value = "adminRefreshToken", required = false) String adminToken,
-          @RequestBody(required = false) Map<String, String> body){
+public ResponseEntity<?> refreshTokenAdmin(
+        @CookieValue(
+                value = "adminRefreshToken",
+                required = false
+        ) String adminToken,
+        @RequestBody(required = false) Map<String, String> body
+) {
 
-     if (adminToken == null || !jwtUtil.validateRefreshToken(adminToken)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    if (adminToken == null ||
+            !jwtUtil.validateRefreshToken(adminToken)) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid refresh token"));
     }
 
-       String username = jwtUtil.extractUsername(adminToken);
+    String username = jwtUtil.extractUsername(adminToken);
     String role = jwtUtil.extractRole(adminToken);
     Long id = jwtUtil.extractId(adminToken);
+    Long tenantId = jwtUtil.extractTenantId(adminToken);
 
+    String accessToken = jwtUtil.generateToken(
+            id,
+            username,
+            role,
+            tenantId
+    );
 
-    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+    return ResponseEntity.ok(
+            Map.of("accessToken", accessToken)
+    );
 }
 
 @PostMapping("/refresh-token-employee")
-public ResponseEntity<?> refreshTokenEmployee(@RequestBody(required = false) Map<String, String> body){
+public ResponseEntity<?> refreshTokenEmployee(
+        @RequestBody(required = false) Map<String, String> body
+) {
 
-    String empToken = (body != null) ? body.get("refreshToken") : null;
+    String empToken =
+            (body != null) ? body.get("refreshToken") : null;
 
-     if (empToken == null || !jwtUtil.validateRefreshToken(empToken)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    if (empToken == null ||
+            !jwtUtil.validateRefreshToken(empToken)) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid refresh token"));
     }
 
-       String username = jwtUtil.extractUsername(empToken);
+    String username = jwtUtil.extractUsername(empToken);
     String role = jwtUtil.extractRole(empToken);
     Long id = jwtUtil.extractId(empToken);
+    Long tenantId = jwtUtil.extractTenantId(empToken);
 
+    String accessToken = jwtUtil.generateToken(
+            id,
+            username,
+            role,
+            tenantId
+    );
 
-    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+    return ResponseEntity.ok(
+            Map.of("accessToken", accessToken)
+    );
 }
 
 @PostMapping("/refresh-token-client")
-public ResponseEntity<?> refreshTokenClient( @CookieValue(value = "clientRefreshToken", required = false) String clientToken){
+public ResponseEntity<?> refreshTokenClient(
+        @CookieValue(
+                value = "clientRefreshToken",
+                required = false
+        ) String clientToken
+) {
 
-     if (clientToken == null || !jwtUtil.validateRefreshToken(clientToken)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    if (clientToken == null ||
+            !jwtUtil.validateRefreshToken(clientToken)) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid refresh token"));
     }
 
-       String username = jwtUtil.extractUsername(clientToken);
+    String username = jwtUtil.extractUsername(clientToken);
     String role = jwtUtil.extractRole(clientToken);
     Long id = jwtUtil.extractId(clientToken);
+    Long tenantId = jwtUtil.extractTenantId(clientToken);
 
+    String accessToken = jwtUtil.generateToken(
+            id,
+            username,
+            role,
+            tenantId
+    );
 
-    return ResponseEntity.ok(Map.of("accessToken", jwtUtil.generateToken(id, username, role)));
+    return ResponseEntity.ok(
+            Map.of("accessToken", accessToken)
+    );
 }
 
 }

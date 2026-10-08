@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 import com.example.beautysalonRESTAPI.dto.OtpClient;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientDTO;
 import com.example.beautysalonRESTAPI.dto.Clients.ClientRegisterRequest;
@@ -321,50 +322,74 @@ catch(Exception e){
 
 }
 
-   @PostMapping("/verify/fast-login&register")
-public ResponseEntity<?> verifyFastLoginRegister(@RequestBody OtpClient response, HttpServletResponse res) throws JsonProcessingException {
+@PostMapping("/verify/fast-login&register")
+public ResponseEntity<?> verifyFastLoginRegister(
+        @RequestBody OtpClient response,
+        HttpServletResponse res
+) throws JsonProcessingException {
 
-    // Validate OTP first
     try {
-        if(approvalService.validateOTP(response.getOtpcode(), response.getNumri_telefonit())){
 
-               Client client = clientRepo.findByNumriTelefonit(response.getNumri_telefonit())
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        // Validate OTP first
+        if (approvalService.validateOTP(
+                response.getOtpcode(),
+                response.getNumri_telefonit()
+        )) {
 
-        String accessToken = jwtUtil.generateToken(
-                client.getId(),
-                client.getNumriTelefonit(),
-                "ROLE_CLIENT"
-        );
+            Client client = clientRepo
+                    .findByNumriTelefonit(response.getNumri_telefonit())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("Client not found"));
 
-        String refreshToken = jwtUtil.generateRefreshToken(
-                client.getId(),
-                client.getNumriTelefonit(),
-                "ROLE_CLIENT"
-        );
+            Long tenantId = TenantContext.getTenantId();
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(30 * 24 * 60 * 60)
-                .sameSite("Lax")
-                .build();
+            if (tenantId == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Tenant not found"));
+            }
 
-        res.addHeader("Set-Cookie", cookie.toString());
+            String accessToken = jwtUtil.generateToken(
+                    client.getId(),
+                    client.getNumriTelefonit(),
+                    "ROLE_CLIENT",
+                    tenantId
+            );
 
-        return ResponseEntity.ok(new ClientAuthResponse(accessToken));
+            String refreshToken = jwtUtil.generateRefreshToken(
+                    client.getId(),
+                    client.getNumriTelefonit(),
+                    "ROLE_CLIENT",
+                    tenantId
+            );
+
+            ResponseCookie cookie = ResponseCookie
+                    .from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(30 * 24 * 60 * 60)
+                    .sameSite("Lax")
+                    .build();
+
+            res.addHeader("Set-Cookie", cookie.toString());
+
+            return ResponseEntity.ok(
+                    new ClientAuthResponse(accessToken)
+            );
         }
+
     } catch (ResponseStatusException ex) {
-           return ResponseEntity
+
+        return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(Map.of("message", ex.getReason()));
-    }
-    catch (Exception ex) {
+
+    } catch (Exception ex) {
+
         return ResponseEntity
                 .status(500)
-                .body(
-                    Map.of("message", ex.getMessage()));
+                .body(Map.of("message", ex.getMessage()));
     }
 
     return ResponseEntity.ok("Client Verified and Registered!");

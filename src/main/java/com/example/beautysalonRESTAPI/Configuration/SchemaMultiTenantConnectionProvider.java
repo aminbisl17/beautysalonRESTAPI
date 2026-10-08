@@ -27,7 +27,6 @@ public class SchemaMultiTenantConnectionProvider
     public Connection getConnection(String tenant) throws SQLException {
         Connection c = dataSource.getConnection();
         try (Statement s = c.createStatement()) {
-            // tenant comes from your fixed whitelist, never raw user input
             s.execute("EXECUTE AS USER = '" + tenant + "_user'");
         } catch (SQLException e) { c.close(); throw e; }
         return c;
