@@ -1,3 +1,4 @@
+
 package com.example.beautysalonRESTAPI.Configuration;
 
 public class TenantContext {
@@ -6,6 +7,9 @@ public class TenantContext {
             new ThreadLocal<>();
 
     private static final ThreadLocal<Long> CURRENT_TENANT_ID =
+            new ThreadLocal<>();
+
+    private static final ThreadLocal<String> CURRENT_TENANT_KEY =
             new ThreadLocal<>();
 
     private TenantContext() {
@@ -27,8 +31,18 @@ public class TenantContext {
         return CURRENT_TENANT_ID.get();
     }
 
+    public static void setTenantKey(String tenantKey) {
+        CURRENT_TENANT_KEY.set(tenantKey);
+    }
+
+    public static String getTenantKey() {
+        return CURRENT_TENANT_KEY.get();
+    }
+
     public static void clear() {
         CURRENT_TENANT.remove();
         CURRENT_TENANT_ID.remove();
+        CURRENT_TENANT_KEY.remove();
     }
 }
+

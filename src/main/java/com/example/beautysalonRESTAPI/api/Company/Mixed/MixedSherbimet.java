@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 import com.example.beautysalonRESTAPI.dto.Sherbimet.AtributetImageResponse;
 import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
 import com.example.beautysalonRESTAPI.model.Atributet_sherbimeve;
+import com.example.beautysalonRESTAPI.service.BlobStorageService;
 import com.example.beautysalonRESTAPI.service.SherbimetService;
 
 @RestController
@@ -27,17 +29,32 @@ import com.example.beautysalonRESTAPI.service.SherbimetService;
 public class MixedSherbimet {
     
     private final SherbimetRepository sherbimetRepository;
+
+
     @Autowired
     private SherbimetService sherbimetService;
+
+    @Autowired 
+    private BlobStorageService blobService;
 
     MixedSherbimet(SherbimetRepository sherbimetRepository) {
         this.sherbimetRepository = sherbimetRepository;
     }
 
-    @GetMapping("all")
-    public List<SherbimetAdminDTO> getAllServices() {
-        return sherbimetService.getAllServices();
+@GetMapping("all")
+public List<SherbimetAdminDTO> getAllServices() {
+
+    List<SherbimetAdminDTO> services =
+            sherbimetService.getAllServices();
+
+    for (SherbimetAdminDTO service : services) {
+        service.setImagePath(
+                blobService.getImage(service.getImagePath())
+        );
     }
+
+    return services;
+}
 
     @GetMapping("atributet/{id}")
 public ResponseEntity<?> getAtributet(@PathVariable Long id) throws IOException {
@@ -64,20 +81,10 @@ public ResponseEntity<?> getAtributet(@PathVariable Long id) throws IOException 
     }
     */
 
-    String imageName = sherbimetService.getServiceIMGPath(id);
-
-String imageUrl = null;
-
-if (imageName != null && !imageName.isBlank()) {
-    imageUrl = "https://blobstorageamin.blob.core.windows.net/beautysalon-images/SherbimetImgPath/"
-            + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
-              .replace("+", "%20");
-}
-
     AtributetImageResponse response = new AtributetImageResponse();
     //response.setImagePath(base64Image);
 
-    response.setImagePath(imageUrl);
+    response.setImagePath(blobService.getImage(sherbimetService.getServiceIMGPath(id)));
     response.setAtributet(atributet);
 
     return ResponseEntity.ok(response);

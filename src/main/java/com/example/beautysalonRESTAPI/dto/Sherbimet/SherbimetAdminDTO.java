@@ -54,7 +54,7 @@ public class SherbimetAdminDTO {
         this.update_at = s.getUpdated_at();
         this.zbritja = s.getZbritja();
         this.kohezgjatja = s.getKohezgjatja();
-
+this.imagePath = s.getImagepath();
      /*     String imageName = s.getImagepath();
 
        //  String base64Image = null;
@@ -76,7 +76,7 @@ public class SherbimetAdminDTO {
         }
     } */
 
-        
+        /*         
     String imageName = s.getImagepath();
 
 //String imageUrl = null;
@@ -86,7 +86,7 @@ if (imageName != null && !imageName.isBlank()) {
             + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
               .replace("+", "%20");
 }
-
+ */
 }
 
           public String getImagePath() {
