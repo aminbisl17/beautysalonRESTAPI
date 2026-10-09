@@ -39,11 +39,6 @@ protected void doFilterInternal(
         FilterChain chain)
         throws ServletException, IOException {
 
-            System.out.println("TENANT FILTER REACHED");
-System.out.println("URI: " + request.getRequestURI());
-System.out.println("METHOD: " + request.getMethod());
-System.out.println("ORIGIN: " + request.getHeader("Origin"));
-
 String tenantKey = request.getHeader("X-Tenant-ID");
 
 TenantInfo tenant;
@@ -72,6 +67,7 @@ try {
     }
 
 } catch (Exception e) {
+   
     response.sendError(
             HttpServletResponse.SC_BAD_REQUEST,
             "Unknown tenant"
@@ -83,7 +79,7 @@ try {
     TenantContext.setTenant(tenant.schemaName());
     TenantContext.setTenantId(tenant.id());
     TenantContext.setTenantKey(tenant.tenantKey());
-    System.out.println(tenant.tenantKey());
+
     chain.doFilter(request, response);
 
 } finally {

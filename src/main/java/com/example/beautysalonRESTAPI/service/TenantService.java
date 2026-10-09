@@ -16,11 +16,11 @@ public class TenantService {
 
         public TenantInfo findByKey(String tenantKey) {
 
-        String sql = """
-            SELECT Id, SchemaName, Name
-            FROM dbo.Tenants
-            WHERE TenantKey = ?
-        """;
+       String sql = """
+    SELECT Id, SchemaName, Name, TenantKey
+    FROM dbo.Tenants
+    WHERE TenantKey = ?
+""";
 
         return jdbcTemplate.queryForObject(
     sql,
@@ -56,11 +56,12 @@ public class TenantService {
     }
 
     public TenantInfo findByDomain(String domain) {
-    String sql = """
-        SELECT Id, SchemaName, Name
-        FROM dbo.Tenants
-        WHERE Domain = ?
-    """;
+
+        String sql = """
+    SELECT Id, SchemaName, Name, TenantKey
+    FROM dbo.Tenants
+    WHERE Domain = ?
+""";
 
     return jdbcTemplate.queryForObject(
         sql,
