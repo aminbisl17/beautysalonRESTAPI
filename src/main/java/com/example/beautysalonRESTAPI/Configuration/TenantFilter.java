@@ -39,6 +39,11 @@ protected void doFilterInternal(
         FilterChain chain)
         throws ServletException, IOException {
 
+            System.out.println("TENANT FILTER REACHED");
+System.out.println("URI: " + request.getRequestURI());
+System.out.println("METHOD: " + request.getMethod());
+System.out.println("ORIGIN: " + request.getHeader("Origin"));
+
 String tenantKey = request.getHeader("X-Tenant-ID");
 
 TenantInfo tenant;
