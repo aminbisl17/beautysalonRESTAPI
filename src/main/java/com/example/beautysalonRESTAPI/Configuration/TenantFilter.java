@@ -78,6 +78,7 @@ try {
     TenantContext.setTenant(tenant.schemaName());
     TenantContext.setTenantId(tenant.id());
     TenantContext.setTenantKey(tenant.tenantKey());
+    System.out.println(tenant.tenantKey());
     chain.doFilter(request, response);
 
 } finally {
