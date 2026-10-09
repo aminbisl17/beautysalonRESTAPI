@@ -27,7 +27,8 @@ public class TenantService {
     (rs, rowNum) -> new TenantInfo(
         rs.getLong("Id"),
         rs.getString("SchemaName"),
-        rs.getString("Name")
+        rs.getString("Name"),
+        rs.getString("TenantKey")
     ),
     tenantKey
 );
@@ -66,7 +67,8 @@ public class TenantService {
         (rs, rowNum) -> new TenantInfo(
             rs.getLong("Id"),
             rs.getString("SchemaName"),
-            rs.getString("Name")
+            rs.getString("Name"),
+            rs.getString("TenantKey")
         ),
         domain
     );

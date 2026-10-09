@@ -77,7 +77,7 @@ try {
 try {
     TenantContext.setTenant(tenant.schemaName());
     TenantContext.setTenantId(tenant.id());
-
+    TenantContext.setTenantKey(tenant.tenantKey());
     chain.doFilter(request, response);
 
 } finally {
