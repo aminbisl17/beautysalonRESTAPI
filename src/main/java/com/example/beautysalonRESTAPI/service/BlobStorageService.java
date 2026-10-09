@@ -62,6 +62,7 @@ public String uploadImage(MultipartFile image) throws IOException {
 
 public String getImage(String imagePath) {
 
+        try{
     if (imagePath == null || imagePath.isBlank()) {
         return null;
     }
@@ -78,5 +79,9 @@ public String getImage(String imagePath) {
             + URLEncoder.encode(imagePath, StandardCharsets.UTF_8)
                     .replace("+", "%20");
 }
-
+ catch(Exception e){
+        e.printStackTrace();
+        return null;
+}
+}
 }
