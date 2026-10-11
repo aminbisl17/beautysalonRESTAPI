@@ -81,6 +81,7 @@ public AuthenticationManager employeeAuthManager() {
             .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
     .requestMatchers("/ws/**").permitAll()
+    
     .requestMatchers(
     "/swagger-ui/**", 
     "/v3/api-docs/**", 
