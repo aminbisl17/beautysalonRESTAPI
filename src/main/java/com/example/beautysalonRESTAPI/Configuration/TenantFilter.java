@@ -27,7 +27,8 @@ public class TenantFilter extends OncePerRequestFilter {
         String p = request.getRequestURI();
 
         return p.startsWith("/actuator")
-                || p.startsWith("/ws")
+                || p.startsWith("/ws") 
+                || p.startsWith("/tenants")
                 || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
