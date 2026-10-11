@@ -7,10 +7,11 @@ This project is built with Java and Spring Boot, with SQL Server as the main per
 
 ## Features
 
-- JWT-based authentication and authorization
+- JWT role & type based authentication and authorization
 - Client-side and admin-side API endpoints
 - Employee and tenant-related services
 - SQL Server database integration using Spring Data JPA
+- Multi-tenant database architecture
 - Email notifications via Spring Mail
 - SMS notifications via Twilio
 - Firebase integration for push/notification support
