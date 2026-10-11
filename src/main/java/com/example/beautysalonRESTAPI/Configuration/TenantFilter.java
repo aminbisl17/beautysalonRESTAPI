@@ -50,20 +50,40 @@ try {
 
     } else {
 
-        String origin = request.getHeader("Origin");
+       String origin = request.getHeader("Origin");
 
-        
-        if (origin == null || origin.isBlank()) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing tenant information"
-            );
-            return;
-        }
+if (origin == null || origin.isBlank()) {
+    response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Missing tenant information"
+    );
+    return;
+}
 
-        String domain = java.net.URI.create(origin).getHost();
+String host = java.net.URI.create(origin).getHost();
 
-        tenant = tenantService.findByDomain(domain);
+if (host == null) {
+    response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Invalid origin"
+    );
+    return;
+}
+
+String[] parts = host.split("\\.");
+
+if (parts.length < 2) {
+    response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Invalid domain"
+    );
+    return;
+}
+
+String domain = parts[parts.length - 2];
+
+tenant = tenantService.findByDomain(domain);
+
     }
 
 } catch (Exception e) {
