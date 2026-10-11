@@ -561,19 +561,19 @@ ALTER TABLE [{{SCHEMA}}].[terminet]  WITH CHECK ADD  CONSTRAINT [CHK_status_valu
 GO
 ALTER TABLE [{{SCHEMA}}].[terminet] CHECK CONSTRAINT [CHK_status_values]
 GO
-/****** Object:  StoredProcedure [dbo].[create_appointment]    Script Date: 11/10/2026 3:00:40 PM ******/
+/****** Object:  StoredProcedure [{{SCHEMA}}].[create_appointment]    Script Date: 11/10/2026 3:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE   PROCEDURE [dbo].[create_appointment]
+CREATE   PROCEDURE [{{SCHEMA}}].[create_appointment]
 (
     @IDClientit BIGINT,
     @IDEmployee BIGINT,
     @pershkrimi NVARCHAR(255) = NULL,
     @data_caktimit DATETIME2,
-    @detajet_termineve dbo.detajet_termineve_array READONLY,
+    @detajet_termineve [{{SCHEMA}}].detajet_termineve_array READONLY,
     @status BIT OUTPUT
 )
 AS
@@ -588,7 +588,7 @@ BEGIN
         ---------------------------------------------------
         IF EXISTS (
             SELECT 1
-            FROM terminet
+            FROM [{{SCHEMA}}].terminet
             WHERE employee_id = @IDEmployee
               AND DATEADD(MINUTE, DATEDIFF(MINUTE, 0, data_caktimit), 0) =
                   DATEADD(MINUTE, DATEDIFF(MINUTE, 0, @data_caktimit), 0)
@@ -607,7 +607,7 @@ BEGIN
         -- 3. INSERT APPOINTMENT
         -- ?? FIXED: assumes ID is IDENTITY (MOST COMMON CASE)
         ---------------------------------------------------
-          INSERT INTO terminet (ID, employee_id, pershkrimi, data_caktimit)
+          INSERT INTO [{{SCHEMA}}].terminet (ID, employee_id, pershkrimi, data_caktimit)
         VALUES (@IDClientit, @IDEmployee, @pershkrimi, @data_caktimit);
 
         -- Get new appointment ID
@@ -616,7 +616,7 @@ BEGIN
         ---------------------------------------------------
         -- 4. INSERT DETAILS (TVP)
         ---------------------------------------------------
-        EXEC dbo.krijo_detaj_terminit
+        EXEC [{{SCHEMA}}].krijo_detaj_terminit
             @id_terminit = @newID,
             @detajet_termineve = @detajet_termineve;
 
@@ -637,16 +637,16 @@ BEGIN
     END CATCH
 END
 GO
-/****** Object:  StoredProcedure [dbo].[register_history]    Script Date: 11/10/2026 3:00:40 PM ******/
+/****** Object:  StoredProcedure [{{SCHEMA}}].[register_history]    Script Date: 11/10/2026 3:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE procedure [dbo].[register_history] 
+CREATE procedure [{{SCHEMA}}].[register_history] 
 
 @ID int,
 @id_employee int,
-@historiku_detajet dbo.historiku_detajet_array READONLY
+@historiku_detajet [{{SCHEMA}}].historiku_detajet_array READONLY
 as 
 begin
 SET NOCOUNT ON;
@@ -656,33 +656,33 @@ SET NOCOUNT ON;
 
 declare @newID int;
 
-INSERT INTO historiku (ID, emri_mbiemri_punonjesit)
+INSERT INTO [{{SCHEMA}}].historiku (ID, emri_mbiemri_punonjesit)
 VALUES (
     @ID,
     (SELECT emri + ' ' + mbiemri
-     FROM employees
+     FROM [{{SCHEMA}}].employees
      WHERE ID = @id_employee)
 );
 
  set @newID = SCOPE_IDENTITY();
 
- insert into historiku_detajet(id_historikut, emri_sherbimit, emri_atributit, pershkrimi, pagesa)
+ insert into [{{SCHEMA}}].historiku_detajet(id_historikut, emri_sherbimit, emri_atributit, pershkrimi, pagesa)
  SELECT @newID, emri_sherbimit, emri_atributit, pershkrimi, pagesa from @historiku_detajet;
   commit transaction;
  end;
 GO
-/****** Object:  StoredProcedure [dbo].[setAvailableDates]    Script Date: 11/10/2026 3:00:40 PM ******/
+/****** Object:  StoredProcedure [{{SCHEMA}}].[setAvailableDates]    Script Date: 11/10/2026 3:00:40 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[setAvailableDates]
+CREATE PROCEDURE [{{SCHEMA}}].[setAvailableDates]
     @id_employee INT,
     @start_date DATE,
     @end_date DATE,
-    @daysOfTheWeek dbo.setDaysOfTheWeek READONLY,
-    @availableSkills dbo.setAvailableSkills READONLY
+    @daysOfTheWeek [{{SCHEMA}}].setDaysOfTheWeek READONLY,
+    @availableSkills [{{SCHEMA}}].setAvailableSkills READONLY
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -701,7 +701,7 @@ BEGIN
         IF EXISTS
         (
             SELECT 1
-            FROM employeeAvailability
+            FROM [{{SCHEMA}}].employeeAvailability
             WHERE id_employee = @id_employee
               AND @start_date <= end_date
               AND @end_date >= start_date
@@ -715,7 +715,7 @@ BEGIN
         (
             SELECT 1
             FROM @availableSkills s
-            LEFT JOIN skills sk
+            LEFT JOIN [{{SCHEMA}}].skills sk
                 ON sk.id = s.id_skills
                 AND sk.id_employee = @id_employee
             WHERE sk.id IS NULL
@@ -727,7 +727,7 @@ BEGIN
         DECLARE @id_availability BIGINT;
 
         -- Insert availability
-        INSERT INTO employeeAvailability
+        INSERT INTO [{{SCHEMA}}].employeeAvailability
         (
             id_employee,
             start_date,
@@ -743,7 +743,7 @@ BEGIN
         SET @id_availability = SCOPE_IDENTITY();
 
         -- Insert availability details
-        INSERT INTO availabilityDetails
+        INSERT INTO [{{SCHEMA}}].availabilityDetails
         (
             id_availability,
             day_of_week,
@@ -762,7 +762,7 @@ BEGIN
         FROM @daysOfTheWeek;
 
         -- Insert available skills
-        INSERT INTO availableSkill
+        INSERT INTO [{{SCHEMA}}].availableSkill
         (
             id_availability,
             id_skills
