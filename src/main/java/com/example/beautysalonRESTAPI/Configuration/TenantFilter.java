@@ -62,6 +62,7 @@ if (origin == null || origin.isBlank()) {
 
 String host = java.net.URI.create(origin).getHost();
 
+System.out.println(host);
 if (host == null) {
     response.sendError(
             HttpServletResponse.SC_BAD_REQUEST,
@@ -82,6 +83,7 @@ if (parts.length < 2) {
 
 String domain = parts[parts.length - 2];
 
+System.out.println(domain);
 tenant = tenantService.findByDomain(domain);
 
     }
