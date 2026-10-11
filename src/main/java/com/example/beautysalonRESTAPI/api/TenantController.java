@@ -1,15 +1,18 @@
 package com.example.beautysalonRESTAPI.api;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.beautysalonRESTAPI.dto.TenantDetails;
 import com.example.beautysalonRESTAPI.service.TenantService;
 import com.example.beautysalonRESTAPI.service.TenantService.RegisteredTenant;
 
@@ -29,13 +32,11 @@ public class TenantController {
             String schemaName,
             String domain) {}
 
-    /**
-     * POST /api/tenants
-     * Body: { "name": "...", "tenantKey": "...", "schemaName": "...", "domain": "..." }
-     *
-     * The response contains the generated DB password for [schemaName_user].
-     * It is returned only this once, so the caller must store it securely.
-     */
+            @GetMapping
+    public ResponseEntity<List<TenantDetails>> getAll() {
+        return ResponseEntity.ok(tenantService.findAll());
+    }
+    
     @PostMapping("/register")
     public ResponseEntity<RegisteredTenant> register(@RequestBody RegisterTenantRequest request) {
         RegisteredTenant created = tenantService.registerTenant(

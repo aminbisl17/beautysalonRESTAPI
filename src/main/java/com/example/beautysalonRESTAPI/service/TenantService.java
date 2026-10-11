@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.beautysalonRESTAPI.dto.TenantDetails;
 import com.example.beautysalonRESTAPI.dto.TenantInfo;
 
 @Service
@@ -211,6 +213,27 @@ public class TenantService {
     // Existing methods (unchanged)
     // ------------------------------------------------------------------
 
+
+       public List<TenantDetails> findAll() {
+        String sql = """
+                SELECT Id, TenantKey, SchemaName, Name, IsActive, CreatedAt, Domain
+                FROM dbo.Tenants
+                ORDER BY Id DESC
+                """;
+ 
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Timestamp created = rs.getTimestamp("CreatedAt");
+            return new TenantDetails(
+                    rs.getLong("Id"),
+                    rs.getString("TenantKey"),
+                    rs.getString("SchemaName"),
+                    rs.getString("Name"),
+                    rs.getBoolean("IsActive"),
+                    created == null ? null : created.toLocalDateTime(),
+                    rs.getString("Domain"));
+        });
+    }
+    
     public TenantInfo findByKey(String tenantKey) {
 
         String sql = """
