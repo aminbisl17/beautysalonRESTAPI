@@ -1,4 +1,4 @@
-package com.example.beautysalonRESTAPI.Configuration;
+package com.example.beautysalonRESTAPI.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 import com.example.beautysalonRESTAPI.dto.TenantInfo;
 import com.example.beautysalonRESTAPI.service.TenantService;
 
@@ -29,7 +30,7 @@ public class TenantFilter extends OncePerRequestFilter {
         return p.startsWith("/actuator")
                 || p.startsWith("/ws") 
                 || p.startsWith("/tenants") ||
-p.startsWith("/webhooks")
+p.startsWith("/whatsapp")
                 || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 

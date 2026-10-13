@@ -6,13 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/webhooks/whatsapp")
+@RequestMapping("/whatsapp")
 public class WhatsAppWebhookController {
 
     @Value("${whatsapp.webhook-verify-token}")
     private String verifyToken;
 
-    @GetMapping
+    @GetMapping("/webhook")
     public ResponseEntity<String> verifyWebhook(
             @RequestParam("hub.mode") String mode,
             @RequestParam("hub.verify_token") String token,

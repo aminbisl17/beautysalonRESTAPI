@@ -19,8 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.beautysalonRESTAPI.Configuration.TenantFilter;
-
 @Configuration
 public class SecurityConfig {
 
@@ -87,7 +85,7 @@ public AuthenticationManager employeeAuthManager() {
     "/v3/api-docs/**", 
     "/swagger-ui.html",
     "/tenants",
-    "/webhooks/whatsapp"
+    "/whatsapp"
 ).permitAll()
 
 
