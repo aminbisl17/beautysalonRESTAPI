@@ -28,7 +28,8 @@ public class TenantFilter extends OncePerRequestFilter {
 
         return p.startsWith("/actuator")
                 || p.startsWith("/ws") 
-                || p.startsWith("/tenants")
+                || p.startsWith("/tenants") ||
+p.startsWith("/webhooks")
                 || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
