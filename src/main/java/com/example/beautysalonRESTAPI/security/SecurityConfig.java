@@ -37,6 +37,7 @@ public class SecurityConfig {
     @Bean FilterRegistrationBean<TenantFilter> tenantReg(TenantFilter f) {
     var r = new FilterRegistrationBean<>(f); r.setEnabled(false); return r;
 }
+
 @Bean FilterRegistrationBean<JwtAuthFilter> jwtReg(JwtAuthFilter f) {
     var r = new FilterRegistrationBean<>(f); r.setEnabled(false); return 
     r;
