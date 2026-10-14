@@ -27,12 +27,13 @@ public class TenantFilter extends OncePerRequestFilter {
 
         String p = request.getRequestURI();
 
-        return p.startsWith("/actuator")
-                || p.startsWith("/ws") 
-                || p.startsWith("/tenants")
-                || p.startsWith("/whatsapp")
-                || p.startsWith("/swagger-ui/**")
-                || "OPTIONS".equalsIgnoreCase(request.getMethod());
+ return p.startsWith("/actuator")
+            || p.startsWith("/ws")
+            || p.startsWith("/tenants")
+            || p.startsWith("/whatsapp")
+            || p.startsWith("/swagger-ui")
+            || p.startsWith("/v3/api-docs")
+            || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
  
