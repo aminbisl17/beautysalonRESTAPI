@@ -65,6 +65,18 @@ private List<Atributet_sherbimeve> atributet;
   @Column(name="imagepath")
   private String imagepath;
 
+  @Column(name="Category")
+  private String Category;
+
+  
+    public String getCategory() {
+    return Category;
+}
+
+  public void setCategory(String category) {
+    Category = category;
+  }
+
     public String getImagepath() {
     return imagepath;
 }

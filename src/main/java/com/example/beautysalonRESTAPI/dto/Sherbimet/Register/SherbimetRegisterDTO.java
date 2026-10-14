@@ -7,6 +7,7 @@ public class SherbimetRegisterDTO {
     private String pershkrimi;
     private Double qmimi_baze;
     private int zbritja, kohezgjatja;
+    private String Category;
     private List<AtributetSherbimeveRegisterDTO> atributet;
 
     public String getEmri_sherbimit() {
@@ -44,5 +45,12 @@ public class SherbimetRegisterDTO {
     }
     public void setAtributet(List<AtributetSherbimeveRegisterDTO> atributet) {
         this.atributet = atributet;
+    }
+
+       public String getCategory() {
+        return Category;
+    }
+    public void setCategory(String category) {
+        Category = category;
     }
 }
