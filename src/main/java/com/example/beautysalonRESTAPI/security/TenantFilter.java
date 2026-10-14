@@ -29,8 +29,9 @@ public class TenantFilter extends OncePerRequestFilter {
 
         return p.startsWith("/actuator")
                 || p.startsWith("/ws") 
-                || p.startsWith("/tenants") ||
-p.startsWith("/whatsapp")
+                || p.startsWith("/tenants")
+                || p.startsWith("/whatsapp")
+                || p.startsWith("/swagger-ui/**")
                 || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
