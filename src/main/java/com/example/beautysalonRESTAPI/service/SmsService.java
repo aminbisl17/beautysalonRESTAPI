@@ -9,7 +9,9 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.beautysalonRESTAPI.Configuration.TwilioConfig;
 import com.example.beautysalonRESTAPI.dto.OtpData;
@@ -17,20 +19,68 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import dm.sent.client.SentClient;
+import dm.sent.client.okhttp.SentOkHttpClient;
+import dm.sent.core.JsonValue;
+import dm.sent.models.messages.MessageSendParams;
+import dm.sent.models.messages.MessageSendResponse;
+
 
 @Service
 public class SmsService {
+
+        
+ private final SentClient client;
+
+
 
     private final TwilioConfig twilioConfig;
 
     private final AprovalsRepository aproval; 
 
-    public SmsService(TwilioConfig twilioConfig, AprovalsRepository aproval) {
+    public SmsService(TwilioConfig twilioConfig, AprovalsRepository aproval,    @Value("${SENT_DM_API_KEY}") String apiKey) {
         this.twilioConfig = twilioConfig;
         this.aproval = aproval;
+             this.client = SentOkHttpClient.builder()
+                .apiKey(apiKey)
+                .build();
     
     }
 
+    public String sentMessage(String phoneNumber, String otp) {
+
+        MessageSendParams params = MessageSendParams.builder()
+                .addChannel("sent")
+                .template(
+                    MessageSendParams.Template.builder()
+                        .id("6630d08b-1df6-4f83-bf29-5e8a164bc68a")
+                        .parameters(
+                            MessageSendParams.Template.Parameters.builder()
+                                .putAdditionalProperty(
+                                    "var_1", JsonValue.from(otp))
+                                .build())
+                        .build())
+                .addTo(phoneNumber)
+                .build();
+
+        MessageSendResponse response = client.messages().send(params);
+
+        var data = response.data()
+                .orElseThrow(() ->
+                    new IllegalStateException("Sent response contains no data"));
+
+        var recipients = data.recipients()
+                .orElseThrow(() ->
+                    new IllegalStateException("Sent response contains no recipients"));
+
+        if (recipients.isEmpty()) {
+            throw new IllegalStateException("Sent response contains an empty recipient list");
+        }
+
+        return recipients.get(0).messageId()
+                .orElseThrow(() ->
+                    new IllegalStateException("Sent response contains no message ID"));
+    }
     @Autowired
     private ApprovalService approvalService;
 

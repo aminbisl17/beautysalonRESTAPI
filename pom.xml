@@ -145,6 +145,14 @@
     <version>12.30.0</version>
 </dependency>
 
+
+<dependency>
+    <groupId>dm.sent</groupId>
+    <artifactId>sent-java</artifactId>
+    <!-- Use the latest version from https://github.com/sentdm/sent-dm-java/releases -->
+   <version>0.37.0</version>
+</dependency>
+
     </dependencies>
 
     <build>
