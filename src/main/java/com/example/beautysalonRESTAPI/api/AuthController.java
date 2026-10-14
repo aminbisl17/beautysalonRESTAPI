@@ -197,11 +197,12 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
     }
 
     String otp = smsservice.generateOTP();
-
+    String nrTel = response.getNumri_telefonit();
     // approvalService.createOtp(otp, client.getNumriTelefonit(), null);
-    loginOtpService.createLoginOTP(otp, response.getNumri_telefonit());
+    loginOtpService.createLoginOTP(otp, nrTel);
       //smsservice.sendOtp(response.getNumri_telefonit(), otp);
-      System.out.println("OTP: " + otp);
+      smsservice.sentMessage(nrTel, otp);
+      //System.out.println("OTP: " + otp);
     return ResponseEntity.ok("sent to verify");
 }
 

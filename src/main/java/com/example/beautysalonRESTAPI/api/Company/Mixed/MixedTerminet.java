@@ -58,7 +58,7 @@ private SimpMessagingTemplate messagingTemplate;
       //    boolean success = terminetService.createAppointment(dto);
             if (terminetService.createAppointment(dto)) {
                 
-   messagingTemplate.convertAndSend("/topic/availability/" +  dto.getEmployeeId(), terminetService.FilteredData(dto.getEmployeeId())); 
+     messagingTemplate.convertAndSend("/topic/availability/" +  dto.getEmployeeId(), terminetService.FilteredData(dto.getEmployeeId())); 
      messagingTemplate.convertAndSend("/topic/appointments/employee/" +  dto.getEmployeeId(), terminetService.getSpecificEmployeeAppointments(dto.getEmployeeId())); 
          //      smsService.sendSms(dto.getNumri_tel(), "Termini juaj u krijua tek " + (employeeRepo.findById(dto.getEmployeeId()).orElseThrow()).getEmri());
     //     ems.sendOtp(client, null, null);

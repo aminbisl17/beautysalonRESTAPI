@@ -128,15 +128,15 @@ try{
         
 
     String otp = smsservice.generateOTP();
-
+    String nrTel = client.getNumriTelefonit();
 
   approvalService.createOtp(otp, client.getNumriTelefonit(), client);
 
   emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
   
-  //smsservice.sendOtp(client.getNumriTelefonit(),otp);
+  smsservice.sentMessage(nrTel,otp);
   
-    System.out.println(otp);
+   // System.out.println(otp);
 
 }
 catch(Exception e){
@@ -284,12 +284,13 @@ boolean phoneExists =
         String otp = smsservice.generateOTP();
 if (phoneExists) {
     
-    System.out.println(otp);
-  //  smsservice.sendOtp(request.getNumri_telefonit(), otp);
+ //   System.out.println(otp);
+    smsservice.sentMessage(request.getNumri_telefonit(), otp);
 
   emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
   
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
+
   return ResponseEntity.noContent().build();
 }   
 try{
