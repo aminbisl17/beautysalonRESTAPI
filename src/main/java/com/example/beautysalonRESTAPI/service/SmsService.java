@@ -50,7 +50,7 @@ public class SmsService {
     public String sentMessage(String phoneNumber, String otp) {
 
         MessageSendParams params = MessageSendParams.builder()
-                .addChannel("sent")
+                .addChannel("whatsapp")
                 .template(
                     MessageSendParams.Template.builder()
                         .id("6630d08b-1df6-4f83-bf29-5e8a164bc68a")
