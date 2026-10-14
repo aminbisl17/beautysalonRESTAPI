@@ -86,7 +86,7 @@ public AuthenticationManager employeeAuthManager() {
     "/v3/api-docs/**", 
     "/swagger-ui.html",
     "/tenants",
-    "/whatsapp"
+    "/whatsapp/**"
 ).permitAll()
 
 
