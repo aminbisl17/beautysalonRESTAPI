@@ -287,7 +287,7 @@ if (phoneExists) {
  //   System.out.println(otp);
     smsservice.sentMessage(request.getNumri_telefonit(), otp);
 
-  emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
+ // emailService.sendOtp(request.getEmail(), "Kodi i verifikimit", otp);
   
 approvalService.createOtp(otp, request.getNumri_telefonit(), null);
 
