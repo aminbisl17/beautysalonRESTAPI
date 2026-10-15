@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.employees.EmployeeCredentialsDTO;
 import com.example.beautysalonRESTAPI.dto.employees.EmployeesDTO;
@@ -29,7 +30,7 @@ import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.EmployeeAuthResponse;
 import com.example.beautysalonRESTAPI.service.TerminetService;
 import com.example.beautysalonRESTAPI.service.Employees.EmployeeAvailabilityDateService;
-
+import com.example.beautysalonRESTAPI.service.BlobStorageService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,6 +60,9 @@ private SimpMessagingTemplate messagingTemplate;
     
     @Autowired
  private BCryptPasswordEncoder passwordEncoder;
+
+ @Autowired
+ private BlobStorageService blobService;
 
       @GetMapping("/data")
     public ResponseEntity<?> getData(
@@ -162,34 +166,50 @@ private SimpMessagingTemplate messagingTemplate;
         }
     }
     
-    @GetMapping("/getAvailableDates")
-    public ResponseEntity<?> getAvailableDates(@RequestHeader("Authorization") String authHeader){
+@GetMapping("/getAvailableDates")
+public ResponseEntity<?> getAvailableDates(
+        @RequestHeader(value = "Authorization", required = false)
+        String authHeader) {
 
-          try{
-
-               if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+    try {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401)
+                    .body("Missing or invalid Authorization header");
         }
-        
-        
+
         String token = authHeader.substring(7);
 
-  List<employeeAvailability> availability =
-        employeeAvailabilityRepository.findByEmployees_ID(jwtUtil.extractId(token));
+        List<employeeAvailability> availability =
+                employeeAvailabilityRepository.findByEmployees_ID(
+                        jwtUtil.extractId(token)
+                );
 
+        List<AvailableEmployeeDates> response = availability.stream()
+                .map(AvailableEmployeeDates::new)
+                .toList();
 
-    List<AvailableEmployeeDates> response = availability.stream()
-            .map(AvailableEmployeeDates::new)
-            .toList();
+        // Convert service image filenames into tenant-specific Blob URLs
+        for (AvailableEmployeeDates dates : response) {
+            if (dates.getSherbimetDisplay() == null) {
+                continue;
+            }
 
-    return ResponseEntity.ok(response);
+            for (SherbimetAdminDTO service : dates.getSherbimetDisplay()) {
+                service.setImagePath(
+                        blobService.getImage(service.getImagePath())
+                );
+            }
+        }
 
+        return ResponseEntity.ok(response);
 
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(e.getMessage());
     }
-    catch(Exception e){
-return ResponseEntity.status(500).body(e.getMessage());
-    }
-    }
+}
+
+
 @PatchMapping("/updateAvailableDates/{availabilityId}")
 public ResponseEntity<?> updateAvailableDates(
         @RequestHeader("Authorization") String authHeader, 
