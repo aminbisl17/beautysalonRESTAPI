@@ -16,7 +16,7 @@ public class skillsDTO {
     private Long id;
     private Long id_employee;
     private Long id_service;
-    private Sherbimet service;
+	private Sherbimet service;
 
     public skillsDTO(skills skill) {
         this.id = skill.getId();
@@ -25,14 +25,9 @@ public class skillsDTO {
             this.id_employee = skill.getEmployees().getID();
         }
 
-        Sherbimet sherbimet = skill.getSherbimet();
-        
-        if (sherbimet != null) {
-            this.id_service = sherbimet.getID();
-            this.service = sherbimet;
 
-            String imageName = sherbimet.getImagepath();
-
+         //   String imageName = sherbimet.getImagepath();
+//this.service.setImagepath();
             /* 
             if (imageName != null && !imageName.isBlank()) {
                 Path path = Paths.get("src/main/resources/SherbimetImgPath/", imageName);
@@ -53,7 +48,7 @@ public class skillsDTO {
             } else {
                 // Image name in DB is null or blank
                 this.service.setImagepath(null);
-            } */
+            } 
 
                 
 if (imageName != null && !imageName.isBlank()) {
@@ -61,8 +56,9 @@ if (imageName != null && !imageName.isBlank()) {
             + URLEncoder.encode(imageName, StandardCharsets.UTF_8)
               .replace("+", "%20"));
 }
-        }
-    }
+        }*/
+
+}
 
     public Long getId() {
         return id;
@@ -79,4 +75,11 @@ if (imageName != null && !imageName.isBlank()) {
     public Sherbimet getService() {
         return service;
     }
+     public void setId_employee(Long id_employee) {
+		this.id_employee = id_employee;
+	}
+
+	public void setId_service(Long id_service) {
+		this.id_service = id_service;
+	}
 }

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import com.example.beautysalonRESTAPI.service.BlobStorageService;
 
 @RestController
 @RequestMapping("/com/mixed/employee/skills")
@@ -39,6 +39,10 @@ public class MixedSkills {
 
     @Autowired 
     private SherbimetRepository serRepo;
+
+    
+    @Autowired 
+    private BlobStorageService blobService;
 
     
   @PostMapping("/add")
@@ -62,6 +66,7 @@ public ResponseEntity<?> addSkill(@RequestBody addSkillDTO sk) {
             skill.setEmployees(emp);
             skill.setSherbimet(ser);
 
+            
             skillsList.add(skill);
         }
 
@@ -91,7 +96,6 @@ public ResponseEntity<?> getSkills() {
 public ResponseEntity<?> getSkill(@PathVariable Long id) {
 
     try {
-
         List<skills> skillsList = skRepo.findByEmployees_ID(id);
 
         if (skillsList.isEmpty()) {
@@ -99,12 +103,24 @@ public ResponseEntity<?> getSkill(@PathVariable Long id) {
         }
 
         List<skillsDTO> dto = skillsList.stream()
-                .map(skillsDTO::new)
+                .map(skill -> {
+                    skillsDTO skillDTO = new skillsDTO(skill);
+
+                    if (skillDTO.getService() != null) {
+                        skillDTO.getService().setImagepath(
+                                blobService.getImage(
+                                        skillDTO.getService().getImagepath()
+                                )
+                        );
+                    }
+
+                    return skillDTO;
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dto);
 
-    } catch(Exception e) {
+    } catch (Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
