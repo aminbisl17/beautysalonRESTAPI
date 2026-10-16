@@ -116,14 +116,15 @@ public String extractCode(String token){
     return getClaims(token).get("id", Long.class);
 }
 
-    public boolean validateToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+   public boolean validateToken(String token) {
+       try {
+           String type = getClaims(token).get("type", String.class);
+           return type == null;   // access tokens carry no type claim
+       } catch (Exception e) {
+           return false;
+       }
+   }
+ 
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
