@@ -33,6 +33,7 @@ public class TenantFilter extends OncePerRequestFilter {
             || p.startsWith("/whatsapp")
             || p.startsWith("/swagger-ui")
             || p.startsWith("/v3/api-docs")
+            || p.startsWith("/notification")
             || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
