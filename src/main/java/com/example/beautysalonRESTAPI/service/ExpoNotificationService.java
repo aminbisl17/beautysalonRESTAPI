@@ -15,14 +15,7 @@ import com.google.api.services.storage.model.Notification;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 @Service
-public class FirebaseService {
-    
-
-    @Autowired
-    FirebaseMessaging firebaseMessaging;
-
-  //  public String token;
-
+public class ExpoNotificationService {
   
 public String sendExpoNotification(String token, String title, String body) {
 

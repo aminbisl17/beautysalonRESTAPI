@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.NotificationMessage;
 import com.example.beautysalonRESTAPI.dto.TokenRequest;
-import com.example.beautysalonRESTAPI.service.FirebaseService;
+import com.example.beautysalonRESTAPI.service.ExpoNotificationService;
 
 @RestController
 @RequestMapping("/notification")
 public class NotificationController {
 
     @Autowired
-    FirebaseService firebaseService;
+    ExpoNotificationService firebaseService;
     String token;
 
     @PostMapping("/save-token")
