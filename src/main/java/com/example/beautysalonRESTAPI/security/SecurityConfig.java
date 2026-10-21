@@ -101,8 +101,7 @@ public AuthenticationManager companyAuthManager() {
     "/swagger-ui.html",
     "/tenants",
     "/whatsapp/**",
-    "/notification/**",
-    "/register/**"
+    "/notification/**"
 ).permitAll()
 
 

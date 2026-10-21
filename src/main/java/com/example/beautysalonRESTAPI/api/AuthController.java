@@ -158,6 +158,73 @@ public ResponseEntity<?> registerCompany(
             ));
 }
 
+@PostMapping("/login/company")
+public ResponseEntity<?> loginCompany(
+        @RequestBody AuthRequest request) {
+
+    Long tenantId = TenantContext.getTenantId();
+
+    if (tenantId == null) {
+        return ResponseEntity.badRequest()
+                .body(Map.of("error", "Tenant not resolved"));
+    }
+
+    if (request.getUsername() == null
+            || request.getUsername().isBlank()
+            || request.getPassword() == null
+            || request.getPassword().isBlank()) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of(
+                        "error",
+                        "Username and password are required"
+                ));
+    }
+
+    Optional<CompanyAuth> optionalCompany =
+            companyAuthRepo.findByTenantIdAndUsername(
+                    tenantId,
+                    request.getUsername()
+            );
+
+    if (optionalCompany.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid username or password"));
+    }
+
+    CompanyAuth company = optionalCompany.get();
+
+    if (!passwordEncoder.matches(
+            request.getPassword(),
+            company.getPasswordHash())) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid username or password"));
+    }
+
+    String accessToken = jwtUtil.generateToken(
+            company.getId().longValue(),
+            company.getUsername(),
+            "ROLE_COMPANY",
+            tenantId
+    );
+
+    String refreshToken = jwtUtil.generateRefreshToken(
+            company.getId().longValue(),
+            company.getUsername(),
+            "ROLE_COMPANY",
+            tenantId
+    );
+
+    return ResponseEntity.ok(Map.of(
+            "message", "Company login successful",
+            "accessToken", accessToken,
+            "refreshToken", refreshToken,
+            "username", company.getUsername(),
+            "tenantId", tenantId
+    ));
+}
+
 @Operation(
     summary = "Kyçja Admin",
     description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token"
