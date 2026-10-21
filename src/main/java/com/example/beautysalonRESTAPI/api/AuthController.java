@@ -60,7 +60,6 @@ private final AprovalsRepository aprovalsRepo;
 private final AuthenticationManager adminAuthManager;
 private final AuthenticationManager clientAuthManager;
 private final AuthenticationManager employeeAuthManager;
-private final TenantService tenantService;
 private final JwtUtil jwtUtil;
 private final CompanyAuthRepository companyAuthRepo;
 private final BCryptPasswordEncoder passwordEncoder;
@@ -82,7 +81,6 @@ public AuthController(
         AuthenticationManager clientAuthManager,
         @Qualifier("employeeAuthManager")
         AuthenticationManager employeeAuthManager,
-        TenantService tenantService,
         JwtUtil jwtUtil,
         CompanyAuthRepository companyAuthRepo,
         BCryptPasswordEncoder passwordEncoder
@@ -99,7 +97,6 @@ public AuthController(
     this.adminAuthManager = adminAuthManager;
     this.clientAuthManager = clientAuthManager;
     this.employeeAuthManager = employeeAuthManager;
-    this.tenantService = tenantService;
     this.jwtUtil = jwtUtil;
     this.companyAuthRepo = companyAuthRepo;
     this.passwordEncoder = passwordEncoder;
@@ -671,6 +668,50 @@ public ResponseEntity<?> refreshTokenClient(
     String role = jwtUtil.extractRole(clientToken);
     Long id = jwtUtil.extractId(clientToken);
     Long tenantId = jwtUtil.extractTenantId(clientToken);
+
+    String accessToken = jwtUtil.generateToken(
+            id,
+            username,
+            role,
+            tenantId
+    );
+
+    return ResponseEntity.ok(
+            Map.of("accessToken", accessToken)
+    );
+}
+
+@PostMapping("/refresh-token-company")
+public ResponseEntity<?> refreshTokenCompany(
+        @RequestBody(required = false) Map<String, String> body
+) {
+
+    String companyToken =
+            (body != null) ? body.get("refreshToken") : null;
+
+    if (companyToken == null
+            || !jwtUtil.validateRefreshToken(companyToken)) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
+
+    String username = jwtUtil.extractUsername(companyToken);
+    String role = jwtUtil.extractRole(companyToken);
+    Long id = jwtUtil.extractId(companyToken);
+    Long tenantId = jwtUtil.extractTenantId(companyToken);
+
+    // Ensure this endpoint accepts only company refresh tokens
+    if (!"ROLE_COMPANY".equals(role)
+            || tenantId == null
+            || TenantContext.getTenantId() == null
+            || !tenantId.equals(TenantContext.getTenantId())) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid refresh token"));
+    }
 
     String accessToken = jwtUtil.generateToken(
             id,
