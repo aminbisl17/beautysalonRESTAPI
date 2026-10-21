@@ -24,7 +24,9 @@ import dm.sent.client.okhttp.SentOkHttpClient;
 import dm.sent.core.JsonValue;
 import dm.sent.models.messages.MessageSendParams;
 import dm.sent.models.messages.MessageSendResponse;
-
+import java.time.Duration;
+import java.util.concurrent.ConcurrentHashMap;
+import java.security.SecureRandom;
 
 @Service
 public class SmsService {
@@ -32,6 +34,11 @@ public class SmsService {
         
  private final SentClient client;
 
+
+ private static final long OTP_EXPIRATION_MINUTES = 5;
+
+private final Map<String, String> otpStorage = new ConcurrentHashMap<>();
+private final Map<String, LocalDateTime> otpExpiration = new ConcurrentHashMap<>();
 
 
     private final TwilioConfig twilioConfig;
@@ -108,7 +115,41 @@ public class SmsService {
         return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
     }
+
+public void storeOTP(String phoneNumber, String otp) {
+    otpStorage.put(phoneNumber, otp);
+    otpExpiration.put(
+            phoneNumber,
+            LocalDateTime.now().plusMinutes(OTP_EXPIRATION_MINUTES)
+    );
 }
+
+public boolean validateOTP(String phoneNumber, String submittedOtp) {
+    String storedOtp = otpStorage.get(phoneNumber);
+    LocalDateTime expiresAt = otpExpiration.get(phoneNumber);
+
+    if (storedOtp == null || expiresAt == null) {
+        return false;
+    }
+
+    if (!LocalDateTime.now().isBefore(expiresAt)) {
+        otpStorage.remove(phoneNumber);
+        otpExpiration.remove(phoneNumber);
+        return false;
+    }
+
+    if (!storedOtp.equals(submittedOtp)) {
+        return false;
+    }
+
+    // Clear both entries after successful validation
+    otpStorage.remove(phoneNumber);
+    otpExpiration.remove(phoneNumber);
+
+    return true;
+}
+}
+
 
 /* 
 package com.example.beautysalonRESTAPI.service;

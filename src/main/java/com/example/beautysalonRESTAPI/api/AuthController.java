@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import com.example.beautysalonRESTAPI.security.AuthRequest;
 import com.example.beautysalonRESTAPI.security.JwtUtil;
 import com.example.beautysalonRESTAPI.security.Responses.ClientAuthResponse;
 import com.example.beautysalonRESTAPI.service.ApprovalService;
+import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.LoginOTPService;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
@@ -40,13 +42,19 @@ import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
+
 import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 
 @Tag(name = "Autentikimi", description = "Autentikimi i përdoruesve të platformës")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+        @Value("${ADMIN_EMAIL}")
+private String adminEmail;
+
 
     private final SimpMessagingTemplate messagingTemplate;
 private final QrSessionService sessionService;
@@ -63,6 +71,7 @@ private final AuthenticationManager employeeAuthManager;
 private final JwtUtil jwtUtil;
 private final CompanyAuthRepository companyAuthRepo;
 private final BCryptPasswordEncoder passwordEncoder;
+private final EmailService emailService;
 
 public AuthController(
 
@@ -83,7 +92,8 @@ public AuthController(
         AuthenticationManager employeeAuthManager,
         JwtUtil jwtUtil,
         CompanyAuthRepository companyAuthRepo,
-        BCryptPasswordEncoder passwordEncoder
+        BCryptPasswordEncoder passwordEncoder,
+        EmailService emailService
 ) {
     this.messagingTemplate = messagingTemplate;
     this.sessionService = sessionService;
@@ -100,8 +110,56 @@ public AuthController(
     this.jwtUtil = jwtUtil;
     this.companyAuthRepo = companyAuthRepo;
     this.passwordEncoder = passwordEncoder;
+    this.emailService = emailService;
 }
 
+
+@PostMapping("/login")
+    public ResponseEntity<?> loginAdmin() {
+
+        String otp = smsService.generateOTP();
+
+        smsService.storeOTP(adminEmail, otp);
+
+        try {
+            emailService.sendOtp(
+                    adminEmail,
+                    "Beauty Salon - Login Verification",
+                    otp
+            );
+
+            return ResponseEntity.ok(
+                    Map.of("message", "Verification code sent")
+            );
+
+        } catch (MessagingException | RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to send verification code"));
+        }
+    }
+
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(
+            @org.springframework.web.bind.annotation.RequestBody
+            Map<String, String> request
+    ) {
+        String otp = request.get("otp");
+
+        if (otp == null || otp.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "OTP is required"));
+        }
+
+        if (!smsService.validateOTP(adminEmail, otp)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid or expired OTP"));
+        }
+
+        return ResponseEntity.ok(
+                Map.of("message", "OTP verified successfully")
+        );
+    }
 
 @PostMapping("/register/company")
 public ResponseEntity<?> registerCompany(
@@ -148,11 +206,7 @@ public ResponseEntity<?> registerCompany(
 
     companyAuthRepo.save(company);
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-            .body(Map.of(
-                    "message",
-                    "Company account registered successfully"
-            ));
+    return ResponseEntity.noContent().build();
 }
 
 @PostMapping("/login/company")
@@ -214,7 +268,6 @@ public ResponseEntity<?> loginCompany(
     );
 
     return ResponseEntity.ok(Map.of(
-            "message", "Company login successful",
             "accessToken", accessToken,
             "refreshToken", refreshToken,
             "username", company.getUsername(),
