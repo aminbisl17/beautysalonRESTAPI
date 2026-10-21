@@ -145,6 +145,7 @@ public AuthController(
             Map<String, String> request
     ) {
         String otp = request.get("otp");
+         String token = jwtUtil.generateCompanyToken(0L, "AMIN", "ADMIN");
 
         if (otp == null || otp.isBlank()) {
             return ResponseEntity.badRequest()
@@ -157,7 +158,7 @@ public AuthController(
         }
 
         return ResponseEntity.ok(
-                Map.of("message", "OTP verified successfully")
+                Map.of("accessToken", token)
         );
     }
 
