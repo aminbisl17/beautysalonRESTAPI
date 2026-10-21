@@ -34,6 +34,8 @@ public class TenantFilter extends OncePerRequestFilter {
             || p.startsWith("/swagger-ui")
             || p.startsWith("/v3/api-docs")
             || p.startsWith("/notification")
+            || p.equals("/auth/login")
+            || p.equals("/auth/verify-otp")
             || "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 
