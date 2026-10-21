@@ -34,6 +34,11 @@ public class SecurityConfig {
     @Qualifier("employeeDetailsService")
     private UserDetailsService employeeDetailsService;
 
+    @Autowired
+    @Qualifier("companyDetailsService")
+    private UserDetailsService companyDetailsService;
+
+
     @Bean FilterRegistrationBean<TenantFilter> tenantReg(TenantFilter f) {
     var r = new FilterRegistrationBean<>(f); r.setEnabled(false); return r;
 }
@@ -72,6 +77,15 @@ public AuthenticationManager employeeAuthManager() {
     return new ProviderManager(provider);
 }
 
+@Bean("companyAuthManager")
+public AuthenticationManager companyAuthManager() {
+    DaoAuthenticationProvider provider =
+        new DaoAuthenticationProvider(employeeDetailsService);
+    provider.setPasswordEncoder(passwordEncoder());
+    return new ProviderManager(provider);
+}
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter) throws Exception {
         http
@@ -87,7 +101,8 @@ public AuthenticationManager employeeAuthManager() {
     "/swagger-ui.html",
     "/tenants",
     "/whatsapp/**",
-    "/notification/**"
+    "/notification/**",
+    "/register/**"
 ).permitAll()
 
 

@@ -22,16 +22,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsService adminDetailsService;
     private final UserDetailsService clientDetailsService;
     private final UserDetailsService employeeDetailsService;
+    private final UserDetailsService companyDetailsService;
+
 
     public JwtAuthFilter(
             JwtUtil jwtUtil,
             @Qualifier("adminDetailsService") UserDetailsService adminDetailsService,
             @Qualifier("clientDetailsService") UserDetailsService clientDetailsService,
-            @Qualifier("employeeDetailsService") UserDetailsService employeeDetailsService) {
+            @Qualifier("employeeDetailsService") UserDetailsService employeeDetailsService,
+            @Qualifier("companyDetailsService") UserDetailsService companyDetailsService) {
         this.jwtUtil = jwtUtil;
         this.adminDetailsService = adminDetailsService;
         this.clientDetailsService = clientDetailsService;
         this.employeeDetailsService = employeeDetailsService;
+        this.companyDetailsService = companyDetailsService;
     }
 
     @Override
@@ -85,7 +89,9 @@ if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
                         userDetails = clientDetailsService.loadUserByUsername(username);
                     } else if ("ROLE_EMPLOYEE".equals(role)) {
                         userDetails = employeeDetailsService.loadUserByUsername(username);
-                    } else {
+                    } else if ("ROLE_COMPANY".equals(role)) {
+                        userDetails = companyDetailsService.loadUserByUsername(username);
+                    }  else {
                         userDetails = null;
                     }
 

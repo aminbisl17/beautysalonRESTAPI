@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,9 +21,11 @@ import com.example.beautysalonRESTAPI.dto.Clients.ClientLogin;
 import com.example.beautysalonRESTAPI.model.AdminUser;
 import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
+import com.example.beautysalonRESTAPI.model.CompanyAuth;
 import com.example.beautysalonRESTAPI.model.Employees;
 import com.example.beautysalonRESTAPI.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
+import com.example.beautysalonRESTAPI.repository.CompanyAuthRepository;
 import com.example.beautysalonRESTAPI.repository.LoginOTPRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
@@ -33,11 +36,9 @@ import com.example.beautysalonRESTAPI.service.ApprovalService;
 import com.example.beautysalonRESTAPI.service.LoginOTPService;
 import com.example.beautysalonRESTAPI.service.QrSessionService;
 import com.example.beautysalonRESTAPI.service.SmsService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.example.beautysalonRESTAPI.service.TenantService;
-import com.example.beautysalonRESTAPI.dto.TenantInfo;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import com.example.beautysalonRESTAPI.Configuration.TenantContext;
@@ -47,60 +48,120 @@ import com.example.beautysalonRESTAPI.Configuration.TenantContext;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-private SimpMessagingTemplate messagingTemplate
-;
-     @Autowired
-    QrSessionService SessionService;
-
-      @Autowired
-    private AdminUserRepository adminRepo;
-
-    @Autowired
-    private ClientRepository clientRepo;
-
-    @Autowired
-    private EmployeesRepository employeeRepo;
-
-        @Autowired
-    private SmsService smsservice;
-
-    @Autowired ApprovalService approvalService;
-
-    @Autowired
-    LoginOTPService loginOtpService;
-        
-
-@Autowired
-private AprovalsRepository aprovalsRepo;
-    //@Autowired
-   // private AuthenticationManager authenticationManager;
-
-   private final AuthenticationManager adminAuthManager;
+    private final SimpMessagingTemplate messagingTemplate;
+private final QrSessionService sessionService;
+private final AdminUserRepository adminRepo;
+private final ClientRepository clientRepo;
+private final EmployeesRepository employeeRepo;
+private final SmsService smsService;
+private final ApprovalService approvalService;
+private final LoginOTPService loginOtpService;
+private final AprovalsRepository aprovalsRepo;
+private final AuthenticationManager adminAuthManager;
 private final AuthenticationManager clientAuthManager;
 private final AuthenticationManager employeeAuthManager;
 private final TenantService tenantService;
+private final JwtUtil jwtUtil;
+private final CompanyAuthRepository companyAuthRepo;
+private final BCryptPasswordEncoder passwordEncoder;
 
-   public AuthController(
-    @Qualifier("adminAuthManager") AuthenticationManager adminAuthManager,
-    @Qualifier("clientAuthManager") AuthenticationManager clientAuthManager,
-    @Qualifier("employeeAuthManager") AuthenticationManager employeeAuthManager,
-      TenantService tenantService
+public AuthController(
+
+        SimpMessagingTemplate messagingTemplate,
+        QrSessionService sessionService,
+        AdminUserRepository adminRepo,
+        ClientRepository clientRepo,
+        EmployeesRepository employeeRepo,
+        SmsService smsService,
+        ApprovalService approvalService,
+        LoginOTPService loginOtpService,
+        AprovalsRepository aprovalsRepo,
+        @Qualifier("adminAuthManager")
+        AuthenticationManager adminAuthManager,
+        @Qualifier("clientAuthManager")
+        AuthenticationManager clientAuthManager,
+        @Qualifier("employeeAuthManager")
+        AuthenticationManager employeeAuthManager,
+        TenantService tenantService,
+        JwtUtil jwtUtil,
+        CompanyAuthRepository companyAuthRepo,
+        BCryptPasswordEncoder passwordEncoder
 ) {
+    this.messagingTemplate = messagingTemplate;
+    this.sessionService = sessionService;
+    this.adminRepo = adminRepo;
+    this.clientRepo = clientRepo;
+    this.employeeRepo = employeeRepo;
+    this.smsService = smsService;
+    this.approvalService = approvalService;
+    this.loginOtpService = loginOtpService;
+    this.aprovalsRepo = aprovalsRepo;
     this.adminAuthManager = adminAuthManager;
     this.clientAuthManager = clientAuthManager;
     this.employeeAuthManager = employeeAuthManager;
     this.tenantService = tenantService;
+    this.jwtUtil = jwtUtil;
+    this.companyAuthRepo = companyAuthRepo;
+    this.passwordEncoder = passwordEncoder;
 }
-    @Autowired
-    private JwtUtil jwtUtil;
+
+
+@PostMapping("/register/company")
+public ResponseEntity<?> registerCompany(
+        @RequestBody AuthRequest request) {
+
+    Long tenantId = TenantContext.getTenantId();
+
+    if (tenantId == null) {
+        return ResponseEntity.badRequest()
+                .body(Map.of("error", "Tenant not resolved"));
+    }
+
+    if (request.getUsername() == null
+            || request.getUsername().isBlank()
+            || request.getPassword() == null
+            || request.getPassword().length() < 8) {
+        return ResponseEntity.badRequest()
+                .body(Map.of(
+                        "error",
+                        "Username is required and password must be at least 8 characters"
+                ));
+    }
+
+    // tenantId is Long — use it directly
+    if (companyAuthRepo.existsByTenantId(tenantId)) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of(
+                        "error",
+                        "This tenant already has a company account"
+                ));
+    }
+
+    if (companyAuthRepo.existsByUsername(request.getUsername())) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", "Username already exists"));
+    }
+
+    CompanyAuth company = new CompanyAuth();
+    company.setTenantId(tenantId);
+    company.setUsername(request.getUsername());
+    company.setPasswordHash(
+            passwordEncoder.encode(request.getPassword())
+    );
+
+    companyAuthRepo.save(company);
+
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(Map.of(
+                    "message",
+                    "Company account registered successfully"
+            ));
+}
 
 @Operation(
     summary = "Kyçja Admin",
     description = "Autentikohet përmes username dhe password, gjenerohet access dhe refresh token"
 )
-
-
 @PostMapping("/login/admin")
 public ResponseEntity<?> loginAdmin(
         @RequestBody AuthRequest request,
@@ -196,12 +257,12 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
         return ResponseEntity.badRequest().body("ky numer nuk ekziston!");
     }
 
-    String otp = smsservice.generateOTP();
+    String otp = smsService.generateOTP();
     String nrTel = response.getNumri_telefonit();
     // approvalService.createOtp(otp, client.getNumriTelefonit(), null);
     loginOtpService.createLoginOTP(otp, nrTel);
       //smsservice.sendOtp(response.getNumri_telefonit(), otp);
-      smsservice.sentMessage(nrTel, otp);
+      smsService.sentMessage(nrTel, otp);
       //System.out.println("OTP: " + otp);
     return ResponseEntity.ok("sent to verify");
 }
@@ -329,7 +390,7 @@ public ResponseEntity<?> loginEmployee(@RequestBody AuthRequest request) {
 
 @GetMapping("/generate-qr_code")
   public ResponseEntity<Map<String, String>> sendQrCode(){
-    return ResponseEntity.ok(Map.of("code", SessionService.generateQrCode()));
+    return ResponseEntity.ok(Map.of("code", sessionService.generateQrCode()));
   }
 
 
@@ -348,7 +409,7 @@ public ResponseEntity<?> validateQrCode(
         return ResponseEntity.status(401).body("Invalid or expired token");
     }
 
-    if (!SessionService.validateQr(request.getCode())) {
+    if (!sessionService.validateQr(request.getCode())) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Invalid or expired QR code"));
     }
