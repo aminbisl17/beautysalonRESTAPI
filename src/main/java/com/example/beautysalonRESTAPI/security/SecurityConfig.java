@@ -84,85 +84,161 @@ public AuthenticationManager companyAuthManager() {
     provider.setPasswordEncoder(passwordEncoder());
     return new ProviderManager(provider);
 }
+@Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        JwtAuthFilter jwtAuthFilter,
+        TenantFilter tenantFilter
+) throws Exception {
 
+    http
+        .cors(cors -> {})
+        .csrf(csrf -> csrf.disable())
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, TenantFilter tenantFilter) throws Exception {
-        http
-         .cors(cors -> {}) 
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-    .requestMatchers("/ws/**").permitAll()
-
-    .requestMatchers(
-    "/swagger-ui/**", 
-    "/v3/api-docs/**", 
-    "/swagger-ui.html",
-    "/tenants",
-    "/whatsapp/**",
-    "/notification/**"
-).permitAll()
-
-
- //   .requestMatchers("/auth/refresh-token").permitAll()
-   // .requestMatchers("/auth/delete-refresh-token").permitAll()
-   .requestMatchers("/auth/**").permitAll()
-    .requestMatchers("/test/generate-token").permitAll()
-    .requestMatchers("/test/test-token").permitAll()
-    .requestMatchers("/server/**").permitAll()
-
-    .requestMatchers("/web/sherbimet/all").permitAll()
-    .requestMatchers("/web/employees/all").permitAll()
-    
-    .requestMatchers("/api/mixed/sherbimet/all").permitAll()
-    .requestMatchers("/api/mixed/sherbimet/atributet/**").permitAll()
-    .requestMatchers("/api/clients/register").permitAll()
-    .requestMatchers("/api/clients/verify").permitAll()
-    .requestMatchers("/api/clients/fast-login&register").permitAll()
-    .requestMatchers("/api/clients/verify/fast-login&register").permitAll()
-    .requestMatchers("/company/email/send").permitAll()
-
-    .requestMatchers("/scope/company/clients/**").hasAuthority("SCOPE_COMPANY")
-    .requestMatchers("/auth/validate-qr_code")
-    .hasAnyRole("ADMIN", "EMPLOYEE")
-
-    .requestMatchers("/api/admin/data").hasRole("ADMIN")
-    .requestMatchers("/api/admin/register").permitAll()
-    .requestMatchers("/api/admin/update").hasRole("ADMIN")
-
-    .requestMatchers("/api/admin/employees/register").hasRole("ADMIN")
-    .requestMatchers("/api/admin/employees/all").hasRole("ADMIN")
-    .requestMatchers("/api/admin/employees/delete/**").hasRole("ADMIN")
-    .requestMatchers("/api/admin/employees/update/**").hasRole("ADMIN")
-
-    // Services (sherbimet)
-   .requestMatchers("/api/admin/sherbimet/register").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
-    .requestMatchers("/api/admin/sherbimet/delete/**").hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
-    .requestMatchers("/api/admin/sherbimet/update/**")
-    .hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
-
-    .requestMatchers("/api/admin/dashboard/statistics").hasRole("ADMIN")
-
-    .requestMatchers("/api/employee/**").hasRole("EMPLOYEE")
-    //.requestMatchers("/api/employee/clients/**").hasRole("EMPLOYEE")
-    //.requestMatchers("/api/employee/sherbimet/all").hasRole("EMPLOYEE")
-
-
-    .requestMatchers("/api/mixed/clients/delete/*")
-        .hasAnyRole("EMPLOYEE", "CLIENT")
-
-        .requestMatchers("/com/mixed/employee/skills/**").hasAnyRole("EMPLOYEE", "ADMIN")
-
-    .requestMatchers("/api/mixed/terminet/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_CLIENT", "SCOPE_COMPANY")
-
-    .requestMatchers("/api/clients/**").authenticated()
-                                   //.hasRole("CLIENT").anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-.addFilterBefore(tenantFilter, JwtAuthFilter.class);
+        .authorizeHttpRequests(auth -> auth
             
-        return http.build();
-    }
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+            .requestMatchers(
+                "/ws/**",
+
+                // Swagger / OpenAPI
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+
+                // Authentication
+                "/auth/**",
+
+                // Public infrastructure / integrations
+                "/whatsapp/**",
+                "/notification/**",
+                "/server/**",
+
+                // Testing
+                "/test/generate-token",
+                "/test/test-token",
+
+                // Public web data
+                "/web/sherbimet/all",
+                "/web/employees/all",
+
+                // Public mixed endpoints
+                "/api/mixed/sherbimet/all",
+                "/api/mixed/sherbimet/atributet/**",
+
+                // Client registration and verification
+                "/api/clients/register",
+                "/api/clients/verify",
+                "/api/clients/fast-login&register",
+                "/api/clients/verify/fast-login&register",
+
+                // Company email
+                "/company/email/send",
+
+                // Admin registration
+                "/api/admin/register"
+            ).permitAll()
+
+
+            // =========================================
+            // 2. HAS ROLE
+            // =========================================
+
+            .requestMatchers(
+                "/api/admin/data",
+                "/api/admin/update",
+                "/api/admin/dashboard/statistics",
+
+                // Admin employee management
+                "/api/admin/employees/register",
+                "/api/admin/employees/all",
+                "/api/admin/employees/delete/**",
+                "/api/admin/employees/update/**"
+            ).hasRole("ADMIN")
+
+            .requestMatchers(
+                "/api/employee/**"
+            ).hasRole("EMPLOYEE")
+
+
+            // =========================================
+            // 3. HAS ANY ROLE
+            // =========================================
+
+            .requestMatchers(
+                "/auth/validate-qr_code"
+            ).hasAnyRole("ADMIN", "EMPLOYEE")
+
+            .requestMatchers(
+                "/api/mixed/clients/delete/*"
+            ).hasAnyRole("EMPLOYEE", "CLIENT")
+
+            .requestMatchers(
+                "/com/mixed/employee/skills/**"
+            ).hasAnyRole("EMPLOYEE", "ADMIN")
+
+
+            // =========================================
+            // 4. HAS AUTHORITY
+            // =========================================
+
+            .requestMatchers(
+                "/scope/company/clients/**",
+                "/tenants/**"
+            ).hasAuthority("SCOPE_COMPANY")
+
+
+            // =========================================
+            // 5. HAS ANY AUTHORITY
+            // =========================================
+
+            .requestMatchers(
+                "/api/admin/sherbimet/register",
+                "/api/admin/sherbimet/delete/**",
+                "/api/admin/sherbimet/update/**"
+            ).hasAnyAuthority("ROLE_ADMIN", "SCOPE_COMPANY")
+
+            .requestMatchers(
+                "/api/mixed/terminet/**"
+            ).hasAnyAuthority(
+                "ROLE_ADMIN",
+                "ROLE_EMPLOYEE",
+                "ROLE_CLIENT",
+                "SCOPE_COMPANY"
+            )
+
+
+            // =========================================
+            // 6. AUTHENTICATED
+            // =========================================
+
+            .requestMatchers(
+                "/api/clients/**"
+            ).authenticated()
+
+
+            // =========================================
+            // 7. EVERYTHING ELSE
+            // =========================================
+
+            .anyRequest().authenticated()
+        )
+
+        .sessionManagement(sess ->
+            sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+
+        .addFilterBefore(
+            jwtAuthFilter,
+            UsernamePasswordAuthenticationFilter.class
+        )
+
+        .addFilterBefore(
+            tenantFilter,
+            JwtAuthFilter.class
+        );
+
+    return http.build();
+}
 }
