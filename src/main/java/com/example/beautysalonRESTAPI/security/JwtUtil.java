@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+import javax.crypto.SecretKey;
+
 @Component
 public class JwtUtil {
 
@@ -19,10 +21,12 @@ public class JwtUtil {
 
  // private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; //test
 
-    @Value("${SECRET_KEY}")
-    private String SECRET;
+   
+ private final SecretKey key;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(@Value("${SECRET_KEY}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
 public String generateToken(
         Long id,
@@ -68,6 +72,17 @@ public String generateCompanyToken(Long id, String username, String role) {
             .setSubject(username)
             .claim("id", id)
             .claim("role", role) 
+            .claim("type", "COMPANY_ACCESS")
+            .setIssuedAt(new Date())
+              .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24)) // 15 min
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+}
+
+public String generateTenantToken(String username, String tenant_key){
+      return Jwts.builder()
+            .setSubject(username)
+            .claim("TenantKey", tenant_key) 
             .claim("type", "COMPANY_ACCESS")
             .setIssuedAt(new Date())
               .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24)) // 15 min

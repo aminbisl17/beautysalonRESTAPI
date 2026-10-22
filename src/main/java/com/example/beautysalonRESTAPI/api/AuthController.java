@@ -24,10 +24,12 @@ import com.example.beautysalonRESTAPI.model.Aprovals;
 import com.example.beautysalonRESTAPI.model.Client;
 import com.example.beautysalonRESTAPI.model.CompanyAuth;
 import com.example.beautysalonRESTAPI.model.Employees;
+import com.example.beautysalonRESTAPI.model.Tenants;
 import com.example.beautysalonRESTAPI.repository.AdminUserRepository;
 import com.example.beautysalonRESTAPI.repository.AprovalsRepository;
 import com.example.beautysalonRESTAPI.repository.CompanyAuthRepository;
 import com.example.beautysalonRESTAPI.repository.LoginOTPRepository;
+import com.example.beautysalonRESTAPI.repository.TenantsRepository;
 import com.example.beautysalonRESTAPI.repository.Client.ClientRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.security.AuthRequest;
@@ -72,6 +74,7 @@ private final JwtUtil jwtUtil;
 private final CompanyAuthRepository companyAuthRepo;
 private final BCryptPasswordEncoder passwordEncoder;
 private final EmailService emailService;
+private final TenantsRepository tenantRepo;
 
 public AuthController(
 
@@ -93,7 +96,8 @@ public AuthController(
         JwtUtil jwtUtil,
         CompanyAuthRepository companyAuthRepo,
         BCryptPasswordEncoder passwordEncoder,
-        EmailService emailService
+        EmailService emailService,
+        TenantsRepository tenantRepo
 ) {
     this.messagingTemplate = messagingTemplate;
     this.sessionService = sessionService;
@@ -111,6 +115,7 @@ public AuthController(
     this.companyAuthRepo = companyAuthRepo;
     this.passwordEncoder = passwordEncoder;
     this.emailService = emailService;
+    this.tenantRepo = tenantRepo;
 }
 
 
@@ -214,12 +219,13 @@ public ResponseEntity<?> registerCompany(
 public ResponseEntity<?> loginCompany(
         @RequestBody AuthRequest request) {
 
-    Long tenantId = TenantContext.getTenantId();
+   /*  Long tenantId = TenantContext.getTenantId();
 
     if (tenantId == null) {
         return ResponseEntity.badRequest()
                 .body(Map.of("error", "Tenant not resolved"));
     }
+                */
 
     if (request.getUsername() == null
             || request.getUsername().isBlank()
@@ -234,8 +240,7 @@ public ResponseEntity<?> loginCompany(
     }
 
     Optional<CompanyAuth> optionalCompany =
-            companyAuthRepo.findByTenantIdAndUsername(
-                    tenantId,
+            companyAuthRepo.findByUsername(
                     request.getUsername()
             );
 
@@ -254,27 +259,65 @@ public ResponseEntity<?> loginCompany(
                 .body(Map.of("error", "Invalid username or password"));
     }
 
-    String accessToken = jwtUtil.generateToken(
-            company.getId().longValue(),
-            company.getUsername(),
-            "ROLE_COMPANY",
-            tenantId
-    );
+  /*  String tenantKey = tenantRepo.findById(company.getTenantId())
+        .map(Tenants::getTenantKey)
+        .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED, "Tenant not found for this account"));
+String accessToken = jwtUtil.generateTenantToken(
+        company.getUsername(),
+        tenantKey
+);
 
-    String refreshToken = jwtUtil.generateRefreshToken(
-            company.getId().longValue(),
+
+                */
+String otp = smsService.generateOTP();
+smsService.storeOTP(request.getUsername(), otp);
+    return ResponseEntity.ok(Map.of("otp", otp));
+}
+
+@PostMapping("/login/company/validate")
+public ResponseEntity<?> validateCompanyOtp(@RequestBody Map<String, String> body) {
+
+    String username = body.get("username");
+    String otp = body.get("otp");
+
+    if (username == null || username.isBlank()
+            || otp == null || !otp.matches("\\d{6}")) {
+        return ResponseEntity.badRequest()
+                .body(Map.of("error", "Username and a 6-digit code are required"));
+    }
+
+    // 1. check the code (also consumes it, so it can't be reused)
+    if (!smsService.validateOTP(username, otp)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid or expired code"));
+    }
+    CompanyAuth company = companyAuthRepo.findByUsername(username).orElse(null);
+
+    if (company == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid or expired code"));
+    }
+
+    // 3. load the tenant
+    Tenants tenant = tenantRepo.findById(company.getTenantId()).orElse(null);
+
+    if (tenant == null) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Tenant not found for this account"));
+    }
+
+    // 4. issue the token containing the tenant key
+    String accessToken = jwtUtil.generateTenantToken(
             company.getUsername(),
-            "ROLE_COMPANY",
-            tenantId
+            tenant.getTenantKey()
     );
 
     return ResponseEntity.ok(Map.of(
-            "accessToken", accessToken,
-            "refreshToken", refreshToken,
-            "username", company.getUsername(),
-            "tenantId", tenantId
+            "accessToken", accessToken
     ));
 }
+
 
 @Operation(
     summary = "Kyçja Admin",

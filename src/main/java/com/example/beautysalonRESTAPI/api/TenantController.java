@@ -61,4 +61,6 @@ public class TenantController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Tenant registration failed"));
     }
+
+    
 }
