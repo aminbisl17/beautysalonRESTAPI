@@ -29,7 +29,7 @@ public class TenantFilter extends OncePerRequestFilter {
 
  return p.startsWith("/actuator")
             || p.startsWith("/ws")
-          //  || p.startsWith("/tenants")
+            || p.startsWith("/tenants")
             || p.startsWith("/whatsapp")
             || p.startsWith("/swagger-ui")
             || p.startsWith("/v3/api-docs")
