@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -17,7 +19,9 @@ public class JwtUtil {
 
  // private static final long REFRESH_TOKEN_EXPIRATION = 1000L * 10; //test
 
-    private static final String SECRET = "myVeryStrongSecretKeyForJWT123456!";
+    @Value("${SECRET_KEY}")
+    private String SECRET;
+
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
 public String generateToken(
