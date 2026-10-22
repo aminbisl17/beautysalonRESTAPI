@@ -61,7 +61,7 @@ String role = jwtUtil.extractRole(token);
 String type = jwtUtil.extractType(token);
 
 
-if (jwtUtil.validateToken(token) && "COMPANY_ACCESS".equals(type)) {
+if (jwtUtil.validateCompanyToken(token) && "COMPANY_ACCESS".equals(type)) {
 
 
     UsernamePasswordAuthenticationToken auth =
