@@ -420,8 +420,8 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 
     String otp = smsService.generateOTP();
     String nrTel = response.getNumri_telefonit();
-     approvalService.createOtp(otp, nrTel, null);
-    //loginOtpService.createLoginOTP(otp, nrTel);
+     //approvalService.createOtp(otp, nrTel, null);
+    loginOtpService.createLoginOTP(otp, nrTel);
       //smsservice.sendOtp(response.getNumri_telefonit(), otp);
       smsService.sentMessage(nrTel, otp);
       //System.out.println("OTP: " + otp);
@@ -432,7 +432,7 @@ public ResponseEntity<?> loginClient(@RequestBody ClientLogin response) {
 public ResponseEntity<?> verify(@RequestBody OtpClient response, HttpServletResponse res) {
 
     try {
-     approvalService.validateOTP(
+     loginOtpService.validateLoginOTP(
                 response.getOtpcode(),
                 response.getNumri_telefonit()
         );
