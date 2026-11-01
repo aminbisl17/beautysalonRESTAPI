@@ -80,6 +80,7 @@ public List<TerminetGetDTO> getSpecificEmployeeAppointments(Long id) {
 }
 
 
+/* 
 public DetajetStafitDTO FilteredData(Long id) {
 
     List<employeeAvailability> availability =
@@ -93,6 +94,27 @@ public DetajetStafitDTO FilteredData(Long id) {
   data.setDates(availability.stream().map(AvailableEmployeeDates::new).toList());
   data.setUnavailableDates(existingAppointments);
 
+
+    return data;
+} */
+
+    public DetajetStafitDTO FilteredData(Long id) {
+
+    List<employeeAvailability> availability =
+            availabilityRepository.findByEmployees_ID(id);
+
+    List<LocalDateTime> unavailableDates = terRepo.findDataCaktimitAndDuration(id)
+            .stream()
+            .map(row -> {
+                LocalDateTime start = (LocalDateTime) row[0];
+                long minutes = ((Number) row[1]).longValue();
+                return start.plusMinutes(minutes);   // 10:00 + 30 min = 10:30
+            })
+            .toList();
+
+    DetajetStafitDTO data = new DetajetStafitDTO();
+    data.setDates(availability.stream().map(AvailableEmployeeDates::new).toList());
+    data.setUnavailableDates(unavailableDates);
 
     return data;
 }

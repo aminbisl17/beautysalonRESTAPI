@@ -33,4 +33,13 @@ public interface TerminetRepository extends JpaRepository<Terminet, Long> {
 List<LocalDateTime> findDataCaktimitByEmployeeId(
     @Param("employeeId") Long employeeId
 );
+
+@Query("""
+    SELECT t.data_caktimit, COALESCE(SUM(d.kohezgjatja), 0)
+    FROM Terminet t
+    LEFT JOIN t.detajet_termineve d
+    WHERE t.employee.ID = :employeeId
+    GROUP BY t.id_terminit, t.data_caktimit
+    """)
+List<Object[]> findDataCaktimitAndDuration(@Param("employeeId") Long employeeId);
 }
