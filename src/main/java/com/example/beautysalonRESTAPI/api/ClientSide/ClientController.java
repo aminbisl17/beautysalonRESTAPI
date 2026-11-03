@@ -365,7 +365,7 @@ public ResponseEntity<?> verifyFastLoginRegister(
             );
 
             ResponseCookie cookie = ResponseCookie
-                    .from("refreshToken", refreshToken)
+                    .from("clientRefreshToken", refreshToken)
                     .httpOnly(true)
                     .secure(false)
                     .path("/")
