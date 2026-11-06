@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import com.example.beautysalonRESTAPI.model.employeeAvailability;
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
+import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO.BusyRange;
 
 @Service
 public class TerminetService {
@@ -103,14 +104,17 @@ public DetajetStafitDTO FilteredData(Long id) {
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
-    List<LocalDateTime> unavailableDates = terRepo.findDataCaktimitAndDuration(id)
-            .stream()
-            .map(row -> {
-                LocalDateTime start = (LocalDateTime) row[0];
-                long minutes = ((Number) row[1]).longValue();
-                return start.plusMinutes(minutes);   // 10:00 + 30 min = 10:30
-            })
-            .toList();
+            List<BusyRange> unavailableDates = terRepo
+        .findDataCaktimitAndDuration(id, LocalDateTime.now().minusDays(1))
+        .stream()
+        .map(row -> {
+            LocalDateTime start = (LocalDateTime) row[0];
+            long minutes = ((Number) row[1]).longValue();
+            if (minutes == 0) minutes = 30;
+            return new BusyRange(start, start.plusMinutes(minutes));
+        })
+        .toList();
+  
 
     DetajetStafitDTO data = new DetajetStafitDTO();
     data.setDates(availability.stream().map(AvailableEmployeeDates::new).toList());
