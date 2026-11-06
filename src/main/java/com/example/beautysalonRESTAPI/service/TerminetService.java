@@ -104,20 +104,33 @@ public DetajetStafitDTO FilteredData(Long id) {
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
-            List<BusyRange> unavailableDates = terRepo
-        .findDataCaktimitAndDuration(id, LocalDateTime.now().minusDays(1))
-        .stream()
-        .map(row -> {
-            LocalDateTime start = (LocalDateTime) row[0];
-            long minutes = ((Number) row[1]).longValue();
-            if (minutes == 0) minutes = 30;
-            return new BusyRange(start, start.plusMinutes(minutes));
-        })
-        .toList();
-  
+    List<BusyRange> unavailableDates = terRepo
+            .findDataCaktimitAndDuration(id)
+            .stream()
+            .map(row -> {
+                LocalDateTime start = (LocalDateTime) row[0];
+
+                long minutes = ((Number) row[1]).longValue();
+
+                if (minutes == 0) {
+                    minutes = 30;
+                }
+
+                return new BusyRange(
+                        start,
+                        start.plusMinutes(minutes)
+                );
+            })
+            .toList();
 
     DetajetStafitDTO data = new DetajetStafitDTO();
-    data.setDates(availability.stream().map(AvailableEmployeeDates::new).toList());
+
+    data.setDates(
+            availability.stream()
+                    .map(AvailableEmployeeDates::new)
+                    .toList()
+    );
+
     data.setUnavailableDates(unavailableDates);
 
     return data;

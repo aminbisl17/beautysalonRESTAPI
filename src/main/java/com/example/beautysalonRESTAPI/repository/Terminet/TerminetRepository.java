@@ -34,7 +34,7 @@ List<LocalDateTime> findDataCaktimitByEmployeeId(
     @Param("employeeId") Long employeeId
 );
 
-/* 
+ 
 @Query("""
     SELECT t.data_caktimit, COALESCE(SUM(d.kohezgjatja), 0)
     FROM Terminet t
@@ -43,7 +43,9 @@ List<LocalDateTime> findDataCaktimitByEmployeeId(
     GROUP BY t.id_terminit, t.data_caktimit
     """)
 List<Object[]> findDataCaktimitAndDuration(@Param("employeeId") Long employeeId);
-*/
+
+
+/* 
 
 @Query("""
     SELECT t.data_caktimit, COALESCE(SUM(d.kohezgjatja), 0)
@@ -56,4 +58,5 @@ List<Object[]> findDataCaktimitAndDuration(@Param("employeeId") Long employeeId)
 List<Object[]> findDataCaktimitAndDuration(@Param("employeeId") Long employeeId,
                                            @Param("from") LocalDateTime from);
                                            
+                                        */
 }
