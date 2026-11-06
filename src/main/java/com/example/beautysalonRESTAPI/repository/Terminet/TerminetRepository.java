@@ -36,14 +36,17 @@ List<LocalDateTime> findDataCaktimitByEmployeeId(
 
  
 @Query("""
-    SELECT t.data_caktimit, COALESCE(SUM(d.kohezgjatja), 0)
+    SELECT
+        t.data_caktimit,
+        COALESCE(SUM(d.kohezgjatja), 30)
     FROM Terminet t
     LEFT JOIN t.detajet_termineve d
     WHERE t.employee.ID = :employeeId
     GROUP BY t.id_terminit, t.data_caktimit
     """)
-List<Object[]> findDataCaktimitAndDuration(@Param("employeeId") Long employeeId);
-
+List<Object[]> findDataCaktimitAndDuration(
+        @Param("employeeId") Long employeeId
+);
 
 /* 
 

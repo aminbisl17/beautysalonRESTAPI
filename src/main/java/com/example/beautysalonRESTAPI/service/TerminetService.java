@@ -99,29 +99,28 @@ public DetajetStafitDTO FilteredData(Long id) {
     return data;
 } */
 
-    public DetajetStafitDTO FilteredData(Long id) {
+public DetajetStafitDTO FilteredData(Long id) {
 
     List<employeeAvailability> availability =
             availabilityRepository.findByEmployees_ID(id);
 
-    List<BusyRange> unavailableDates = terRepo
-            .findDataCaktimitAndDuration(id)
-            .stream()
-            .map(row -> {
-                LocalDateTime start = (LocalDateTime) row[0];
+    List<BusyRange> unavailableDates =
+            terRepo.findDataCaktimitAndDuration(id)
+                    .stream()
+                    .map(row -> {
 
-                long minutes = ((Number) row[1]).longValue();
+                        LocalDateTime start =
+                                (LocalDateTime) row[0];
 
-                if (minutes == 0) {
-                    minutes = 30;
-                }
+                        long duration =
+                                ((Number) row[1]).longValue();
 
-                return new BusyRange(
-                        start,
-                        start.plusMinutes(minutes)
-                );
-            })
-            .toList();
+                        LocalDateTime end =
+                                start.plusMinutes(duration);
+
+                        return new BusyRange(start, end);
+                    })
+                    .toList();
 
     DetajetStafitDTO data = new DetajetStafitDTO();
 
