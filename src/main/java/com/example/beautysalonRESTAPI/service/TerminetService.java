@@ -9,9 +9,13 @@ import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetTermineveDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetGetDTO;
+import com.example.beautysalonRESTAPI.model.AppointmentStatus;
 import com.example.beautysalonRESTAPI.model.Terminet;
 import com.example.beautysalonRESTAPI.repository.Terminet.TerminetRepository;
 import com.microsoft.sqlserver.jdbc.SQLServerDataTable;
+
+import jakarta.transaction.Transactional;
+
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -133,5 +137,66 @@ public DetajetStafitDTO FilteredData(Long id) {
     data.setUnavailableDates(unavailableDates);
 
     return data;
+}
+
+@Transactional
+public Long updateAppointmentStatus(
+        Long appointmentId,
+        AppointmentStatus newStatus,
+        String cancellationReason) {
+
+    Terminet appointment = terRepo.findById(appointmentId)
+            .orElseThrow(() ->
+                    new IllegalArgumentException("Termini nuk u gjet!"));
+
+    AppointmentStatus currentStatus = appointment.getStatus();
+
+    if (newStatus == null || currentStatus == newStatus) {
+        throw new IllegalArgumentException("Statusi nuk është valid!");
+    }
+
+    // Decide which transitions are allowed
+    boolean allowed = switch (currentStatus) {
+        case PENDING ->
+                newStatus == AppointmentStatus.CONFIRMED ||
+                newStatus == AppointmentStatus.CANCELLED;
+
+        case CONFIRMED ->
+                newStatus == AppointmentStatus.COMPLETED ||
+                newStatus == AppointmentStatus.CANCELLED ||
+                newStatus == AppointmentStatus.NO_SHOW;
+
+        case COMPLETED, CANCELLED, NO_SHOW -> false;
+    };
+
+    if (!allowed) {
+        throw new IllegalArgumentException(
+                "Nuk lejohet ndryshimi nga " +
+                currentStatus + " në " + newStatus
+        );
+    }
+
+    // Handle the requested status
+    switch (newStatus) {
+
+        case COMPLETED ->
+                appointment.setCompleted_at(LocalDateTime.now());
+
+        case CANCELLED -> {
+            appointment.setCancelled_at(LocalDateTime.now());
+            appointment.setCancellation_reason(cancellationReason);
+        }
+
+        case CONFIRMED, NO_SHOW, PENDING -> {
+            // No additional timestamp actions needed here.
+        }
+    }
+
+    appointment.setStatus(newStatus);
+
+    terRepo.save(appointment);
+
+    // Return the employee ID for WebSocket updates.
+    return appointment.getEmployee().getID();
 }
 }

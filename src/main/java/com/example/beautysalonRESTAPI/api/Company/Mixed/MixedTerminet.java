@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.beautysalonRESTAPI.dto.AvailableEmployeeDates;
 import com.example.beautysalonRESTAPI.dto.Sherbimet.SherbimetAdminDTO;
+import com.example.beautysalonRESTAPI.dto.terminet.AppointmentStatusUpdateDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.DetajetStafitDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetCreateDTO;
 import com.example.beautysalonRESTAPI.dto.terminet.TerminetGetDTO;
@@ -27,6 +28,7 @@ import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.TerminetService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -100,4 +102,41 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
                 terminetService.getSpecificEmployeeAppointments(id)
         );
     }
+
+    @PatchMapping("status/{id}")
+public ResponseEntity<?> updateAppointmentStatus(
+        @PathVariable Long id,
+        @RequestBody AppointmentStatusUpdateDTO dto) {
+
+    try {
+
+        Long employeeId = terminetService.updateAppointmentStatus(
+                id,
+                dto.getStatus(),
+                dto.getCancellationReason()
+        );
+
+        messagingTemplate.convertAndSend(
+                "/topic/appointments/employee/" + employeeId,
+                terminetService.getSpecificEmployeeAppointments(employeeId)
+        );
+
+        messagingTemplate.convertAndSend(
+                "/topic/availability/" + employeeId,
+                terminetService.FilteredData(employeeId)
+        );
+
+        return ResponseEntity.ok("Statusi i terminit u ndryshua!");
+
+    } catch (IllegalArgumentException e) {
+
+        return ResponseEntity.badRequest().body(e.getMessage());
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        return ResponseEntity.internalServerError()
+                .body("Ndryshimi i statusit dështoi!");
+    }
+}
 }

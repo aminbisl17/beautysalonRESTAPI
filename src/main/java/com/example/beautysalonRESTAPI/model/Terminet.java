@@ -6,6 +6,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,11 +42,55 @@ public class Terminet {
       @Column(name="data_krijimit", nullable = false)
    private LocalDateTime data_krijimit;
 
+   @Enumerated(EnumType.STRING)
+@Column(name = "status", nullable = false)
+private AppointmentStatus status = AppointmentStatus.PENDING;
 
    @OneToMany(mappedBy = "terminet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    private List<Detajet_termineve> detajet_termineve;
 
 
+   @Column(name = "completed_at")
+private LocalDateTime completed_at;
+
+@Column(name = "cancelled_at")
+private LocalDateTime cancelled_at;
+
+@Column(name = "cancellation_reason")
+private String cancellation_reason;
+
+
+public LocalDateTime getCompleted_at() {
+    return completed_at;
+}
+
+public void setCompleted_at(LocalDateTime completed_at) {
+    this.completed_at = completed_at;
+}
+
+public LocalDateTime getCancelled_at() {
+    return cancelled_at;
+}
+
+public void setCancelled_at(LocalDateTime cancelled_at) {
+    this.cancelled_at = cancelled_at;
+}
+
+public String getCancellation_reason() {
+    return cancellation_reason;
+}
+
+public void setCancellation_reason(String cancellation_reason) {
+    this.cancellation_reason = cancellation_reason;
+}
+
+   public AppointmentStatus getStatus() {
+    return status;
+}
+
+public void setStatus(AppointmentStatus status) {
+    this.status = status;
+}
 
       public LocalDateTime getData_krijimit() {
          return data_krijimit;
