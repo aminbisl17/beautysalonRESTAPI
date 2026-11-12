@@ -156,18 +156,22 @@ public Long updateAppointmentStatus(
     }
 
     // Decide which transitions are allowed
-    boolean allowed = switch (currentStatus) {
-        case PENDING ->
-                newStatus == AppointmentStatus.CONFIRMED ||
-                newStatus == AppointmentStatus.CANCELLED;
+boolean allowed = switch (currentStatus) {
 
-        case CONFIRMED ->
-                newStatus == AppointmentStatus.COMPLETED ||
-                newStatus == AppointmentStatus.CANCELLED ||
-                newStatus == AppointmentStatus.NO_SHOW;
+    case PENDING ->
+            newStatus == AppointmentStatus.CONFIRMED ||
+            newStatus == AppointmentStatus.CANCELLED;
 
-        case COMPLETED, CANCELLED, NO_SHOW -> false;
-    };
+    case CONFIRMED ->
+            newStatus == AppointmentStatus.EXECUTING ||
+            newStatus == AppointmentStatus.CANCELLED ||
+            newStatus == AppointmentStatus.NO_SHOW;
+
+    case EXECUTING ->
+            newStatus == AppointmentStatus.COMPLETED;
+
+    case COMPLETED, CANCELLED, NO_SHOW -> false;
+};
 
     if (!allowed) {
         throw new IllegalArgumentException(
@@ -177,20 +181,20 @@ public Long updateAppointmentStatus(
     }
 
     // Handle the requested status
-    switch (newStatus) {
+   switch (newStatus) {
 
-        case COMPLETED ->
-                appointment.setCompleted_at(LocalDateTime.now());
+    case COMPLETED ->
+            appointment.setCompleted_at(LocalDateTime.now());
 
-        case CANCELLED -> {
-            appointment.setCancelled_at(LocalDateTime.now());
-            appointment.setCancellation_reason(cancellationReason);
-        }
-
-        case CONFIRMED, NO_SHOW, PENDING -> {
-            // No additional timestamp actions needed here.
-        }
+    case CANCELLED -> {
+        appointment.setCancelled_at(LocalDateTime.now());
+        appointment.setCancellation_reason(cancellationReason);
     }
+
+    case CONFIRMED, EXECUTING, NO_SHOW, PENDING -> {
+        // No additional timestamp actions needed here.
+    }
+}
 
     appointment.setStatus(newStatus);
 

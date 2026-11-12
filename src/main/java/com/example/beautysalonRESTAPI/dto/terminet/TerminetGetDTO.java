@@ -21,6 +21,7 @@ public class TerminetGetDTO {
     private LocalDateTime data_caktimit, data_krijimit;
     private Long employee_id;
     private List<Detajet_Termineve> detajet_terminit;
+    private String status;
 
     public TerminetGetDTO(){
 
@@ -39,6 +40,8 @@ public class TerminetGetDTO {
     this.employee_id = t.getEmployee().getID();
 
     this.data_krijimit = t.getData_krijimit();
+
+    this.status = t.getStatus().name();
 
 Map<Long, List<Detajet_termineve>> grouped =
         t.getDetajet_termineve()
@@ -66,6 +69,13 @@ Map<Long, List<Detajet_termineve>> grouped =
     }
 
 
+    public String getStatus() {
+    return status;
+}
+
+public void setStatus(String status) {
+    this.status = status;
+}
     public Long getId_terminit() {
         return id_terminit;
     }
