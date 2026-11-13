@@ -42,6 +42,10 @@ List<LocalDateTime> findDataCaktimitByEmployeeId(
     FROM Terminet t
     LEFT JOIN t.detajet_termineve d
     WHERE t.employee.ID = :employeeId
+      AND t.status NOT IN (
+          com.example.beautysalonRESTAPI.model.AppointmentStatus.COMPLETED,
+          com.example.beautysalonRESTAPI.model.AppointmentStatus.CANCELLED
+      )
     GROUP BY t.id_terminit, t.data_caktimit
     """)
 List<Object[]> findDataCaktimitAndDuration(
