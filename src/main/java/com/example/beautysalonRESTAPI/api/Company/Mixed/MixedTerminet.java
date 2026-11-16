@@ -24,6 +24,7 @@ import com.example.beautysalonRESTAPI.repository.Employee.EmployeesRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.availableSkillsRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.employeeAvailabilityRepository;
 import com.example.beautysalonRESTAPI.repository.Employee.skillsRepository;
+import com.example.beautysalonRESTAPI.service.BlobStorageService;
 import com.example.beautysalonRESTAPI.service.EmailService;
 import com.example.beautysalonRESTAPI.service.SmsService;
 import com.example.beautysalonRESTAPI.service.TerminetService;
@@ -48,6 +49,10 @@ public class MixedTerminet {
 
     @Autowired 
     private EmailService ems;
+
+    
+    @Autowired 
+    private BlobStorageService blobService;
 
         @Autowired
 private SimpMessagingTemplate messagingTemplate;
@@ -76,23 +81,30 @@ private SimpMessagingTemplate messagingTemplate;
     }
 
 
-@GetMapping("employee-details/{id}")
+
+    @GetMapping("employee-details/{id}")
 public ResponseEntity<?> getMethodName(@PathVariable Long id) {
 
     if (!employeeRepo.existsById(id)) {
         return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
     }
 
-    try{
-    DetajetStafitDTO data = terminetService.FilteredData(id);
-     return ResponseEntity.ok(data);
-    }
-    catch(Exception e){
-         return ResponseEntity.badRequest().body(e.getMessage());
+    try {
+        DetajetStafitDTO data = terminetService.FilteredData(id);
+
+        if (data.getServices() != null) {
+            for (SherbimetAdminDTO service : data.getServices()) {
+                service.setImagePath(
+                        blobService.getImage(service.getImagePath())
+                );
+            }
+        }
+
+        return ResponseEntity.ok(data);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
-
-
 
     @GetMapping("employee/{id}")
     public ResponseEntity<List<TerminetGetDTO>> getSpecificEmployeeAppointments(
