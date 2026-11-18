@@ -82,7 +82,7 @@ private SimpMessagingTemplate messagingTemplate;
 
 
 
-    @GetMapping("employee-details/{id}")
+ @GetMapping("employee-details/{id}")
 public ResponseEntity<?> getMethodName(@PathVariable Long id) {
 
     if (!employeeRepo.existsById(id)) {
@@ -93,11 +93,14 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         DetajetStafitDTO data = terminetService.FilteredData(id);
 
         if (data.getServices() != null) {
-            for (SherbimetAdminDTO service : data.getServices()) {
-                service.setImagePath(
-                        blobService.getImage(service.getImagePath())
-                );
-            }
+            List<SherbimetAdminDTO> services = data.getServices().stream()
+                    .map(service -> {
+                        service.setImagePath(blobService.getImage(service.getImagePath()));
+                        return service;
+                    })
+                    .collect(Collectors.toList());
+
+            data.setServices(services);
         }
 
         return ResponseEntity.ok(data);
@@ -105,6 +108,7 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
+
 
     @GetMapping("employee/{id}")
     public ResponseEntity<List<TerminetGetDTO>> getSpecificEmployeeAppointments(
