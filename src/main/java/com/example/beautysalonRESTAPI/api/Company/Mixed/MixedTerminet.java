@@ -82,10 +82,8 @@ private SimpMessagingTemplate messagingTemplate;
         return ResponseEntity.status(500).body("Termini nuk u krijua!");
     }
 
-
-
- @GetMapping("employee-details/{id}")
-public ResponseEntity<?> getMethodName(@PathVariable Long id) {
+@GetMapping("employee-details/{id}")
+public ResponseEntity<?> getEmployeeDetails(@PathVariable Long id) {
 
     if (!employeeRepo.existsById(id)) {
         return ResponseEntity.badRequest().body("punonjesi nuk u gjet!");
@@ -95,14 +93,11 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         DetajetStafitDTO data = terminetService.FilteredData(id);
 
         if (data.getServices() != null) {
-            List<SherbimetAdminDTO> services = data.getServices().stream()
-                    .map(service -> {
-                        service.setImagePath(blobService.getImage(service.getImagePath()));
-                        return service;
-                    })
-                    .collect(Collectors.toList());
-
-            data.setServices(services);
+            for (SherbimetAdminDTO service : data.getServices()) {
+                service.setImagePath(
+                        blobService.getImage(service.getImagePath())
+                );
+            }
         }
 
         return ResponseEntity.ok(data);
@@ -110,7 +105,6 @@ public ResponseEntity<?> getMethodName(@PathVariable Long id) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
-
 
     @GetMapping("employee/{id}")
     public ResponseEntity<List<TerminetGetDTO>> getSpecificEmployeeAppointments(
