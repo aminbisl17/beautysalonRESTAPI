@@ -3,6 +3,8 @@ package com.example.beautysalonRESTAPI.api.Company.Mixed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
