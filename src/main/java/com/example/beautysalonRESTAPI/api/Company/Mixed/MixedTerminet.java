@@ -82,7 +82,7 @@ private SimpMessagingTemplate messagingTemplate;
         return ResponseEntity.status(500).body("Termini nuk u krijua!");
     }
 
-@GetMapping("employee-details/{id}")
+    @GetMapping("employee-details/{id}")
 public ResponseEntity<?> getEmployeeDetails(@PathVariable Long id) {
 
     if (!employeeRepo.existsById(id)) {
@@ -92,6 +92,22 @@ public ResponseEntity<?> getEmployeeDetails(@PathVariable Long id) {
     try {
         DetajetStafitDTO data = terminetService.FilteredData(id);
 
+        // Process services inside dates
+        if (data.getDates() != null) {
+            for (var date : data.getDates()) {
+
+                if (date.getSherbimetDisplay() != null) {
+                    for (SherbimetAdminDTO service : date.getSherbimetDisplay()) {
+
+                        service.setImagePath(
+                                blobService.getImage(service.getImagePath())
+                        );
+                    }
+                }
+            }
+        }
+
+        // Process regular services if present
         if (data.getServices() != null) {
             for (SherbimetAdminDTO service : data.getServices()) {
                 service.setImagePath(
@@ -101,6 +117,7 @@ public ResponseEntity<?> getEmployeeDetails(@PathVariable Long id) {
         }
 
         return ResponseEntity.ok(data);
+
     } catch (Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
