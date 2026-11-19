@@ -334,13 +334,16 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [{{SCHEMA}}].[terminet](
-	[id_terminit] [int] IDENTITY(235,1) NOT NULL,
+	[id_terminit] [int] IDENTITY(1,1) NOT NULL,
 	[ID] [int] NULL,
 	[pershkrimi] [nvarchar](max) NULL,
 	[data_caktimit] [datetime2](0) NULL,
 	[employee_id] [int] NULL,
-	[status] [nvarchar](15) NULL,
+	[status] [nvarchar](30) NULL,
 	[data_krijimit] [datetime2](7) NOT NULL,
+	[completed_at] [datetime2](7) NULL,
+	[cancelled_at] [datetime2](7) NULL,
+	[cancellation_reason] [nvarchar](1000) NULL,
  CONSTRAINT [PK_terminet_id_terminit] PRIMARY KEY CLUSTERED 
 (
 	[id_terminit] ASC
@@ -557,7 +560,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [{{SCHEMA}}].[terminet] CHECK CONSTRAINT [fk_terminet_client_id]
 GO
-ALTER TABLE [{{SCHEMA}}].[terminet]  WITH CHECK ADD  CONSTRAINT [CHK_status_values] CHECK  (([status]='executing' OR [status]='overdue' OR [status]='pending'))
+ALTER TABLE [{{SCHEMA}}].[terminet]  WITH CHECK ADD  CONSTRAINT [CHK_status_values] CHECK  ([status] IN ('pending','executing','overdue','completed','cancelled'))
 GO
 ALTER TABLE [{{SCHEMA}}].[terminet] CHECK CONSTRAINT [CHK_status_values]
 GO
